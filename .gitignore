@@ -1,0 +1,4 @@
+# All SQL files
+*.sql
+
+.env

@@ -1,0 +1,8 @@
+bin/
+
+# Composer
+composer.lock
+vendor/
+
+# Wordpress unit tests
+.circleci/
