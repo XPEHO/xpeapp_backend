@@ -1,0 +1,920 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Swagger Wordpress",
+        "description": "Thsi is the swagger documentation for the wordpress api",
+        "termsOfService": "http://swagger.io/terms/",
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.11"
+    },
+    "externalDocs": {
+        "description": "Find out more about Swagger",
+        "url": "http://swagger.io"
+    },
+    "servers": [
+        {
+            "url": "http://yaki.uat.xpeho.fr:7830/wp-json/xpeho/v1/"
+        }
+    ],
+    "tags": [
+        {
+            "name": "QVST Questions",
+            "description": "The endpoints for the QVST Questions"
+        },
+        {
+            "name": "QVST Campaigns",
+            "description": "The endpoints for the QVST Campaigns"
+        },
+        {
+            "name": "QVST Answer Repository",
+            "description": "The endpoints for the QVST Answer Repository"
+        },
+        {
+            "name": "QVST Thèmes",
+            "description": "The endpoints for the QVST Thèmes"
+        },
+        {
+            "name": "QVST User",
+            "description": "Operations about user"
+        }
+    ],
+    "paths": {
+        "/qvst/answers_repo": {
+            "get": {
+                "tags": [
+                    "QVST Answer Repository"
+                ],
+                "summary": "Get all the answers",
+                "description": "Get the answers from the answer repository",
+                "operationId": "api_get_answers_repo",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AnswerRepo"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst/answers_repo/{id}:update": {
+            "put": {
+                "tags": [
+                    "QVST Answer Repository"
+                ],
+                "summary": "Update an answer",
+                "description": "Update an answer in the answer repository",
+                "operationId": "api_update_answers_repo",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The id of the answer",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AnswerRepo"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AnswerRepo"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst/themes": {
+            "get": {
+                "tags": [
+                    "QVST Thèmes"
+                ],
+                "summary": "Get all the themes",
+                "description": "Get the themes from the database",
+                "operationId": "api_get_themes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Theme"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/user": {
+            "get": {
+                "tags": [
+                    "QVST User"
+                ],
+                "summary": "Get the user",
+                "description": "Get the user from the database",
+                "operationId": "api_get_user",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "header",
+                        "description": "The email of the user",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst/campaigns": {
+            "get": {
+                "tags": [
+                    "QVST Campaigns"
+                ],
+                "summary": "Get all the campaigns",
+                "description": "Get the campaigns from the database",
+                "operationId": "api_get_campaigns",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Campaign"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst/campaigns:active": {
+            "get": {
+                "tags": [
+                    "QVST Campaigns"
+                ],
+                "summary": "Get all the active campaigns",
+                "description": "Get the active campaigns from the database",
+                "operationId": "api_get_active_campaigns",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Campaign"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst/campaigns/{id}:questions": {
+            "get": {
+                "tags": [
+                    "QVST Questions"
+                ],
+                "summary": "Get the questions of a campaign",
+                "description": "Get the questions of a campaign from the database",
+                "operationId": "api_get_campaign_questions",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The id of the campaign",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Question"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst/campaigns/{id}:stats": {
+            "get": {
+                "tags": [
+                    "QVST Campaigns"
+                ],
+                "summary": "Get the stats of a campaign",
+                "description": "Get the stats of a campaign from the database",
+                "operationId": "api_get_campaign_stats",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The id of the campaign",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CampaignStats"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst/campaigns:add": {
+            "post": {
+                "tags": [
+                    "QVST Campaigns"
+                ],
+                "summary": "Add a campaign",
+                "description": "Add a campaign to the database",
+                "operationId": "api_add_campaign",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Campaign"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Campaign"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst/campaigns/{id}/status:update": {
+            "put": {
+                "tags": [
+                    "QVST Campaigns"
+                ],
+                "summary": "Update the status of a campaign",
+                "description": "Update the status of a campaign in the database",
+                "operationId": "api_update_campaign_status",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The id of the campaign",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Campaign"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Campaign"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst/{id}:delete": {
+            "delete": {
+                "tags": [
+                    "QVST Questions"
+                ],
+                "summary": "Delete a campaign",
+                "description": "Delete a campaign from the database",
+                "operationId": "api_delete_campaign",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The id of the campaign",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst": {
+            "get": {
+                "tags": [
+                    "QVST Questions"
+                ],
+                "summary": "Get all the questions",
+                "description": "Get the questions from the database",
+                "operationId": "api_get_qvst",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Question"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst/{id}": {
+            "get": {
+                "tags": [
+                    "QVST Questions"
+                ],
+                "summary": "Get a question",
+                "description": "Get a question from the database",
+                "operationId": "api_get_qvst_question",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The id of the question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Question"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst/themes/{id}/questions": {
+            "get": {
+                "tags": [
+                    "QVST Questions"
+                ],
+                "summary": "Get the questions of a theme",
+                "description": "Get the questions of a theme from the database",
+                "operationId": "api_get_theme_questions",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The id of the theme",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Question"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst/{id}:update": {
+            "put": {
+                "tags": [
+                    "QVST Questions"
+                ],
+                "summary": "Update a question",
+                "description": "Update a question in the database",
+                "operationId": "api_update_qvst_question",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The id of the question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Question"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Question"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst/campaigns/{id}/questions:answer": {
+            "post": {
+                "tags": [
+                    "QVST Questions"
+                ],
+                "summary": "Answer a question",
+                "description": "Answer a question in the database",
+                "operationId": "api_answer_question",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The id of the question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Question"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Question"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/qvst:add": {
+            "post": {
+                "tags": [
+                    "QVST Questions"
+                ],
+                "summary": "Add a question",
+                "description": "Add a question to the database",
+                "operationId": "api_add_qvst_question",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Question"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Question"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AnswerRepo": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "repoName": {
+                        "type": "string"
+                    },
+                    "answers": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                },
+                                "answer": {
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "Theme": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "type": "string",
+                        "format": "string"
+                    }
+                }
+            },
+            "Campaign": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "theme": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "format": "int64"
+                            },
+                            "name": {
+                                "type": "string",
+                                "format": "string"
+                            }
+                        }
+                    },
+                    "status": {
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "participation_rate": {
+                        "type": "string",
+                        "format": "string"
+                    }
+                }
+            },
+            "Question": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "theme": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "format": "int64"
+                            },
+                            "name": {
+                                "type": "string",
+                                "format": "string"
+                            }
+                        }
+                    },
+                    "id_theme": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "question": {
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "answers": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "answer": {
+                                    "type": "string",
+                                    "format": "string"
+                                },
+                                "value": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "CampaignStats": {
+                "type": "object",
+                "properties": {
+                    "campaignId": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "campaignName": {
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "campaignStatus": {
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "startDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "endDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "action": {
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "questions": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "question_id": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                },
+                                "question": {
+                                    "type": "string",
+                                    "format": "string"
+                                },
+                                "answer_repo_id": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                },
+                                "theme_id": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                },
+                                "theme": {
+                                    "type": "string",
+                                    "format": "string"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "format": "string"
+                                },
+                                "action": {
+                                    "type": "string",
+                                    "format": "string"
+                                },
+                                "answers": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "format": "int64"
+                                            },
+                                            "answer": {
+                                                "type": "string",
+                                                "format": "string"
+                                            },
+                                            "value": {
+                                                "type": "integer",
+                                                "format": "int64"
+                                            },
+                                            "numberAnswered": {
+                                                "type": "integer",
+                                                "format": "int64"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
