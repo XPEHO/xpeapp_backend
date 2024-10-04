@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
   db:
     image: mysql:latest
-    container_name: wordpress_xpeho_db
+    container_name: xpeapp_wordpress_db
     volumes:
-      - wordpress_xpeho_db:/var/lib/mysql
+      - xpeapp_wordpress_db:/var/lib/mysql
       # Init database with sql file
       - ./0001_dump.sql:/docker-entrypoint-initdb.d/dump.sql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -17,29 +15,43 @@ services:
       MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
 
   wordpress:
-    depends_on:
-      - db
+    container_name: xpeapp_wordpress_uat
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: wordpress_xpeho_uat
+    depends_on:
+      - db
     ports:
-      - "8080:80"
+      - "${WORDPRESS_HOST}:80"
     restart: always
     environment:
-      WORDPRESS_DB_HOST: ${WORDPRESS_HOST}
-      WORDPRESS_DB_NAME: ${WORDPRESS_NAME}
+      DEBUG: true
+
+      # Database
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
       WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
       WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
       WORDPRESS_TABLE_PREFIX: wp_
-      WORDPRESS_JWT_AUTH_SECRET_KEY: ${JWT_AUTH_SECRET_KEY}
+
+      # Wordpress Keys
+      AUTH_KEY: ${AUTH_KEY}
+      SECURE_AUTH_KEY: ${SECURE_AUTH_KEY}
+      LOGGED_IN_KEY: ${LOGGED_IN_KEY}
+      NONCE_KEY: ${NONCE_KEY}
+      AUTH_SALT: ${AUTH_SALT}
+      SECURE_AUTH_SALT: ${SECURE_AUTH_SALT}
+      LOGGED_IN_SALT: ${LOGGED_IN_SALT}
+      NONCE_SALT: ${NONCE_SALT}
+      JWT_AUTH_SECRET_KEY: ${JWT_AUTH_SECRET_KEY}
+
+      # Wordpress Config
       WORDPRESS_CONFIG_EXTRA: |
-        define('WP_HOME', 'http://localhost:8080');
-        define('WP_SITEURL', 'http://localhost:8080');
-        define('WP_DEBUG', false);
+        define('WP_HOME', 'http://localhost:7830');
+        define('WP_SITEURL', 'http://localhost:7830');
     volumes:
-      - wordpress_xpeho_data:/var/www/html
+      - xpeapp_wordpress_uat:/var/www/html
 
 volumes:
-  wordpress_xpeho_db:
-  wordpress_xpeho_data:
+  xpeapp_wordpress_db:
+  xpeapp_wordpress_uat:

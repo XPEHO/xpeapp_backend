@@ -15,19 +15,17 @@ RUN docker-php-ext-install pdo pdo_mysql mysqli
 RUN a2enmod rewrite
 
 # Copier les plugins dans les plugins de Wordpress
-COPY plugins/* /var/www/html/wp-content/plugins/
+COPY plugins/ /var/www/html/wp-content/plugins/
 
-# Copier le fichier composer.json
-COPY composer.json /var/www/html/wp-content/plugins
-
-# Lancer la commande composer install pour installer les dépendances
-RUN cd /var/www/html/wp-content/plugins && composer update
-
-# Définir l'utilisateur et le groupe des fichiers pour Apache
-RUN chown -R www-data:www-data /var/www/html
+# Lancer la commande composer install pour installer les dépendances de xpeapp-backend
+WORKDIR /var/www/html/wp-content/plugins/xpeapp-backend
+RUN composer update
 
 # Copier le fichier de configuration de WordPress
 COPY wp-config.php /var/www/html
+
+# Définir l'utilisateur et le groupe des fichiers pour Apache
+RUN chown -R www-data:www-data /var/www/html
 
 # Exposer le port 80 pour le serveur web
 EXPOSE 80
