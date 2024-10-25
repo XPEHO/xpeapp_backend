@@ -96,3 +96,7 @@ To fix this, you need to create a new field in the user profile.
   ![User field](docs/user_field.png)
 
 After that, you can access the endpoint `http://localhost:7830/wp-json/xpeho/v1/campaign-progress?userId={userId}` with the user id and the token in the header.
+
+## Tests
+
+In order to test, follow the [linked documentation](api-tests/README.md).
