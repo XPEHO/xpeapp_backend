@@ -21,6 +21,9 @@ COPY plugins/ /var/www/html/wp-content/plugins/
 WORKDIR /var/www/html/wp-content/plugins/xpeapp-backend
 RUN composer update
 
+# Go back to the root directory
+WORKDIR /var/www/html
+
 # Copier le fichier de configuration de WordPress
 COPY wp-config.php /var/www/html
 

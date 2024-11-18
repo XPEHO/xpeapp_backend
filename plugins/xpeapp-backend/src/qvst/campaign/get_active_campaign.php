@@ -18,6 +18,7 @@ function get_open_campaign(WP_REST_Request $request)
 			campaign.status,
 			campaign.start_date,
 			campaign.end_date,
+			campaign.action,
 			-- Calcul du taux de participation
 			(COUNT(DISTINCT CASE WHEN user_answers.hasAnswered = 1 THEN user_answers.user_id END) / COUNT(DISTINCT users.id)) * 100 AS participation_rate
 		FROM $table_name_campaigns campaign
@@ -31,7 +32,8 @@ function get_open_campaign(WP_REST_Request $request)
 			theme.id,
 			campaign.status,
 			campaign.start_date,
-			campaign.end_date;
+			campaign.end_date,
+			campaign.action;
 	";
 
 	$resultsCampaigns = $wpdb->get_results($queryCampaigns);
@@ -47,6 +49,7 @@ function get_open_campaign(WP_REST_Request $request)
 			'status' => $result->status,
 			'start_date' => $result->start_date,
 			'end_date' => $result->end_date,
+			'action' => $result->action,
 			'participation_rate' => $result->participation_rate,
 		);
 	}
