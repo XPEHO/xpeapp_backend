@@ -34,8 +34,8 @@ function register_local_acf_fields() {
 			'id' => '',
 		),
 		'choices' => array(
-			'answerQvst' => 'Répondre à une campagne de QVST',
-			'analytics' => 'Droit d\'accès aux statistiques de QVST',
+			'userQvst' => 'Accèder et répondre à une campagne de QVST',
+			'adminQvst' => 'Accèder à l\'administration des campagnes de QVST',
 			// Note: You can add new permissions here
 		),
 		'default_value' => array(),

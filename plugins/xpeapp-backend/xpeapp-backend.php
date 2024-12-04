@@ -87,8 +87,8 @@ class Xpeapp_Backend {
 
 	function xpeapp_init_rest_api()
 	{
-		$answerToQvstParameter = 'answerQvst';
-		$analyticsParameter = 'analytics';
+		$userQvstParameter = 'userQvst';
+		$adminQvstParameter = 'adminQvst';
 		$endpoint_namespace = 'xpeho/v1';
 
 		// GET USER 
@@ -121,8 +121,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'api_post_notification',
-				'permission_callback' => function () use ($analyticsParameter) {
-					return $this->secure_endpoint_with_parameter($analyticsParameter);
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
 		);
@@ -137,8 +137,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_qvst',
-				'permission_callback' => function () {
-					return $this->secure_endpoint_with_parameter(null);
+				'permission_callback' => function () use ($userQvstParameter) {
+					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
 			)
 		);
@@ -151,8 +151,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'api_post_qvst',
-				'permission_callback' => function () use ($analyticsParameter) {
-					return $this->secure_endpoint_with_parameter($analyticsParameter);
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
 		);
@@ -162,8 +162,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'api_import_qvst',
-				'permission_callback' => function () use ($analyticsParameter) {
-					return $this->secure_endpoint_with_parameter($analyticsParameter);
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
 		);
@@ -175,8 +175,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_qvst_by_id',
-				'permission_callback' => function () {
-					return $this->secure_endpoint_with_parameter(null);
+				'permission_callback' => function () use ($userQvstParameter) {
+					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
 			)
 		);
@@ -186,8 +186,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_qvst_resume_by_id',
-				'permission_callback' => function () use ($analyticsParameter) {
-					return $this->secure_endpoint_with_parameter($analyticsParameter);
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
 		);
@@ -197,8 +197,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'api_update_question',
-				'permission_callback' => function () use ($analyticsParameter) {
-					return $this->secure_endpoint_with_parameter($analyticsParameter);
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
 		);
@@ -208,8 +208,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::DELETABLE,
 				'callback' => 'api_delete_qvst',
-				'permission_callback' => function () use ($analyticsParameter) {
-					return $this->secure_endpoint_with_parameter($analyticsParameter);
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
 		);
@@ -221,8 +221,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_qvst_themes',
-				'permission_callback' => function () use ($analyticsParameter) {
-					return $this->secure_endpoint_with_parameter($analyticsParameter);
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
 		);
@@ -233,8 +233,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_qvst_questions_by_theme_id',
-				'permission_callback' => function () use ($analyticsParameter) {
-					return $this->secure_endpoint_with_parameter($analyticsParameter);
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
 		);
@@ -246,8 +246,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_answers_repo',
-				'permission_callback' => function () use ($analyticsParameter) {
-					return $this->secure_endpoint_with_parameter($analyticsParameter);
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
 		);
@@ -259,8 +259,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'api_update_answers_repo',
-				'permission_callback' => function () use ($analyticsParameter) {
-					return $this->secure_endpoint_with_parameter($analyticsParameter);
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
 		);
@@ -272,8 +272,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_campaigns',
-				'permission_callback' => function () {
-					return $this->secure_endpoint_with_parameter(null);
+				'permission_callback' => function () use ($userQvstParameter) {
+					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
 			)
 		);
@@ -283,8 +283,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'api_post_campaign',
-				'permission_callback' => function () use ($analyticsParameter) {
-					return $this->secure_endpoint_with_parameter($analyticsParameter);
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
 		);
@@ -294,8 +294,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'get_open_campaign',
-				'permission_callback' => function () {
-					return $this->secure_endpoint_with_parameter(null);
+				'permission_callback' => function () use ($userQvstParameter) {
+					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
 			)
 		);
@@ -307,8 +307,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_questions_by_campaign_id',
-				'permission_callback' => function () {
-					return $this->secure_endpoint_with_parameter(null);
+				'permission_callback' => function () use ($userQvstParameter) {
+					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
 			)
 		);
@@ -318,8 +318,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_qvst_stats_by_campaign_id',
-				'permission_callback' => function () use ($analyticsParameter) {
-					return $this->secure_endpoint_with_parameter($analyticsParameter);
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
 		);
@@ -329,8 +329,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'api_update_campaign_status',
-				'permission_callback' => function () use ($analyticsParameter) {
-					return $this->secure_endpoint_with_parameter($analyticsParameter);
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
 		);
@@ -340,8 +340,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_questions_by_campaign_id_and_user_id',
-				'permission_callback' => function () use ($answerToQvstParameter) {
-					return $this->secure_endpoint_with_parameter($answerToQvstParameter);
+				'permission_callback' => function () use ($userQvstParameter) {
+					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
 			)
 		);
@@ -351,8 +351,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'api_post_qvst_answers',
-				'permission_callback' => function () use ($answerToQvstParameter) {
-					return $this->secure_endpoint_with_parameter($answerToQvstParameter);
+				'permission_callback' => function () use ($userQvstParameter) {
+					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
 			)
 		);
@@ -362,8 +362,8 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_campaign_progress',
-				'permission_callback' => function () use ($answerToQvstParameter) {
-					return $this->secure_endpoint_with_parameter($answerToQvstParameter);
+				'permission_callback' => function () use ($userQvstParameter) {
+					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
 			)
 		);
