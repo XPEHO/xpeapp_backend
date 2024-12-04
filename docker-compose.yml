@@ -1,6 +1,6 @@
 services:
   db:
-    image: mysql:latest
+    image: mysql:9.0
     container_name: xpeapp_wordpress_db
     volumes:
       - xpeapp_wordpress_db:/var/lib/mysql
