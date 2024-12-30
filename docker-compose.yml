@@ -26,6 +26,7 @@ services:
     restart: always
     environment:
       DEBUG: true
+      FORCE_SSL_ADMIN: false
 
       # Database
       WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
