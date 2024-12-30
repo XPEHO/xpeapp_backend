@@ -115,7 +115,7 @@ define('WP_DEBUG_DISPLAY', getenv_docker('DEBUG', false));
 
 /* Add any custom values between this line and the "stop editing" line. */
 
-define( 'FORCE_SSL_ADMIN', true );
+define('FORCE_SSL_ADMIN', getenv_docker('FORCE_SSL_ADMIN', true));
 // If we're behind a proxy server and using HTTPS, we need to alert WordPress of that fact
 // see also https://wordpress.org/support/article/administration-over-ssl/#using-a-reverse-proxy
 if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false) {
