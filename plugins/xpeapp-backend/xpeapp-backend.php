@@ -367,6 +367,19 @@ class Xpeapp_Backend {
 				}
 			)
 		);
+
+		// Route pour mettre à jour le mot de passe de l'utilisateur
+        register_rest_route(
+            $endpoint_namespace,
+            '/update-password',
+            array(
+                'methods' => WP_REST_Server::EDITABLE,
+                'callback' => 'api_update_user_password',
+                'permission_callback' => function () use ($userQvstParameter) {
+                    return $this->secure_endpoint_with_parameter($userQvstParameter);
+                }
+            )
+        );
 	}
 
 	function xpeapp_menu_page()
@@ -401,7 +414,32 @@ class Xpeapp_Backend {
 		register_activation_hook(__FILE__, function () { $this->on_plugin_activation(); });
 		add_action('acf/init', function () { register_local_acf_fields(); });
 	}
+
 }
+
+
+	// Fonction pour mettre à jour le mot de passe de l'utilisateur
+	function api_update_user_password(WP_REST_Request $request) {
+		$user_id = get_current_user_id();
+		$new_password = $request->get_param('password');
+
+		if (empty($new_password)) {
+			return new WP_Error('no_password', __('No password provided', 'xpeapp'));
+		}
+
+		$user_data = array(
+			'ID' => $user_id,
+			'user_pass' => $new_password
+		);
+
+		$result = wp_update_user($user_data);
+
+		if (is_wp_error($result)) {
+			return $result;
+		}
+
+		return new WP_REST_Response(null, 204);
+	}
 
 $xpeapp_backend = new Xpeapp_Backend();
 $xpeapp_backend->run();
