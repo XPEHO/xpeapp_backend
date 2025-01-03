@@ -47,6 +47,33 @@ function register_local_acf_fields() {
 		'placeholder' => '',
 		'parent' => 'user_permissions',
 	));
+
+	acf_add_local_field(array(
+		'key' => 'liste_des_droits_possibles_de_utilisateur',
+		'label' => 'Liste des droits possibles de l\'utilisateur',
+		'name' => 'liste_des_droits_possibles_de_utilisateur',
+		'type' => 'select',
+		'instructions' => '',
+		'required' => 0,
+		'conditional_logic' => 0,
+		'wrapper' => array(
+			'width' => '',
+			'class' => '',
+			'id' => '',
+		),
+		'choices' => array(
+			'editPassword' => 'Modifier son mot de passe',
+			// Note: You can add new permissions here
+		),
+		'default_value' => array(),
+		'allow_null' => 0,
+		'multiple' => 1,
+		'ui' => 1,
+		'ajax' => 1,
+		'return_format' => 'value',
+		'placeholder' => '',
+		'parent' => 'user_permissions',
+	));
 }
 
 /**

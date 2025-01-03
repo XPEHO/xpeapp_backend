@@ -52,6 +52,7 @@ include 'src/qvst/answer_repository/put_answer_repo.php';
 
 /// User
 include 'src/qvst/user/get_user.php';
+include 'src/qvst/user/put_user.php';
 
 class Xpeapp_Backend {
 
@@ -71,17 +72,17 @@ class Xpeapp_Backend {
 	function secure_endpoint_with_parameter($param)
 	{
 		$current_user = get_current_user_id();
-		$user_role = get_field('liste_des_droits_possibles_de_qvst', 'user_' . $current_user);
-
+		$user_permission_for_qvst = get_field('liste_des_droits_possibles_de_qvst', 'user_' . $current_user);
+		$user_permission_for_user = get_field('liste_des_droits_possibles_de_utilisateur', 'user_' . $current_user);
 		// if $param is null, we authorize all users
 		if ($param == null) {
 			return true;
 		} else {
-			if($user_role == null) {
+			if($user_permission_for_qvst == null && $user_permission_for_user == null) {
 				xpeapp_log(Xpeapp_Log_Level::Warn, "Unauthorized user \"$current_user\" tried to access an API route.");
 				return false;
 			}
-			return in_array($param, $user_role);
+			return in_array($param, $user_permission_for_qvst) || in_array($param, $user_permission_for_user);
 		}
 	}
 
@@ -89,6 +90,7 @@ class Xpeapp_Backend {
 	{
 		$userQvstParameter = 'userQvst';
 		$adminQvstParameter = 'adminQvst';
+		$editPasswordParameter = 'editPassword';
 		$endpoint_namespace = 'xpeho/v1';
 
 		// GET USER 
@@ -375,8 +377,8 @@ class Xpeapp_Backend {
             array(
                 'methods' => WP_REST_Server::EDITABLE,
                 'callback' => 'api_update_user_password',
-                'permission_callback' => function () use ($userQvstParameter) {
-                    return $this->secure_endpoint_with_parameter($userQvstParameter);
+                'permission_callback' => function () use ($editPasswordParameter) {
+                    return $this->secure_endpoint_with_parameter($editPasswordParameter);
                 }
             )
         );
@@ -417,29 +419,6 @@ class Xpeapp_Backend {
 
 }
 
-
-	// Fonction pour mettre à jour le mot de passe de l'utilisateur
-	function api_update_user_password(WP_REST_Request $request) {
-		$user_id = get_current_user_id();
-		$new_password = $request->get_param('password');
-
-		if (empty($new_password)) {
-			return new WP_Error('no_password', __('No password provided', 'xpeapp'));
-		}
-
-		$user_data = array(
-			'ID' => $user_id,
-			'user_pass' => $new_password
-		);
-
-		$result = wp_update_user($user_data);
-
-		if (is_wp_error($result)) {
-			return $result;
-		}
-
-		return new WP_REST_Response(null, 204);
-	}
 
 $xpeapp_backend = new Xpeapp_Backend();
 $xpeapp_backend->run();
