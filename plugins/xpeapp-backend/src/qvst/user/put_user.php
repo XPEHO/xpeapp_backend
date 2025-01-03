@@ -1,6 +1,6 @@
 <?php
 
-// Fonction pour mettre à jour le mot de passe de l'utilisateurs
+// Fonction pour mettre à jour le mot de passe de l'utilisateur
 function apiUpdateUserPassword(WP_REST_Request $request) {
     xpeapp_log_request($request);
 

@@ -53,6 +53,7 @@ include 'src/qvst/answer_repository/put_answer_repo.php';
 /// User
 include 'src/qvst/user/get_user.php';
 include_once 'src/qvst/user/put_user.php';
+include_once 'src/qvst/user/get_user_infos.php';
 
 class Xpeapp_Backend {
 
@@ -369,7 +370,6 @@ class Xpeapp_Backend {
 				}
 			)
 		);
-
 		// Route pour mettre à jour le mot de passe de l'utilisateur
         register_rest_route(
             $endpoint_namespace,
@@ -382,6 +382,21 @@ class Xpeapp_Backend {
                 }
             )
         );
+
+		// Route pour récupérer les informations de l'utilisateur
+        register_rest_route(
+            $endpoint_namespace,
+            '/user-infos',
+            array(
+                'methods' => WP_REST_Server::READABLE,
+                'callback' => 'apiGetUserInfos',
+                'permission_callback' => function () {
+                    return $this->secure_endpoint_with_parameter(null);
+                }
+            )
+        );
+
+		
 	}
 
 	function xpeapp_menu_page()
