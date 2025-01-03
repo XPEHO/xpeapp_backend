@@ -50,9 +50,7 @@ services:
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_HOME', 'http://localhost:7830');
         define('WP_SITEURL', 'http://localhost:7830');
-    volumes:
-      - xpeapp_wordpress_uat:/var/www/html
+    
 
 volumes:
   xpeapp_wordpress_db:
-  xpeapp_wordpress_uat:
