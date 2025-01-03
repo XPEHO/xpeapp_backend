@@ -52,7 +52,7 @@ include 'src/qvst/answer_repository/put_answer_repo.php';
 
 /// User
 include 'src/qvst/user/get_user.php';
-include 'src/qvst/user/put_user.php';
+include_once 'src/qvst/user/put_user.php';
 
 class Xpeapp_Backend {
 
@@ -376,7 +376,7 @@ class Xpeapp_Backend {
             '/update-password',
             array(
                 'methods' => WP_REST_Server::EDITABLE,
-                'callback' => 'api_update_user_password',
+                'callback' => 'apiUpdateUserPassword',
                 'permission_callback' => function () use ($editPasswordParameter) {
                     return $this->secure_endpoint_with_parameter($editPasswordParameter);
                 }
