@@ -52,6 +52,7 @@ include 'src/qvst/answer_repository/put_answer_repo.php';
 
 /// User
 include 'src/qvst/user/get_user.php';
+include_once 'src/qvst/user/put_user.php';
 
 class Xpeapp_Backend {
 
@@ -71,17 +72,17 @@ class Xpeapp_Backend {
 	function secure_endpoint_with_parameter($param)
 	{
 		$current_user = get_current_user_id();
-		$user_role = get_field('liste_des_droits_possibles_de_qvst', 'user_' . $current_user);
-
+		$user_permission_for_qvst = get_field('liste_des_droits_possibles_de_qvst', 'user_' . $current_user);
+		$user_permission_for_user = get_field('liste_des_droits_possibles_de_utilisateur', 'user_' . $current_user);
 		// if $param is null, we authorize all users
 		if ($param == null) {
 			return true;
 		} else {
-			if($user_role == null) {
+			if($user_permission_for_qvst == null && $user_permission_for_user == null) {
 				xpeapp_log(Xpeapp_Log_Level::Warn, "Unauthorized user \"$current_user\" tried to access an API route.");
 				return false;
 			}
-			return in_array($param, $user_role);
+			return in_array($param, $user_permission_for_qvst) || in_array($param, $user_permission_for_user);
 		}
 	}
 
@@ -89,6 +90,7 @@ class Xpeapp_Backend {
 	{
 		$userQvstParameter = 'userQvst';
 		$adminQvstParameter = 'adminQvst';
+		$editPasswordParameter = 'editPassword';
 		$endpoint_namespace = 'xpeho/v1';
 
 		// GET USER 
@@ -367,6 +369,19 @@ class Xpeapp_Backend {
 				}
 			)
 		);
+
+		// Route pour mettre à jour le mot de passe de l'utilisateur
+        register_rest_route(
+            $endpoint_namespace,
+            '/update-password',
+            array(
+                'methods' => WP_REST_Server::EDITABLE,
+                'callback' => 'apiUpdateUserPassword',
+                'permission_callback' => function () use ($editPasswordParameter) {
+                    return $this->secure_endpoint_with_parameter($editPasswordParameter);
+                }
+            )
+        );
 	}
 
 	function xpeapp_menu_page()
@@ -401,7 +416,9 @@ class Xpeapp_Backend {
 		register_activation_hook(__FILE__, function () { $this->on_plugin_activation(); });
 		add_action('acf/init', function () { register_local_acf_fields(); });
 	}
+
 }
+
 
 $xpeapp_backend = new Xpeapp_Backend();
 $xpeapp_backend->run();
