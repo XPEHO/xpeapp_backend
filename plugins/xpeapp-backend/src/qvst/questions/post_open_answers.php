@@ -3,43 +3,42 @@
 function postOpenAnswers(WP_REST_Request $request) {
 
     xpeapp_log_request($request);
-	
-	// Utiliser la classe $wpdb pour effectuer une requête SQL
-	global $wpdb;
+    
+    // Utiliser la classe $wpdb pour effectuer une requête SQL
+    global $wpdb;
 
-	$params = $request->get_params();
-	$token = $request->get_header('Authorization');
+    $params = $request->get_params();
+    $token = $request->get_header('Authorization');
 
-	$table_open_answers = $wpdb->prefix . 'qvst_open_answers';
+    $table_open_answers = $wpdb->prefix . 'qvst_open_answers';
 
-	$params = $request->get_params();
+    $params = $request->get_params();
 
-	if (empty($params)) {
-		return new WP_Error('noParams', __('No parameters found', 'QVST'));
+    $response = null;
 
-	} else if (!isset($params['answer_group_id'])) {
-		return new WP_Error('noAnswerGroupId', __('No answer group id found', 'QVST'));
+    if (empty($params)) {
+        $response = new WP_Error('noParams', __('No parameters found', 'QVST'));
+    } elseif (!isset($params['text'])) {
+        $response = new WP_Error('noText', __('No text found', 'QVST'));
+    } else {
+        try {
+            $openAnswersToInsert = array(
+                'answer_group_id' => $token,
+                'text' => $params['text'],
+            );
 
-	} else if (!isset($params['text'])) {
-		return new WP_Error('noText', __('No text found', 'QVST'));
-	} else {
+            // save openAnswers
+            $wpdb->insert(
+                $table_open_answers,
+                $openAnswersToInsert,
+            );
 
-		try {
-			$openAnswersToInsert = array(
-				'answer_group_id' => $token,
-				'text' => $params['text'],
-			);
+            // return 201 created status code if success
+            $response = new WP_REST_Response(null, 201);
+        } catch (\Throwable $th) {
+            $response = new WP_Error('error', __('Error', 'QVST'));
+        }
+    }
 
-			// save openAnswers
-			$wpdb->insert(
-				$table_open_answers,
-				$openAnswersToInsert,
-			);
-
-			// return 201 created status code if success
-			return new WP_REST_Response(null, 201);
-		} catch (\Throwable $th) {
-			return new WP_Error('error', __('Error', 'QVST'));
-		}
-	}
+    return $response;
 }
