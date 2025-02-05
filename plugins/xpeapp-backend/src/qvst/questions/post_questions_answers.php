@@ -20,6 +20,7 @@ function api_post_qvst_answers(WP_REST_Request $request)
 	// List of parameters
 	$campaign_id = $params['id'];
 	$user_id = $request->get_header('userId');
+	$token = $request->get_header('Authorization');
 
 	if (empty($params) || empty($body)) {
 		return new WP_Error('noParams', __('No parameters or body', 'QVST'));
@@ -66,6 +67,7 @@ function api_post_qvst_answers(WP_REST_Request $request)
 						'campaign_id' => $campaign_id,
 						'question_id' => $question->id,
 						'answer_id' => $answer->id,
+						'answer_group_id' => $token,
 					)
 				);
 			}
