@@ -43,6 +43,7 @@ include 'src/qvst/campaign/get_campaign_progress.php';
 include 'src/qvst/campaign/get_stats_of_campaign.php';
 include 'src/qvst/campaign/post_campaign.php';
 include 'src/qvst/campaign/put_campaign_status.php';
+include 'src/qvst/campaign/get_csv_file_campaign.php';
 
 /// Theme
 include 'src/qvst/themes/get_list_of_themes.php';
@@ -409,6 +410,21 @@ class Xpeapp_Backend {
 				}
 			)
 		);
+
+		// Route pour récupérer le fichier CSV d'une campagne
+        register_rest_route(
+            $endpoint_namespace,
+            '/qvst/campaigns/(?P<id>[\d]+):csv',
+            array(
+                'methods' => WP_REST_Server::READABLE,
+                'callback' => 'apiGetCsvFileCampaign',
+                'permission_callback' => function () {
+                    return $this->secure_endpoint_with_parameter();
+                }
+            )
+        );
+
+
 		
 	}
 
