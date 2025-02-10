@@ -34,6 +34,7 @@ include 'src/qvst/questions/get_questions_by_campaign_and_user.php';
 include 'src/qvst/questions/get_questions_by_campaign.php';
 include 'src/qvst/questions/put_qvst_question.php';
 include 'src/qvst/questions/post_questions_answers.php';
+include_once 'src/qvst/questions/post_open_answers.php';
 
 /// Campaign
 include 'src/qvst/campaign/get_list_of_campaigns.php';
@@ -395,7 +396,19 @@ class Xpeapp_Backend {
                 }
             )
         );
-
+		
+		// Route pour enregistrer la réponse dans une table de champ libre
+		register_rest_route(
+			$endpoint_namespace,
+			'/qvst/open-answers',
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => 'postOpenAnswers',
+				'permission_callback' => function () use ($userQvstParameter) {
+					return $this->secure_endpoint_with_parameter($userQvstParameter);
+				}
+			)
+		);
 		
 	}
 
