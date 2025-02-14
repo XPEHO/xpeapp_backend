@@ -61,7 +61,7 @@ Indeed for the most part of endpoints, you need to send a Bearer token in the he
 ```
 
 > [!NOTE]
-> The token is valid for 7 days.
+> The token is valid for a month.
 
 You copy the token field and paste it in the header of the request as follows:
 
