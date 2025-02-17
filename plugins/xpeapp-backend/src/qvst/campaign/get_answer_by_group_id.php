@@ -1,5 +1,5 @@
 <?php
-function get_answer_group_by_id($request) {
+function getAnswerByGroupId($request) {
 
     xpeapp_log_request($request);
     
@@ -11,6 +11,7 @@ function get_answer_group_by_id($request) {
     $table_answers = $wpdb->prefix . 'qvst_answers';
     $table_campaign_questions = $wpdb->prefix . 'qvst_campaign_questions';
     $table_qvst_questions = $wpdb->prefix . 'qvst_questions';
+    $table_qvst_open_answer = $wpdb->prefix . 'qvst_open_answers';
 
     $params = $request->get_params();
 
@@ -18,20 +19,22 @@ function get_answer_group_by_id($request) {
         return new WP_Error('noParams', __('Aucun paramètre', 'Campaign'));
     }
 
+    $response = null;
+
     try {
-        // Récupérer toutes les réponses d'une campagne triées par question
+        // Get all answers of a campaign
         $campaign_classify = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT question_id, answer_id, answer_groupe_id, name 
-                FROM $table_campaign_answers 
-                JOIN $table_answers ON (answer_id = $table_answers.id) 
-                WHERE campaign_id = %d 
+                "SELECT question_id, answer_id, answer_group_id, name
+                FROM $table_campaign_answers
+                JOIN $table_answers ON (answer_id = $table_answers.id)
+                WHERE campaign_id = %d
                 ORDER BY question_id",
                 $params['campaign_id']
             )
         );
 
-        // Récupérer toutes les questions d'une campagne triées par question
+        // Get all questions of a campaign
         $campaign_questions = $wpdb->get_results(
             $wpdb->prepare(
                 "SELECT campaign_id, question_id, `text`
@@ -43,20 +46,29 @@ function get_answer_group_by_id($request) {
             )
         );
 
-        if (empty($campaign_classify) || empty($campaign_questions)) {
-            return new WP_Error('noID', __('Aucune campagne trouvée', 'QVST'));
-        }
-
-        $data = array(
-            'answers' => $campaign_classify,
-            'questions' => $campaign_questions
+        // Get all open answers of a campaign
+        $open_answer = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT `text`, answer_group_id FROM $table_qvst_open_answer"
+            )
         );
 
-        // Return 200 OK status code if success with datas
-        return new WP_REST_Response($data, 200);
+        if (empty($campaign_classify) || empty($campaign_questions)) {
+            $response = new WP_Error('noID', __('Aucune campagne trouvée', 'QVST'));
+        } else {
+            $data = array(
+                'answers' => $campaign_classify,
+                'questions' => $campaign_questions,
+                'open_answers' => $open_answer
+            );
+
+            // Return 200 OK status code if success with datas
+            $response = new WP_REST_Response($data, 200);
+        }
     } catch (\Throwable $th) {
         xpeapp_log(Xpeapp_Log_Level::Error, $th->getMessage());
-        return new WP_Error('error', __('Erreur', 'QVST'));
+        $response = new WP_Error('error', __('Erreur', 'QVST'));
     }
+
+    return $response;
 }
-?>
