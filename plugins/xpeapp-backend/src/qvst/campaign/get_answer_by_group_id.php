@@ -22,10 +22,10 @@ function getAnswerByGroupId($request) {
     $response = null;
 
     try {
-        // Get all answers of a campaign
-        $campaign_classify = $wpdb->get_results(
+        // Get all answers of the campaign
+        $answers = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT question_id, answer_id, answer_group_id, name
+                "SELECT question_id, answer_group_id, `name` as answer_text
                 FROM $table_campaign_answers
                 JOIN $table_answers ON (answer_id = $table_answers.id)
                 WHERE campaign_id = %d
@@ -34,10 +34,10 @@ function getAnswerByGroupId($request) {
             )
         );
 
-        // Get all questions of a campaign
-        $campaign_questions = $wpdb->get_results(
+        // Get all questions of the campaign
+        $questions = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT campaign_id, question_id, `text`
+                "SELECT question_id, $table_qvst_questions.`text` as question_text
                 FROM $table_campaign_questions
                 JOIN $table_qvst_questions ON (question_id = $table_qvst_questions.id)
                 WHERE campaign_id = %d
@@ -46,20 +46,26 @@ function getAnswerByGroupId($request) {
             )
         );
 
-        // Get all open answers of a campaign
-        $open_answer = $wpdb->get_results(
+        // Get all open answers of the campaign
+        $open_answers = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT `text`, answer_group_id FROM $table_qvst_open_answer"
+                "SELECT `text` as open_answer_text, answer_group_id FROM $table_qvst_open_answer
+                WHERE answer_group_id IN (
+                    SELECT DISTINCT answer_group_id
+                    FROM $table_campaign_answers
+                    WHERE campaign_id = %d
+                )",
+                $params['campaign_id']
             )
         );
 
-        if (empty($campaign_classify) || empty($campaign_questions)) {
+        if (empty($answers) || empty($questions)) {
             $response = new WP_Error('noID', __('Aucune campagne trouvée', 'QVST'));
         } else {
             $data = array(
-                'answers' => $campaign_classify,
-                'questions' => $campaign_questions,
-                'open_answers' => $open_answer
+                'answers' => $answers,
+                'questions' => $questions,
+                'open_answers' => $open_answers
             );
 
             // Return 200 OK status code if success with datas

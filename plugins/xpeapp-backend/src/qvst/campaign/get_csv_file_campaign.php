@@ -27,33 +27,36 @@ function apiGetCsvFileCampaign($request) {
     header('Content-Disposition: attachment;filename=' . $filename);
     header('Pragma: no-cache');
 
+    // Create the file
     $file = fopen('php://output', 'w');
 
-    // Add the headers custom ID and free field
+    // Define the headers using CSV using questions
     $headers = array_merge(
         ['Identifiant de réponse'],
-        array_map(fn($question) => $question->text ?? '', $data['questions']),
+        array_map(fn($question) => $question->question_text ?? '', $data['questions']),
         ['Champs libre']
     );
     fputcsv($file, $headers);
 
-    // Group the answers by group ID
+    // Assign the answers to a group ID
     $groupedAnswers = [];
     foreach ($data['answers'] as $answer) {
-        $groupedAnswers[$answer->answer_group_id][$answer->question_id] = $answer->name;
+        $groupedAnswers[$answer->answer_group_id][$answer->question_id] = $answer->answer_text;
     }
 
-    // Associate the user with the open answer
+    // Assign the open answers to its group ID
     $openAnswers = [];
     foreach ($data['open_answers'] as $open) {
-        $openAnswers[$open->answer_group_id] = $open->text;
+        $openAnswers[$open->answer_group_id] = $open->open_answer_text;
     }
 
+    // Define the basic ID to identify users
     $rowIndex = 1;
     foreach ($groupedAnswers as $groupId => $answers) {
+        // Add the user id
         $row = [$rowIndex++];
 
-        // Add the answers in the right order
+        // Add the answers following the questions order
         foreach ($data['questions'] as $question) {
             $row[] = $answers[$question->question_id] ?? '';
         }
@@ -64,6 +67,7 @@ function apiGetCsvFileCampaign($request) {
         fputcsv($file, $row);
     }
 
+    // Close the file
     fclose($file);
     exit();
 }
