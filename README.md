@@ -75,6 +75,18 @@ You copy the token field and paste it in the header of the request as follows:
 
 After every merge to the main branch, a docker image will be created in packages, you can see it on the package section at the right of the code page of the repository.
 
+### Use Github action to deploy
+
+You can use the Github action to deploy the project on your server. See [deploy workflow](.github/workflows/deploy.yaml).
+
+1. Open the Github repository page
+2. Go to the 'Actions' tab
+3. Click on the 'Deploy' workflow
+4. Click on the 'Run workflow' button
+5. Fill the form with the comment and click on the 'Run workflow' button
+
+### Deploy manually on the server
+
 Now you can pull the docker image (on your server for instance) using :
 
 ```shell

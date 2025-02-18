@@ -1,0 +1,21 @@
+name: Deploy backend
+
+on:
+  workflow_dispatch:
+    inputs:
+      comment:
+        description: 'Comment for the deployment'
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update and restart
+        uses: garygrossgarten/github-action-ssh@0.8.0
+        with:
+          command: sh update_xpeapp.sh
+          host: ${{ secrets.XPEHO_SERVER_IP }}
+          username: debian
+          passphrase: ${{ secrets.XPEHO_SSH_PASS }}
+          privateKey: ${{ secrets.XPEHO_SSH_PRIVATE_KEY }}
