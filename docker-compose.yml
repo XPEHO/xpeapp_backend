@@ -46,6 +46,8 @@ services:
       NONCE_SALT: ${NONCE_SALT}
       JWT_AUTH_SECRET_KEY: ${JWT_AUTH_SECRET_KEY}
 
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+
       # Wordpress Config
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_HOME', 'http://localhost:7830');
