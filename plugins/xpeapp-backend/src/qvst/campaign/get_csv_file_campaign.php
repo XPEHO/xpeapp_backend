@@ -4,6 +4,27 @@ include_once 'get_answer_by_group_id.php';
 function apiGetCsvFileCampaign($request) {
     
     xpeapp_log_request($request);
+    
+    // Define allowed origins based on environment
+    $allowed_origins = getenv_docker('CORS_ALLOWED_ORIGINS', '');
+    $allowed_origins = explode(';', $allowed_origins);
+
+    // Get the origin of the request
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+    // Add CORS headers if the origin is allowed
+    if (in_array($origin, $allowed_origins) || in_array('*', $allowed_origins)) {
+        header('Access-Control-Allow-Origin: ' . ($origin ?: '*'));
+    }
+    // Add other CORS headers
+    // header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET');
+    header('Access-Control-Allow-Headers: Authorization, Content-Type');
+
+    // Handle preflight requests
+    if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+        exit(0);
+    }
 
     // Get the answer group by id
     $response = getAnswerByGroupId($request);
