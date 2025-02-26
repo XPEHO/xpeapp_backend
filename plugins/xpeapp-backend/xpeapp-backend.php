@@ -435,11 +435,13 @@ class Xpeapp_Backend {
         );
 
 		// === Agenda ===
+		$events_types_endpoint = '/agenda/events-types/';
+		$events_types_endpoint_with_id = $events_types_endpoint.'(?P<id>[\d]+)';
 
 		// Route pour récupérer le type d'événement par son id
 		register_rest_route(
 			$endpoint_namespace,
-			'/agenda/events-types/(?P<id>[\d]+)',
+			$events_types_endpoint_with_id,
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'apiGetEventsTypesById',
@@ -452,7 +454,7 @@ class Xpeapp_Backend {
 		// Route pour récupérer tout les types d'événements
 		register_rest_route(
 			$endpoint_namespace,
-			'/agenda/events-types/',
+			$events_types_endpoint,
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'apiGetAllEventsTypes',
@@ -465,7 +467,7 @@ class Xpeapp_Backend {
 		// Route pour créer un type d'événement
 		register_rest_route(
 			$endpoint_namespace,
-			'/agenda/events-types/',
+			$events_types_endpoint,
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'apiPostEventsTypes',
@@ -478,7 +480,7 @@ class Xpeapp_Backend {
 		// Route pour mettre à jour un type d'événement
 		register_rest_route(
 			$endpoint_namespace,
-			'/agenda/events-types/(?P<id>[\d]+)',
+			$events_types_endpoint_with_id,
 			array(
 				'methods' => WP_REST_Server::EDITABLE,
 				'callback' => 'apiPutEventsTypes',
@@ -491,7 +493,7 @@ class Xpeapp_Backend {
 		// Route pour supprimer un type d'événement
 		register_rest_route(
 			$endpoint_namespace,
-			'/agenda/events-types/(?P<id>[\d]+)',
+			$events_types_endpoint_with_id,
 			array(
 				'methods' => WP_REST_Server::DELETABLE,
 				'callback' => 'apiDeleteEventsTypes',

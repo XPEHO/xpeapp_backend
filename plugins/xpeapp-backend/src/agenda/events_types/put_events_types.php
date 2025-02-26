@@ -14,16 +14,14 @@ function apiPutEventsTypes(WP_REST_Request $request)
     $label = $request->get_param('label');
 
     if (empty($id) || empty($label)) {
-        return new WP_Error('missing_params', __('Missing id or label', 'Agenda'), array('status' => 400));
+        return new WP_REST_Response(new WP_Error('missing_params', __('Missing id or label', 'Agenda'), array('status' => 400)), 400);
     }
-
-
 
     // Check if the event type exists
     $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_events_type WHERE id = %d", intval($id)));
 
     if ($exists == 0) {
-        return new WP_Error('not_found', __('Event type not found', 'Agenda'), array('status' => 404));
+        return new WP_REST_Response(new WP_Error('not_found', __('Event type not found', 'Agenda'), array('status' => 404)), 404);
     }
 
     // Update the event type in the database
@@ -36,9 +34,10 @@ function apiPutEventsTypes(WP_REST_Request $request)
             'id' => intval($id)
         ),
     );
+
     // Check if the update was successful
     if ($result === false) {
-        return new WP_Error('db_update_error', __('Could not update event type', 'Agenda'), array('status' => 500));
+        return new WP_REST_Response(new WP_Error('db_update_error', __('Could not update event type', 'Agenda'), array('status' => 500)), 500);
     }
     
     // Return a 204 response
