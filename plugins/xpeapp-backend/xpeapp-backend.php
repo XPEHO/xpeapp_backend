@@ -57,6 +57,13 @@ include 'src/qvst/user/get_user.php';
 include_once 'src/qvst/user/put_user.php';
 include_once 'src/qvst/user/get_user_infos.php';
 
+// Agenda
+include_once 'src/agenda/events_types/get_events_types_by_id.php';
+include_once 'src/agenda/events_types/get_all_events_types.php';
+include_once 'src/agenda/events_types/post_events_types.php';
+include_once 'src/agenda/events_types/put_events_types.php';
+include_once 'src/agenda/events_types/delete_events_types.php';
+
 class Xpeapp_Backend {
 
 	/**
@@ -77,15 +84,16 @@ class Xpeapp_Backend {
 		$current_user = get_current_user_id();
 		$user_permission_for_qvst = get_field('liste_des_droits_possibles_de_qvst', 'user_' . $current_user);
 		$user_permission_for_user = get_field('liste_des_droits_possibles_de_utilisateur', 'user_' . $current_user);
+		$user_permission_for_agenda = get_field('liste_des_droits_possibles_de_agenda', 'user_' . $current_user);
 		// if $param is null, we authorize all users
 		if ($param == null) {
 			return true;
 		} else {
-			if($user_permission_for_qvst == null && $user_permission_for_user == null) {
+			if($user_permission_for_qvst == null && $user_permission_for_user == null && $user_permission_for_agenda == null) {
 				xpeapp_log(Xpeapp_Log_Level::Warn, "Unauthorized user \"$current_user\" tried to access an API route.");
 				return false;
 			}
-			return in_array($param, $user_permission_for_qvst) || in_array($param, $user_permission_for_user);
+			return in_array($param, $user_permission_for_qvst) || in_array($param, $user_permission_for_user) || in_array($param, $user_permission_for_agenda);
 		}
 	}
 
@@ -95,6 +103,8 @@ class Xpeapp_Backend {
 		$adminQvstParameter = 'adminQvst';
 		$editPasswordParameter = 'editPassword';
 		$endpoint_namespace = 'xpeho/v1';
+		$userAgenda = 'userAgenda';
+		$adminAgenda = 'adminAgenda';
 
 		// GET USER 
 		// In: Header(email:)
@@ -423,6 +433,75 @@ class Xpeapp_Backend {
                 }
             )
         );
+
+		// === Agenda ===
+		$events_types_endpoint = '/agenda/events-types/';
+		$events_types_endpoint_with_id = $events_types_endpoint.'(?P<id>[\d]+)';
+
+		// Route pour récupérer le type d'événement par son id
+		register_rest_route(
+			$endpoint_namespace,
+			$events_types_endpoint_with_id,
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => 'apiGetEventsTypesById',
+				'permission_callback' => function () use ($userAgenda) {
+					return $this->secure_endpoint_with_parameter($userAgenda);
+				}
+			)
+		);
+
+		// Route pour récupérer tout les types d'événements
+		register_rest_route(
+			$endpoint_namespace,
+			$events_types_endpoint,
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => 'apiGetAllEventsTypes',
+				'permission_callback' => function () use ($userAgenda) {
+					return $this->secure_endpoint_with_parameter($userAgenda);
+				}
+			)
+		);
+
+		// Route pour créer un type d'événement
+		register_rest_route(
+			$endpoint_namespace,
+			$events_types_endpoint,
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => 'apiPostEventsTypes',
+				'permission_callback' => function () use ($adminAgenda) {
+					return $this->secure_endpoint_with_parameter($adminAgenda);
+				}
+			)
+		);
+
+		// Route pour mettre à jour un type d'événement
+		register_rest_route(
+			$endpoint_namespace,
+			$events_types_endpoint_with_id,
+			array(
+				'methods' => WP_REST_Server::EDITABLE,
+				'callback' => 'apiPutEventsTypes',
+				'permission_callback' => function () use ($adminAgenda) {
+					return $this->secure_endpoint_with_parameter($adminAgenda);
+				}
+			)
+		);
+
+		// Route pour supprimer un type d'événement
+		register_rest_route(
+			$endpoint_namespace,
+			$events_types_endpoint_with_id,
+			array(
+				'methods' => WP_REST_Server::DELETABLE,
+				'callback' => 'apiDeleteEventsTypes',
+				'permission_callback' => function () use ($adminAgenda) {
+					return $this->secure_endpoint_with_parameter($adminAgenda);
+				}
+			)
+		);
 		
 	}
 
