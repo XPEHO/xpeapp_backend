@@ -1,6 +1,6 @@
 <?php
 
-function api_post_events_types(WP_REST_Request $request)
+function apiPostEventsTypes(WP_REST_Request $request)
 {
     xpeapp_log_request($request);
 

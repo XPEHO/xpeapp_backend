@@ -442,7 +442,7 @@ class Xpeapp_Backend {
 			'/agenda/events-types/(?P<id>[\d]+)',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'api_get_events_types_by_id',
+				'callback' => 'apiGetEventsTypesById',
 				'permission_callback' => function () use ($userAgenda) {
 					return $this->secure_endpoint_with_parameter($userAgenda);
 				}
@@ -455,7 +455,7 @@ class Xpeapp_Backend {
 			'/agenda/events-types/',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'api_get_all_events_types',
+				'callback' => 'apiGetAllEventsTypes',
 				'permission_callback' => function () use ($userAgenda) {
 					return $this->secure_endpoint_with_parameter($userAgenda);
 				}
@@ -468,7 +468,7 @@ class Xpeapp_Backend {
 			'/agenda/events-types/',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
-				'callback' => 'api_post_events_types',
+				'callback' => 'apiPostEventsTypes',
 				'permission_callback' => function () use ($adminAgenda) {
 					return $this->secure_endpoint_with_parameter($adminAgenda);
 				}
@@ -481,7 +481,7 @@ class Xpeapp_Backend {
 			'/agenda/events-types/(?P<id>[\d]+)',
 			array(
 				'methods' => WP_REST_Server::EDITABLE,
-				'callback' => 'api_put_events_types',
+				'callback' => 'apiPutEventsTypes',
 				'permission_callback' => function () use ($adminAgenda) {
 					return $this->secure_endpoint_with_parameter($adminAgenda);
 				}
@@ -494,7 +494,7 @@ class Xpeapp_Backend {
 			'/agenda/events-types/(?P<id>[\d]+)',
 			array(
 				'methods' => WP_REST_Server::DELETABLE,
-				'callback' => 'api_delete_events_types',
+				'callback' => 'apiDeleteEventsTypes',
 				'permission_callback' => function () use ($adminAgenda) {
 					return $this->secure_endpoint_with_parameter($adminAgenda);
 				}

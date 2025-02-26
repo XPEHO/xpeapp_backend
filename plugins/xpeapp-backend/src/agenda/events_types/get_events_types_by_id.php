@@ -1,6 +1,6 @@
 <?php
 
-function api_get_events_types_by_id(WP_REST_Request $request)
+function apiGetEventsTypesById(WP_REST_Request $request)
 {
     xpeapp_log_request($request);
 
@@ -33,7 +33,7 @@ function api_get_events_types_by_id(WP_REST_Request $request)
             return $events_type;
         } else {
             // Return an error if the event type was not found
-            return new WP_Error('not_found', __('Event type not found', 'Agenda'), array('status' => 404));
+            return new WP_Error('not_found', __('Error finding event type', 'Agenda'), array('status' => 404));
         }
     }
 }
