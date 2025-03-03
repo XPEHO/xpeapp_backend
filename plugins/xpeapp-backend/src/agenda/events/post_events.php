@@ -27,7 +27,7 @@ function apiPostEvents(WP_REST_Request $request)
             if ($result === false) {
                 $response = createErrorResponse('db_insert_error', 'Could not insert event', 500);
             } else {
-                $response = new WP_REST_Response(null, 201);
+                $response = createSuccessResponse(null, 201);
             }
         } catch (\Throwable $th) {
             $response = createErrorResponse('error', 'Error', 500);

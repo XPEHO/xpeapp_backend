@@ -22,6 +22,11 @@ function createErrorResponse($code, $message, $status)
     return new WP_REST_Response(new WP_Error($code, $message, ['status' => $status]), $status);
 }
 
+function createSuccessResponse($data = null, $status = 200)
+{
+    return new WP_REST_Response($data, $status);
+}
+
 function prepareData($params, $fields)
 {
     return array_filter($params, function($key) use ($fields) {

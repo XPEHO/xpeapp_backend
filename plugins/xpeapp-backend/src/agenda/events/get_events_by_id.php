@@ -17,13 +17,13 @@ function apiGetEventsById(WP_REST_Request $request)
 
     // Get the id from the request body
     if (empty($id)) {
-        $response = new WP_Error('noParams', __('No parameters for id', 'Agenda'), array('status' => 400));
+        $response = createErrorResponse('noParams', 'No parameters for id', 400);
     } else {
         // Check if the event exists
         $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_events WHERE id = %d", intval($id)));
 
         if ($exists == 0) {
-            $response = new WP_Error('not_found', __('Event not found', 'Agenda'), array('status' => 404));
+            $response = createErrorResponse('not_found', 'Event not found', 404);
         } else {
             // Get the event and its type from the database
             $query = $wpdb->prepare("
@@ -39,7 +39,8 @@ function apiGetEventsById(WP_REST_Request $request)
                 $response = $event;
             } else {
                 // Return an error if the event was not found
-                $response = new WP_Error('not_found', __('Error finding event', 'Agenda'), array('status' => 404));
+                $response = createErrorResponse('not_found', 'Error finding event', 404);
+
             }
         }
     }

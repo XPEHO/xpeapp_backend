@@ -28,7 +28,7 @@ function apiPutEvents(WP_REST_Request $request)
         if ($result === false) {
             $response = createErrorResponse('db_update_error', 'Could not update event', 500);
         } else {
-            $response = new WP_REST_Response(null, 204);
+            $response = createSuccessResponse(null, 204);
         }
     }
 
