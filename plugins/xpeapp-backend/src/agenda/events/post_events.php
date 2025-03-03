@@ -20,7 +20,7 @@ function apiPostEvents(WP_REST_Request $request)
     $validation_error = validateEventParams($params);
     if ($validation_error) {
         $response = $validation_error;
-    } else if (!typeExists($params['type_id'], $table_events_type)) {
+    } elseif (!typeExists($params['type_id'], $table_events_type)) {
         // Check if the type_id exists in the wp_agenda_events_type table
         $response = new WP_Error('invalid_type_id', __('Invalid type does not exist', 'Agenda'), array('status' => 400));
     } else {

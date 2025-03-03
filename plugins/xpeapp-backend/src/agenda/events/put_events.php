@@ -20,10 +20,10 @@ function apiPutEvents(WP_REST_Request $request)
     $validation_error = validatePutEventParams($params);
     if ($validation_error) {
         $response = $validation_error;
-    } else if (!eventExists($params['id'], $table_events)) {
+    } elseif (!eventExists($params['id'], $table_events)) {
         // Check if the event exists
         $response = new WP_REST_Response(new WP_Error('not_found', __('Event not found', 'Agenda'), array('status' => 404)), 404);
-    } else if (!empty($params['type_id']) && !typeExistsForPut($params['type_id'], $table_events_type)) {
+    } elseif (!empty($params['type_id']) && !typeExistsForPut($params['type_id'], $table_events_type)) {
         // Check if the type_id is valid in the database
         $response = new WP_REST_Response(new WP_Error('invalid_type_id', __('Invalid type_id does not exist', 'Agenda'), array('status' => 400)), 400);
     } else {
