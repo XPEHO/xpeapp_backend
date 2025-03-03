@@ -4,7 +4,7 @@ function apiPostEvents(WP_REST_Request $request)
 {
     xpeapp_log_request($request);
 
-    // Utiliser la classe $wpdb pour effectuer une requête SQL
+    // Use the $wpdb class to perform an SQL query
     global $wpdb;
 
     $table_events = $wpdb->prefix . 'agenda_events';
@@ -13,40 +13,43 @@ function apiPostEvents(WP_REST_Request $request)
     // Get the parameters from the request body
     $params = $request->get_params();
 
+    // Initialize the response variable
+    $response = null;
+
     // Validate the required parameters
     $validation_error = validateEventParams($params);
     if ($validation_error) {
-        return $validation_error;
-    }
+        $response = $validation_error;
+    } else if (!typeExists($params['type_id'], $table_events_type)) {
+        // Check if the type_id exists in the wp_agenda_events_type table
+        $response = new WP_Error('invalid_type_id', __('Invalid type does not exist', 'Agenda'), array('status' => 400));
+    } else {
+        try {
+            // Insert the new event into the database
+            $result = $wpdb->insert(
+                $table_events,
+                array(
+                    'date' => $params['date'],
+                    'heure_debut' => $params['heure_debut'],
+                    'heure_fin' => $params['heure_fin'],
+                    'titre' => $params['titre'],
+                    'lieu' => $params['lieu'],
+                    'topic' => $params['topic'],
+                    'type_id' => $params['type_id'],
+                )
+            );
 
-    // Check if the type_id exists in the wp_agenda_events_type table
-    if (!typeExists($params['type_id'], $table_events_type)) {
-        return new WP_Error('invalid_type_id', __('Invalid type does not exist', 'Agenda'), array('status' => 400));
-    }
-
-    try {
-        // Insert the new event into the database
-        $result = $wpdb->insert(
-            $table_events,
-            array(
-                'date' => $params['date'],
-                'heure_debut' => $params['heure_debut'],
-                'heure_fin' => $params['heure_fin'],
-                'titre' => $params['titre'],
-                'lieu' => $params['lieu'],
-                'topic' => $params['topic'],
-                'type_id' => $params['type_id'],
-            )
-        );
-
-        if ($result === false) {
-            return new WP_Error('db_insert_error', __('Could not insert event', 'Agenda'), array('status' => 500));
+            if ($result === false) {
+                $response = new WP_Error('db_insert_error', __('Could not insert event', 'Agenda'), array('status' => 500));
+            } else {
+                $response = new WP_REST_Response(null, 201);
+            }
+        } catch (\Throwable $th) {
+            $response = new WP_Error('error', __('Error', 'Agenda'), array('status' => 500));
         }
-
-        return new WP_REST_Response(null, 201);
-    } catch (\Throwable $th) {
-        return new WP_Error('error', __('Error', 'Agenda'), array('status' => 500));
     }
+
+    return $response;
 }
 
 function validateEventParams($params)

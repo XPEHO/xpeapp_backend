@@ -13,39 +13,40 @@ function apiPutEvents(WP_REST_Request $request)
     // Get the parameters from the request body
     $params = $request->get_params();
 
+    // Initialize the response variable
+    $response = null;
+
     // Validate the required parameters
     $validation_error = validatePutEventParams($params);
     if ($validation_error) {
-        return $validation_error;
+        $response = $validation_error;
+    } else if (!eventExists($params['id'], $table_events)) {
+        // Check if the event exists
+        $response = new WP_REST_Response(new WP_Error('not_found', __('Event not found', 'Agenda'), array('status' => 404)), 404);
+    } else if (!empty($params['type_id']) && !typeExistsForPut($params['type_id'], $table_events_type)) {
+        // Check if the type_id is valid in the database
+        $response = new WP_REST_Response(new WP_Error('invalid_type_id', __('Invalid type_id does not exist', 'Agenda'), array('status' => 400)), 400);
+    } else {
+        // Prepare the data to update
+        $data = prepareEventData($params);
+
+        // Update the event in the database
+        $result = $wpdb->update(
+            $table_events,
+            $data,
+            array('id' => intval($params['id']))
+        );
+
+        // Check if the update was successful
+        if ($result === false) {
+            $response = new WP_REST_Response(new WP_Error('db_update_error', __('Could not update event', 'Agenda'), array('status' => 500)), 500);
+        } else {
+            // Return a 204 response
+            $response = new WP_REST_Response(null, 204);
+        }
     }
 
-    // Check if the event exists
-    if (!eventExists($params['id'], $table_events)) {
-        return new WP_REST_Response(new WP_Error('not_found', __('Event not found', 'Agenda'), array('status' => 404)), 404);
-    }
-
-    // Check if the type_id is valid in the database
-    if (!empty($params['type_id']) && !typeExistsForPut($params['type_id'], $table_events_type)) {
-        return new WP_REST_Response(new WP_Error('invalid_type_id', __('Invalid type_id does not exist', 'Agenda'), array('status' => 400)), 400);
-    }
-
-    // Prepare the data to update
-    $data = prepareEventData($params);
-
-    // Update the event in the database
-    $result = $wpdb->update(
-        $table_events,
-        $data,
-        array('id' => intval($params['id']))
-    );
-
-    // Check if the update was successful
-    if ($result === false) {
-        return new WP_REST_Response(new WP_Error('db_update_error', __('Could not update event', 'Agenda'), array('status' => 500)), 500);
-    }
-
-    // Return a 204 response
-    return new WP_REST_Response(null, 204);
+    return $response;
 }
 
 function validatePutEventParams($params)
