@@ -13,24 +13,26 @@ function apiPostEvents(WP_REST_Request $request)
 
     $params = $request->get_params();
 
+    $response = null;
+
     $validation_error = validateEventParams($params, ['type_id']);
     if ($validation_error) {
-        return $validation_error;
-    }
+        $response = $validation_error;
+    } elseif (!entityExists($params['type_id'], $table_events_type)) {
+        $response = createErrorResponse('invalid_type_id', 'Invalid type does not exist', 400);
+    } else {
+        try {
+            $result = $wpdb->insert($table_events, prepareEventData($params));
 
-    if (!entityExists($params['type_id'], $table_events_type)) {
-        return createErrorResponse('invalid_type_id', 'Invalid type does not exist', 400);
-    }
-
-    try {
-        $result = $wpdb->insert($table_events, prepareEventData($params));
-
-        if ($result === false) {
-            return createErrorResponse('db_insert_error', 'Could not insert event', 500);
+            if ($result === false) {
+                $response = createErrorResponse('db_insert_error', 'Could not insert event', 500);
+            } else {
+                $response = new WP_REST_Response(null, 201);
+            }
+        } catch (\Throwable $th) {
+            $response = createErrorResponse('error', 'Error', 500);
         }
-
-        return new WP_REST_Response(null, 201);
-    } catch (\Throwable $th) {
-        return createErrorResponse('error', 'Error', 500);
     }
+
+    return $response;
 }
