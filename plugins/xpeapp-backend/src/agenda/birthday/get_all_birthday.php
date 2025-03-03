@@ -15,5 +15,5 @@ function apiGetAllBirthdays(WP_REST_Request $request)
         FROM $table_birthday
     ");
     
-    return $birthdays = $wpdb->get_results($query);
+    return $wpdb->get_results($query);
 }

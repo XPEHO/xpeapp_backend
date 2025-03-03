@@ -449,12 +449,13 @@ class Xpeapp_Backend {
         );
 
 		// === Agenda ===
+		$id_patern = '(?P<id>[\d]+)';
 		$events_types_endpoint = '/agenda/events-types/';
-		$events_types_endpoint_with_id = $events_types_endpoint.'(?P<id>[\d]+)';
+		$events_types_endpoint_with_id = $events_types_endpoint.$id_patern;
 		$events_endpoint = '/agenda/events/';
-		$events_endpoint_with_id = $events_endpoint.'(?P<id>[\d]+)';
+		$events_endpoint_with_id = $events_endpoint.$id_patern;
 		$birthday_endpoint = '/agenda/birthday/';
-		$birthday_endpoint_with_id = $birthday_endpoint.'(?P<id>[\d]+)';
+		$birthday_endpoint_with_id = $birthday_endpoint.$id_patern;
 
 		// Events types
 		// Route pour récupérer le type d'événement par son id

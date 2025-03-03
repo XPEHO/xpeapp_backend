@@ -12,24 +12,26 @@ function apiGetBirthdayById(WP_REST_Request $request)
 
     $id = $request->get_param('id');
 
+    $response = null;
+
     if (empty($id)) {
-        return createErrorResponse('noParams', 'No parameters for id', 400);
-    }
-
-    if (!entityExists($id, $table_birthday)) {
-        return createErrorResponse('not_found', 'Birthday not found', 404);
-    }
-
-    $query = $wpdb->prepare("
-        SELECT first_name, birthdate, email
-        FROM $table_birthday
-        WHERE id = %d
-    ", intval($id));
-    $birthday = $wpdb->get_row($query);
-
-    if ($birthday) {
-        return createSuccessResponse($birthday);
+        $response = createErrorResponse('noParams', 'No parameters for id', 400);
+    } elseif (!entityExists($id, $table_birthday)) {
+        $response = createErrorResponse('not_found', 'Birthday not found', 404);
     } else {
-        return createErrorResponse('not_found', 'Error finding birthday', 404);
+        $query = $wpdb->prepare("
+            SELECT first_name, birthdate, email
+            FROM $table_birthday
+            WHERE id = %d
+        ", intval($id));
+        $birthday = $wpdb->get_row($query);
+
+        if ($birthday) {
+            $response = createSuccessResponse($birthday);
+        } else {
+            $response = createErrorResponse('not_found', 'Error finding birthday', 404);
+        }
     }
+
+    return $response;
 }
