@@ -14,13 +14,13 @@ function apiPostEvents(WP_REST_Request $request)
     $params = $request->get_params();
 
     // Validate the required parameters
-    $validation_error = validate_event_params($params);
+    $validation_error = validateEventParams($params);
     if ($validation_error) {
         return $validation_error;
     }
 
     // Check if the type_id exists in the wp_agenda_events_type table
-    if (!type_exists($params['type_id'], $table_events_type)) {
+    if (!typeExists($params['type_id'], $table_events_type)) {
         return new WP_Error('invalid_type_id', __('Invalid type does not exist', 'Agenda'), array('status' => 400));
     }
 
@@ -49,7 +49,7 @@ function apiPostEvents(WP_REST_Request $request)
     }
 }
 
-function validate_event_params($params)
+function validateEventParams($params)
 {
     $required_params = ['date', 'heure_debut', 'heure_fin', 'titre', 'lieu', 'topic', 'type_id'];
     foreach ($required_params as $param) {
@@ -60,7 +60,7 @@ function validate_event_params($params)
     return null;
 }
 
-function type_exists($type_id, $table_events_type)
+function typeExists($type_id, $table_events_type)
 {
     global $wpdb;
     $type_exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_events_type WHERE id = %d", intval($type_id)));
