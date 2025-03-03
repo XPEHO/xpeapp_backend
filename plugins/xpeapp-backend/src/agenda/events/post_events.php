@@ -1,6 +1,6 @@
 <?php
 
-include_once __DIR__ . '/events_helper.php';
+include_once __DIR__ . '/../../utils.php';
 
 function apiPostEvents(WP_REST_Request $request)
 {
@@ -15,14 +15,14 @@ function apiPostEvents(WP_REST_Request $request)
 
     $response = null;
 
-    $validation_error = validateEventParams($params, ['type_id']);
+    $validation_error = validateParams($params, ['type_id']);
     if ($validation_error) {
         $response = $validation_error;
     } elseif (!entityExists($params['type_id'], $table_events_type)) {
         $response = createErrorResponse('invalid_type_id', 'Invalid type does not exist', 400);
     } else {
         try {
-            $result = $wpdb->insert($table_events, prepareEventData($params));
+            $result = $wpdb->insert($table_events, prepareData($params, ['date', 'heure_debut', 'heure_fin', 'titre', 'lieu', 'topic', 'type_id']));
 
             if ($result === false) {
                 $response = createErrorResponse('db_insert_error', 'Could not insert event', 500);

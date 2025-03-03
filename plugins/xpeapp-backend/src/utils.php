@@ -1,10 +1,10 @@
 <?php
 
-function validateEventParams($params, $required_params = [])
+function validateParams($params, $required_params = [])
 {
     foreach ($required_params as $param) {
         if (!isset($params[$param])) {
-            return createErrorResponse('missing_param', __('Missing ' . $param, 'Agenda'), 400);
+            return createErrorResponse('missing_param', 'Missing ' . $param, 400);
         }
     }
     return null;
@@ -19,12 +19,11 @@ function entityExists($id, $table)
 
 function createErrorResponse($code, $message, $status)
 {
-    return new WP_REST_Response(new WP_Error($code, __($message, 'Agenda'), ['status' => $status]), $status);
+    return new WP_REST_Response(new WP_Error($code, $message, ['status' => $status]), $status);
 }
 
-function prepareEventData($params)
+function prepareData($params, $fields)
 {
-    $fields = ['date', 'heure_debut', 'heure_fin', 'titre', 'lieu', 'topic', 'type_id'];
     return array_filter($params, function($key) use ($fields) {
         return in_array($key, $fields);
     }, ARRAY_FILTER_USE_KEY);
