@@ -70,6 +70,12 @@ include_once 'src/agenda/events/get_all_events.php';
 include_once 'src/agenda/events/get_events_by_id.php';
 include_once 'src/agenda/events/delete_events.php';
 include_once 'src/agenda/events/put_events.php';
+// Birthday
+include_once 'src/agenda/birthday/post_birthday.php';
+include_once 'src/agenda/birthday/get_all_birthday.php';
+include_once 'src/agenda/birthday/get_birthday_by_id.php';
+include_once 'src/agenda/birthday/delete_birthday.php';
+include_once 'src/agenda/birthday/put_birthday.php';
 
 
 class Xpeapp_Backend {
@@ -443,10 +449,13 @@ class Xpeapp_Backend {
         );
 
 		// === Agenda ===
+		$id_patern = '(?P<id>[\d]+)';
 		$events_types_endpoint = '/agenda/events-types/';
-		$events_types_endpoint_with_id = $events_types_endpoint.'(?P<id>[\d]+)';
+		$events_types_endpoint_with_id = $events_types_endpoint.$id_patern;
 		$events_endpoint = '/agenda/events/';
-		$events_endpoint_with_id = $events_endpoint.'(?P<id>[\d]+)';
+		$events_endpoint_with_id = $events_endpoint.$id_patern;
+		$birthday_endpoint = '/agenda/birthday/';
+		$birthday_endpoint_with_id = $birthday_endpoint.$id_patern;
 
 		// Events types
 		// Route pour récupérer le type d'événement par son id
@@ -573,6 +582,73 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::EDITABLE,
 				'callback' => 'apiPutEvents',
+				'permission_callback' => function () use ($adminAgenda) {
+					return $this->secure_endpoint_with_parameter($adminAgenda);
+				}
+			)
+		);
+
+		// Birthday
+
+		// Route pour ajouter un anniversaire
+		register_rest_route(
+			$endpoint_namespace,
+			$birthday_endpoint,
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => 'apiPostBirthday',
+				'permission_callback' => function () use ($adminAgenda) {
+					return $this->secure_endpoint_with_parameter($adminAgenda);
+				}
+			)
+		);
+
+		// Route pour récupérer la liste des anniversaires
+		register_rest_route(
+			$endpoint_namespace,
+			$birthday_endpoint,
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => 'apiGetAllBirthdays',
+				'permission_callback' => function () use ($userAgenda) {
+					return $this->secure_endpoint_with_parameter($userAgenda);
+				}
+			)
+		);
+
+		// Route pour récupérer un anniversaire par son id
+		register_rest_route(
+			$endpoint_namespace,
+			$birthday_endpoint_with_id,
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => 'apiGetBirthdayById',
+				'permission_callback' => function () use ($userAgenda) {
+					return $this->secure_endpoint_with_parameter($userAgenda);
+				}
+			)
+		);
+
+		// Route pour supprimer un anniversaire
+		register_rest_route(
+			$endpoint_namespace,
+			$birthday_endpoint_with_id,
+			array(
+				'methods' => WP_REST_Server::DELETABLE,
+				'callback' => 'apiDeleteBirthday',
+				'permission_callback' => function () use ($adminAgenda) {
+					return $this->secure_endpoint_with_parameter($adminAgenda);
+				}
+			)
+		);
+
+		// Route pour mettre à jour un anniversaire
+		register_rest_route(
+			$endpoint_namespace,
+			$birthday_endpoint_with_id,
+			array(
+				'methods' => WP_REST_Server::EDITABLE,
+				'callback' => 'apiPutBirthday',
 				'permission_callback' => function () use ($adminAgenda) {
 					return $this->secure_endpoint_with_parameter($adminAgenda);
 				}
