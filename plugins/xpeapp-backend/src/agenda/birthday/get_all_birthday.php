@@ -10,10 +10,11 @@ function apiGetAllBirthdays(WP_REST_Request $request)
 
     $table_birthday = $wpdb->prefix . 'agenda_birthday';
 
-    $query = $wpdb->prepare("
-        SELECT first_name, birthdate, email
-        FROM $table_birthday
-    ");
-    
+    // Get the page parameter from the query parameters
+    $page = $request->get_param('page');
+
+    // Build the query using the utility function
+    $query = buildQueryWithPaginationAndFilters($table_birthday, $page, 'birthdate');
+
     return $wpdb->get_results($query);
 }
