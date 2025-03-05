@@ -20,7 +20,7 @@ function apiGetBirthdayById(WP_REST_Request $request)
         $response = createErrorResponse('not_found', 'Birthday not found', 404);
     } else {
         $query = $wpdb->prepare("
-            SELECT first_name, birthdate, email
+            SELECT *
             FROM $table_birthday
             WHERE id = %d
         ", intval($id));

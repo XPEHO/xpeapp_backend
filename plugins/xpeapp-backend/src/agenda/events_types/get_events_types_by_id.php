@@ -13,7 +13,7 @@ function apiGetEventsTypesById(WP_REST_Request $request)
 
     // Get the id from the request body
     if (empty($id)) {
-        return new WP_Error('noParams', __('No parameters for id', 'Agenda'), array('status' => 400));
+        return createErrorResponse('noParams', 'No parameters for id', 400);
     }
 
     // Check if the event type exists
@@ -24,7 +24,7 @@ function apiGetEventsTypesById(WP_REST_Request $request)
     }
 
     // Get the event type from the database
-    $query = $wpdb->prepare("SELECT label FROM $table_events_type WHERE id = %d", intval($id));
+    $query = $wpdb->prepare("SELECT * FROM $table_events_type WHERE id = %d", intval($id));
     $events_type = $wpdb->get_row($query);
 
     // Check if the event type was found

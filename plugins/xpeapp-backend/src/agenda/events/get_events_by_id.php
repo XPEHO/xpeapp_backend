@@ -27,7 +27,7 @@ function apiGetEventsById(WP_REST_Request $request)
         } else {
             // Get the event and its type from the database
             $query = $wpdb->prepare("
-                SELECT te.date, te.heure_debut, te.heure_fin, te.titre, te.lieu, te.topic, tet.label as type_label
+                SELECT te.id, te.date, te.start_time, te.end_time, te.title, te.location, te.topic, tet.id as type_id, tet.label as type_label
                 FROM $table_events te
                 LEFT JOIN $table_events_type tet ON te.type_id = tet.id
                 WHERE te.id = %d
@@ -36,7 +36,21 @@ function apiGetEventsById(WP_REST_Request $request)
 
             // Check if the event was found
             if ($event) {
-                $response = $event;
+                // Format the result to include event type as an object
+                $formatted_event = (object) [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'date' => $event->date,
+                    'start_time' => $event->start_time,
+                    'end_time' => $event->end_time,
+                    'location' => $event->location,
+                    'topic' => $event->topic,
+                    'type' => (object) [
+                        'id' => $event->type_id,
+                        'label' => $event->type_label,
+                    ]
+                ];
+                $response = $formatted_event;
             } else {
                 // Return an error if the event was not found
                 $response = createErrorResponse('not_found', 'Error finding event', 404);

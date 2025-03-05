@@ -9,7 +9,7 @@ function apiGetAllEventsTypes(WP_REST_Request $request)
 
     $table_events_type = $wpdb->prefix . 'agenda_events_type';
 
-    $query = $wpdb->prepare("SELECT label FROM $table_events_type");
+    $query = $wpdb->prepare("SELECT * FROM $table_events_type");
     return $wpdb->get_results($query);
     
 }
