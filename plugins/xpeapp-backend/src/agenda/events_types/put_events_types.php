@@ -12,9 +12,10 @@ function apiPutEventsTypes(WP_REST_Request $request)
     // get the id and label from the request body
     $id = $request->get_param('id');
     $label = $request->get_param('label');
+    $color_code = $request->get_param('color_code');
 
-    if (empty($id) || empty($label)) {
-        return new WP_REST_Response(new WP_Error('missing_params', __('Missing id or label', 'Agenda'), array('status' => 400)), 400);
+    if (empty($id) || empty($label) || empty($color_code)) { 
+        return new WP_REST_Response(new WP_Error('missing_params', __('Missing id or label or color_code', 'Agenda'), array('status' => 400)), 400);
     }
 
     // Check if the event type exists
@@ -28,11 +29,10 @@ function apiPutEventsTypes(WP_REST_Request $request)
     $result = $wpdb->update(
         $table_events_type,
         array(
-            'label' => $label
+            'label' => $label,
+            'color_code' => $color_code
         ),
-        array(
-            'id' => intval($id)
-        ),
+        array('id' => intval($id))
     );
 
     // Check if the update was successful

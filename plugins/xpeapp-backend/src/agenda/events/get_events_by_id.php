@@ -27,7 +27,7 @@ function apiGetEventsById(WP_REST_Request $request)
         } else {
             // Get the event and its type from the database
             $query = $wpdb->prepare("
-                SELECT te.id, te.date, te.start_time, te.end_time, te.title, te.location, te.topic, tet.id as type_id, tet.label as type_label
+                SELECT te.id, te.date, te.start_time, te.end_time, te.title, te.location, te.topic, tet.id as type_id, tet.label as type_label, tet.color_code as type_color_code
                 FROM $table_events te
                 LEFT JOIN $table_events_type tet ON te.type_id = tet.id
                 WHERE te.id = %d
@@ -48,6 +48,7 @@ function apiGetEventsById(WP_REST_Request $request)
                     'type' => (object) [
                         'id' => $event->type_id,
                         'label' => $event->type_label,
+                        'color_code' => $event->type_color_code
                     ]
                 ];
                 $response = $formatted_event;

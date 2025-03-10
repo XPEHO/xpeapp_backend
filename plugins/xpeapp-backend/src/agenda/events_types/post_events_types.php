@@ -11,16 +11,20 @@ function apiPostEventsTypes(WP_REST_Request $request)
 
     // Récupérer le label depuis le corps de la requête
     $label = $request->get_param('label');
+    $color_code = $request->get_param('color_code');
 
-    if (empty($label)) {
+    if (empty($label) ) {
         return new WP_Error('no_label', __('No label provided', 'Agenda'), array('status' => 400));
+    }elseif (empty($color_code)) {
+        return new WP_Error('no_color_code', __('No color code provided', 'Agenda'), array('status' => 400));
     }
 
     // Insérer le nouveau type d'événement dans la base de données
     $result = $wpdb->insert(
         $table_events_type,
         array(
-            'label' => $label
+            'label' => $label,
+            'color_code' => $color_code
         )
     );
 
