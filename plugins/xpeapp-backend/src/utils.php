@@ -34,11 +34,17 @@ function prepareData($params, $fields)
     }, ARRAY_FILTER_USE_KEY);
 }
 
-function buildQueryWithPaginationAndFilters($table, $page, $date_field, $items_per_page = 10)
+function buildQueryWithPaginationAndFilters($table, $page, $date_field, $items_per_page = 10, $custom_query = null)
 {
     global $wpdb;
 
-    $query = "SELECT * FROM $table";
+    
+    if ($custom_query) {
+        $query = $custom_query;
+    } else {
+        $query = "SELECT * FROM $table";
+    }
+
     $condition = "";
     $offset = 0;
 
