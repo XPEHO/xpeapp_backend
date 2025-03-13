@@ -36,22 +36,7 @@ function apiGetEventsById(WP_REST_Request $request)
 
             // Check if the event was found
             if ($event) {
-                // Format the result to include event type as an object
-                $formatted_event = (object) [
-                    'id' => $event->id,
-                    'title' => $event->title,
-                    'date' => $event->date,
-                    'start_time' => $event->start_time,
-                    'end_time' => $event->end_time,
-                    'location' => $event->location,
-                    'topic' => $event->topic,
-                    'type' => (object) [
-                        'id' => $event->type_id,
-                        'label' => $event->type_label,
-                        'color_code' => $event->type_color_code
-                    ]
-                ];
-                $response = $formatted_event;
+                $response = $event;
             } else {
                 // Return an error if the event was not found
                 $response = createErrorResponse('not_found', 'Error finding event', 404);
