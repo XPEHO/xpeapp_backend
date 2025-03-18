@@ -9,37 +9,33 @@ function apiPutEventsTypes(WP_REST_Request $request)
 
     $table_events_type = $wpdb->prefix . 'agenda_events_type';
 
-    // get the id and label from the request body
+    // get the params from the request body
     $id = $request->get_param('id');
-    $label = $request->get_param('label');
-    $color_code = $request->get_param('color_code');
+    $params = $request->get_params();
 
-    if (empty($id) || empty($label) || empty($color_code)) { 
-        return new WP_REST_Response(new WP_Error('missing_params', __('Missing id or label or color_code', 'Agenda'), array('status' => 400)), 400);
-    }
-
+    // Check if the parameters are valid
+    if (empty($id)) {
+        $response = createErrorResponse('missing_id', 'Missing id parameter', 400);
     // Check if the event type exists
-    $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_events_type WHERE id = %d", intval($id)));
+    } elseif (!entityExists($id, $table_events_type)) {
+        $response = createErrorResponse('not_found', 'Event type not found', 404);
+    // Check if an event type with the same label already exists if its provided
+    } elseif (!empty($params['label']) && entityExistsWithDifferentId($params['label'], $table_events_type, 'label', $id)) {
+        $response = createErrorResponse('already_exists', 'Event type already exists', 409);
+    } else {
+        // Update the event type in the database
+        $result = $wpdb->update(
+            $table_events_type,
+            prepareData($params, ['label', 'color_code']),
+            array('id' => intval($id))
+        );
 
-    if ($exists == 0) {
-        return new WP_REST_Response(new WP_Error('not_found', __('Event type not found', 'Agenda'), array('status' => 404)), 404);
+        if ($result === false) {
+            $response = createErrorResponse('db_update_error', 'Could not update event type', 500);
+        } else {
+            $response = createSuccessResponse(null, 204);
+        }
     }
 
-    // Update the event type in the database
-    $result = $wpdb->update(
-        $table_events_type,
-        array(
-            'label' => $label,
-            'color_code' => $color_code
-        ),
-        array('id' => intval($id))
-    );
-
-    // Check if the update was successful
-    if ($result === false) {
-        return new WP_REST_Response(new WP_Error('db_update_error', __('Could not update event type', 'Agenda'), array('status' => 500)), 500);
-    }
-    
-    // Return a 204 response
-    return new WP_REST_Response(null, 204);
+    return $response;
 }

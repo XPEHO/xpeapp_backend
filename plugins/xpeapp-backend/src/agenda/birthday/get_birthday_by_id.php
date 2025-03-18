@@ -12,13 +12,14 @@ function apiGetBirthdayById(WP_REST_Request $request)
 
     $id = $request->get_param('id');
 
-    $response = null;
-
+    // Check if the parameters are valid
     if (empty($id)) {
-        $response = createErrorResponse('noParams', 'No parameters for id', 400);
+        $response = createErrorResponse('missing_id', 'Missing id parameter', 400);
+    // Check if the birthday exists
     } elseif (!entityExists($id, $table_birthday)) {
         $response = createErrorResponse('not_found', 'Birthday not found', 404);
     } else {
+        // Get the birthday from the database
         $query = $wpdb->prepare("
             SELECT *
             FROM $table_birthday
@@ -29,7 +30,7 @@ function apiGetBirthdayById(WP_REST_Request $request)
         if ($birthday) {
             $response = createSuccessResponse($birthday);
         } else {
-            $response = createErrorResponse('not_found', 'Error finding birthday', 404);
+            $response = createErrorResponse('db_get_error', 'Could not get birthday', 400);
         }
     }
 
