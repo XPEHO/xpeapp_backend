@@ -12,22 +12,21 @@ function apiPostBirthday(WP_REST_Request $request)
 
     $params = $request->get_params();
 
-    $response = null;
-
+    // Check if the parameters are valid
     $validation_error = validateParams($params, ['first_name', 'birthdate', 'email']);
     if ($validation_error) {
         $response = $validation_error;
+    // Check if a birthday for the same email already exists
+    } elseif (entityExists($params['email'], $table_birthday, 'email')) {
+        $response = createErrorResponse('email_exists', 'A birthday with the same email already exists', 409);
     } else {
-        try {
-            $result = $wpdb->insert($table_birthday, prepareData($params, ['first_name', 'birthdate', 'email']));
+        // Insert the birthday into the database
+        $result = $wpdb->insert($table_birthday, prepareData($params, ['first_name', 'birthdate', 'email']));
 
-            if ($result === false) {
-                $response = createErrorResponse('db_insert_error', 'Could not insert birthday', 500);
-            } else {
-                $response = createSuccessResponse(null, 201);
-            }
-        } catch (\Throwable $th) {
-            $response = createErrorResponse('error', 'Error', 500);
+        if ($result === false) {
+            $response = createErrorResponse('db_insert_error', 'Could not insert birthday', 500);
+        } else {
+            $response = createSuccessResponse(null, 201);
         }
     }
 

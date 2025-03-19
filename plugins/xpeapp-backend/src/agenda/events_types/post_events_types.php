@@ -9,24 +9,28 @@ function apiPostEventsTypes(WP_REST_Request $request)
 
     $table_events_type = $wpdb->prefix . 'agenda_events_type';
 
-    // Récupérer le label depuis le corps de la requête
-    $label = $request->get_param('label');
+    $params = $request->get_params();
 
-    if (empty($label)) {
-        return new WP_Error('no_label', __('No label provided', 'Agenda'), array('status' => 400));
+    // Check if the parameters are valid
+    $validation_error = validateParams($params, ['label', 'color_code']);
+    if ($validation_error) {
+        $response = $validation_error;
+    // Check if an event type with the same label already exists
+    } elseif (entityExists($params['label'], $table_events_type, 'label')) {
+        $response = createErrorResponse('already_exists', 'Event type already exists', 409);
+    } else {
+        // Insert the event type into the database
+        $result = $wpdb->insert(
+            $table_events_type,
+            prepareData($params, ['label', 'color_code'])
+        );
+
+        if ($result === false) {
+            $response = createErrorResponse('db_insert_error', 'Could not insert event type', 500);
+        } else {
+            $response = createSuccessResponse(null, 201);
+        }
     }
 
-    // Insérer le nouveau type d'événement dans la base de données
-    $result = $wpdb->insert(
-        $table_events_type,
-        array(
-            'label' => $label
-        )
-    );
-
-    if ($result === false) {
-        return new WP_Error('db_insert_error', __('Could not insert event type', 'Agenda'), array('status' => 500));
-    }
-
-    return new WP_REST_Response(null, 201);
+    return $response;
 }

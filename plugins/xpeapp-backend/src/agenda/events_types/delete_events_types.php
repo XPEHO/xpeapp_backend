@@ -8,36 +8,34 @@ function apiDeleteEventsTypes(WP_REST_Request $request)
     global $wpdb;
 
     $table_events_type = $wpdb->prefix . 'agenda_events_type';
+    $table_events = $wpdb->prefix . 'agenda_events';
 
-    // Get the id from the request body
     $id = $request->get_param('id');
 
-    $response = null;
-
+    // Check if the parameters are valid
     if (empty($id)) {
-        $response = createErrorResponse('missing_params', 'Missing id', 400);
+        $response = createErrorResponse('missing_id', 'Missing id parameter', 400);
+    // Check if the event type exists
+    } elseif (!entityExists($id, $table_events_type)) {
+        $response = createErrorResponse('not_found', 'Event type not found', 404);
+    // Check if an event has this type assigned
+    } elseif (entityExists($id, $table_events, 'type_id')) {
+        $response = createErrorResponse('event_exists', 'Cannot delete because event type has assigned events', 409);
     } else {
-        // Check if an event has this type
-        $table_events = $wpdb->prefix . 'agenda_events';
-        $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_events WHERE type_id = %d", intval($id)));
-        if ($exists > 0) {
-            $response = createErrorResponse('event_exists', 'Cannot delete because event type has assigned events', 409);
-        } else {
-            // Delete the event type from the database
-            $result = $wpdb->delete(
-                $table_events_type,
-                array(
-                    'id' => intval($id)
-                )
-            );
+        // Delete the event type from the database
+        $result = $wpdb->delete(
+            $table_events_type,
+            array(
+                'id' => intval($id)
+            )
+        );
 
-            // Check if the delete was successful
-            if ($result === false) {
-                $response = createErrorResponse('db_delete_error', 'Could not delete event type', 500);
-            } else {
-                // Return a 204 response
-                $response = createSuccessResponse('Event type deleted', 204);
-            }
+        // Check if the delete was successful
+        if ($result === false) {
+            $response = createErrorResponse('db_delete_error', 'Could not delete event type', 500);
+        } else {
+            // Return a 204 response
+            $response = createSuccessResponse('Event type deleted', 204);
         }
     }
 

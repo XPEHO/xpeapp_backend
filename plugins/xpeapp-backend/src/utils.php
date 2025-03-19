@@ -10,10 +10,24 @@ function validateParams($params, $required_params = [])
     return null;
 }
 
-function entityExists($id, $table)
+function entityExists($field_value, $table, $field_name = 'id')
 {
     global $wpdb;
-    $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE id = %d", intval($id)));
+    $table = esc_sql($table);
+    $field_name = esc_sql($field_name);
+    $field_value = esc_sql($field_value);
+    $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `$table` WHERE `$field_name` = %s", $field_value));
+    return $exists > 0;
+}
+
+function entityExistsWithDifferentId($field_value, $table, $field_name, $id)
+{
+    global $wpdb;
+    $table = esc_sql($table);
+    $field_name = esc_sql($field_name);
+    $field_value = esc_sql($field_value);
+    $id = esc_sql($id);
+    $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `$table` WHERE `$field_name` = %s AND `id` != %s ", $field_value, $id));
     return $exists > 0;
 }
 
@@ -34,12 +48,22 @@ function prepareData($params, $fields)
     }, ARRAY_FILTER_USE_KEY);
 }
 
-function buildQueryWithPaginationAndFilters($table, $page, $date_field, $items_per_page = 10)
+function buildQueryWithPaginationAndFilters($table, $page, $date_field, $items_per_page = 10, $custom_query = null)
 {
     global $wpdb;
 
-    $query = "SELECT * FROM $table";
+    
+    if ($custom_query) {
+        $query = $custom_query;
+    } else {
+        $query = "SELECT * FROM $table";
+    }
+
+    // Initialize query parts
     $condition = "";
+    $sort = " ORDER BY $date_field ASC";
+    $limits = "";
+
     $offset = 0;
 
     if ($page === 'week') {
@@ -52,8 +76,8 @@ function buildQueryWithPaginationAndFilters($table, $page, $date_field, $items_p
         // Apply pagination
         $page = is_numeric($page) ? intval($page) : 1;
         $offset = ($page - 1) * $items_per_page;
-        $condition = " LIMIT $items_per_page OFFSET $offset";
+        $limits = " LIMIT $items_per_page OFFSET $offset";
     }
 
-    return $wpdb->prepare($query . $condition);
+    return $wpdb->prepare($query . $condition . $sort . $limits);
 }
