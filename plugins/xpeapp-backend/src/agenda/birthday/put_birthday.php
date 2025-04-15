@@ -19,9 +19,6 @@ function apiPutBirthday(WP_REST_Request $request)
     // Check if the birthday exists
     } elseif (!entityExists($params['id'], $table_birthday)) {
         $response = createErrorResponse('not_found', 'Birthday not found', 404);
-    // Check if a birthday for the same email already exists
-    } elseif (!empty($params['email']) && entityExistsWithDifferentId($params['email'], $table_birthday, 'email', $id)) {
-        $response = createErrorResponse('email_exists', 'A birthday with the same email already exists', 409);
     } else {
         // Update the birthday in the database
         $result = $wpdb->update($table_birthday, prepareData($params, ['first_name', 'birthdate', 'email']), ['id' => intval($params['id'])]);
