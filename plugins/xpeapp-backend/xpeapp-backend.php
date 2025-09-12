@@ -77,6 +77,12 @@ include_once 'src/agenda/birthday/get_birthday_by_id.php';
 include_once 'src/agenda/birthday/delete_birthday.php';
 include_once 'src/agenda/birthday/put_birthday.php';
 
+// Storage
+include_once 'src/storage/post_image.php';
+include_once 'src/storage/get_image_by_id.php';
+include_once 'src/storage/get_all_images.php';
+include_once 'src/storage/delete_image.php';
+
 
 class Xpeapp_Backend {
 
@@ -655,7 +661,48 @@ class Xpeapp_Backend {
 			)
 		);
 
-		
+		// Route API pour uploader une image en BLOB dans wp_images
+		register_rest_route(
+			$endpoint_namespace,
+			'/storeImage',
+			array(
+				'methods' => 'POST',
+				'callback' => 'apiPostImage', 
+				'permission_callback' => '__return_true',
+		));
+
+		// Route API pour récupérer une image par son ID
+		register_rest_route(
+			$endpoint_namespace,
+			'/storeImage/(?P<id>[\d]+)',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => 'apiGetImageById',
+				'permission_callback' => '__return_true', 
+			)
+		);
+
+		// Route API pour récupérer toutes les images
+		register_rest_route(
+			$endpoint_namespace,
+			'/storeImage',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => 'apiGetAllImages',
+				'permission_callback' => '__return_true', 
+			)
+		);
+
+		// Route API pour supprimer une image par son ID
+		register_rest_route(
+			$endpoint_namespace,
+			'/storeImage/(?P<id>[\d]+)',
+			array(
+				'methods' => WP_REST_Server::DELETABLE,
+				'callback' => 'apiDeleteImage',
+				'permission_callback' => '__return_true',
+			)
+		);
 	}
 
 	function xpeapp_menu_page()
