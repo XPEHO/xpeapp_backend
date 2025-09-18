@@ -670,7 +670,7 @@ class Xpeapp_Backend {
 			'/storeImage',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
-				'callback' => 'apiPostImage', 
+				'callback' => 'apiPostImage',
 				'permission_callback' => function () use ($adminImageParameter) {
 					return $this->secure_endpoint_with_parameter($adminImageParameter);
 				}
