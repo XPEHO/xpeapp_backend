@@ -80,7 +80,7 @@ include_once 'src/agenda/birthday/put_birthday.php';
 // Storage
 include_once 'src/storage/post_image.php';
 include_once 'src/storage/get_image.php';
-include_once 'src/storage/get_all_folders_or_imagesbyfolder.php';
+include_once 'src/storage/get_all_folders_or_images_by_folder.php';
 include_once 'src/storage/delete_image.php';
 
 
