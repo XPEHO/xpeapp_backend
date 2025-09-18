@@ -32,6 +32,8 @@ function register_local_acf_fields() {
 
     addAcfField('liste_des_droits_possibles_de_utilisateur', 'Liste des droits possibles de l\'utilisateur', array(
         'editPassword' => 'Modifier son mot de passe',
+        'userImageParameter' => 'Accèder aux images (téléchargement, liste)',
+        'adminImageParameter' => 'Ajouter/Supprimer des images',
     ));
 }
 

@@ -27,5 +27,5 @@ function apiPostImage($request) {
     if ($result === false) {
         return new WP_REST_Response(['error' => 'DB insert failed'], 500);
     }
-    return new WP_REST_Response(['success' => true], 200);
+    return new WP_REST_Response(['success' => true], 201);
 }
