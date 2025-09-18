@@ -1,7 +1,10 @@
 <?php
-include_once __DIR__ . '/../../utils.php';
+include_once __DIR__ . '/../utils.php';
 
-function apiPostImage($request) {
+function apiPostImage(WP_REST_Request $request) {
+
+    xpeapp_log_request($request);
+
     $files = $request->get_file_params();
     $folder = $request->get_param('folder');
     $response = null;

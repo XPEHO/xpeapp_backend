@@ -1,9 +1,12 @@
 <?php
 
-include_once __DIR__ . '/../../utils.php';
+include_once __DIR__ . '/../utils.php';
 
 // Delete an image by its ID
-function apiDeleteImage($request) {
+function apiDeleteImage(WP_REST_Request $request) {
+    
+    xpeapp_log_request($request);
+
 	$id = $request->get_param('id');
 	$response = null;
 

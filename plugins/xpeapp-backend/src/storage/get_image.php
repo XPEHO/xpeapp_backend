@@ -1,9 +1,12 @@
 <?php
 
-include_once __DIR__ . '/../../utils.php';
+include_once __DIR__ . '/../utils.php';
 
 // Fetch an image by folder and filename (binary direct)
-function apiGetImage($request) {
+function apiGetImage(WP_REST_Request $request) {
+
+    xpeapp_log_request($request);
+
     $params = $request->get_params();
     $response = null;
 

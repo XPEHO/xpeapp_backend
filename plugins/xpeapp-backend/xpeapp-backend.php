@@ -664,10 +664,10 @@ class Xpeapp_Backend {
 		);
 
 		// === Storage ===
-		// Route pour uploader une image en BLOB dans wp_images
+		// Route pour uploader une image
 		register_rest_route(
 			$endpoint_namespace,
-			'/storeImage',
+			'/image-storage',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'apiPostImage',
@@ -676,10 +676,10 @@ class Xpeapp_Backend {
 				}
 		));
 
-		// Route pour récupérer une image par son ID
+		// Route pour récupérer une image par son dossier et son nom de fichier
 		register_rest_route(
 			$endpoint_namespace,
-			'/storeImage/(?P<folder>[^/]+)/(?P<filename>[^/]+)',
+			'/image-storage/(?P<folder>[^/]+)/(?P<filename>[^/]+)',
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'apiGetImage',
@@ -691,7 +691,7 @@ class Xpeapp_Backend {
 		// Route pour récupérer toutes les dossiers ou les images d'un dossier
 		register_rest_route(
 			$endpoint_namespace,
-			'/storeImage',
+			'/image-storage',
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'apiGetAllFoldersOrImagesByFolder',
@@ -704,7 +704,7 @@ class Xpeapp_Backend {
 		// Route pour supprimer une image par son ID
 		register_rest_route(
 			$endpoint_namespace,
-			'/storeImage/(?P<id>[\d]+)',
+			'/image-storage/(?P<id>[\d]+)',
 			array(
 				'methods' => WP_REST_Server::DELETABLE,
 				'callback' => 'apiDeleteImage',

@@ -1,9 +1,12 @@
 <?php
 
-include_once __DIR__ . '/../../utils.php';
+include_once __DIR__ . '/../utils.php';
 
 // Fetch all images, optionally filtered by folder
-function apiGetAllFoldersOrImagesByFolder($request) {
+function apiGetAllFoldersOrImagesByFolder(WP_REST_Request $request) {
+
+    xpeapp_log_request($request);
+
     global $wpdb;
     $table = $wpdb->prefix . 'images';
     $folder = $request->get_param('folder');
