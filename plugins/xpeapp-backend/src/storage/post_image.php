@@ -9,7 +9,7 @@ function apiPostImage($request) {
     if (empty($files['file']) || empty($folder)) {
         $response = createErrorResponse('missing_file_or_folder', 'Missing file or folder', 400);
     } elseif (empty($files['file']['tmp_name'])) {
-        $response = createErrorResponse('file_upload_failed', 'File upload failed', 400, ['debug' => $files]);
+        $response = createErrorResponse('file_upload_failed', 'File upload failed', 400);
     } else {
         $filename = sanitize_file_name($files['file']['name']);
         $mime_type = sanitize_text_field($files['file']['type']);
