@@ -77,6 +77,12 @@ include_once 'src/agenda/birthday/get_birthday_by_id.php';
 include_once 'src/agenda/birthday/delete_birthday.php';
 include_once 'src/agenda/birthday/put_birthday.php';
 
+// Storage
+include_once 'src/storage/post_image.php';
+include_once 'src/storage/get_image.php';
+include_once 'src/storage/get_all_folders_or_images_by_folder.php';
+include_once 'src/storage/delete_image.php';
+
 
 class Xpeapp_Backend {
 
@@ -116,6 +122,8 @@ class Xpeapp_Backend {
 		$userQvstParameter = 'userQvst';
 		$adminQvstParameter = 'adminQvst';
 		$editPasswordParameter = 'editPassword';
+		$userImageParameter = 'userImageParameter';
+		$adminImageParameter = 'adminImageParameter';
 		$endpoint_namespace = 'xpeho/v1';
 		$userAgenda = 'userAgenda';
 		$adminAgenda = 'adminAgenda';
@@ -655,7 +663,56 @@ class Xpeapp_Backend {
 			)
 		);
 
-		
+		// === Storage ===
+		// Route pour uploader une image
+		register_rest_route(
+			$endpoint_namespace,
+			'/image-storage',
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => 'apiPostImage',
+				'permission_callback' => function () use ($adminImageParameter) {
+					return $this->secure_endpoint_with_parameter($adminImageParameter);
+				}
+		));
+
+		// Route pour récupérer une image par son dossier et son nom de fichier
+		register_rest_route(
+			$endpoint_namespace,
+			'/image-storage/(?P<folder>[^/]+)/(?P<filename>[^/]+)',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => 'apiGetImage',
+				'permission_callback' => function () use ($userImageParameter) {
+					return $this->secure_endpoint_with_parameter($userImageParameter);
+				}
+			)
+		);
+		// Route pour récupérer toutes les dossiers ou les images d'un dossier
+		register_rest_route(
+			$endpoint_namespace,
+			'/image-storage',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => 'apiGetAllFoldersOrImagesByFolder',
+				'permission_callback' => function () use ($userImageParameter) {
+					return $this->secure_endpoint_with_parameter($userImageParameter);
+				}
+			)
+		);
+
+		// Route pour supprimer une image par son ID
+		register_rest_route(
+			$endpoint_namespace,
+			'/image-storage/(?P<id>[\d]+)',
+			array(
+				'methods' => WP_REST_Server::DELETABLE,
+				'callback' => 'apiDeleteImage',
+				'permission_callback' => function () use ($adminImageParameter) {
+					return $this->secure_endpoint_with_parameter($adminImageParameter);
+				}
+			)
+		);
 	}
 
 	function xpeapp_menu_page()
