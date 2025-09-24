@@ -33,17 +33,15 @@ function api_post_campaign(WP_REST_Request $request)
 		$validation_error = new WP_Error('noQuestions', __('No questions', 'QVST'));
 	}
 
-	if ($validation_error) {
-		return $validation_error;
-	}
-
 	try {
-		// Vérifier que tous les thèmes existent
-		foreach ($params['themes'] as $theme_id) {
-			$theme = $wpdb->get_row("SELECT * FROM $table_name_theme WHERE id=" . intval($theme_id));
-			if (empty($theme)) {
-				$validation_error = new WP_Error('noID', __('No theme found for id ' . $theme_id, 'QVST'));
-				break;
+		// Vérifier que tous les thèmes existent si pas d'erreur de validation
+		if (!$validation_error) {
+			foreach ($params['themes'] as $theme_id) {
+				$theme = $wpdb->get_row("SELECT * FROM $table_name_theme WHERE id=" . intval($theme_id));
+				if (empty($theme)) {
+					$validation_error = new WP_Error('noID', __('No theme found for id ' . $theme_id, 'QVST'));
+					break;
+				}
 			}
 		}
 
