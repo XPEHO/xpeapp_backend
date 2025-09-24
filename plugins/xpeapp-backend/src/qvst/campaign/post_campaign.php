@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/campaign_themes_utils.php';
+
 
 function api_post_campaign(WP_REST_Request $request)
 {
@@ -21,8 +23,8 @@ function api_post_campaign(WP_REST_Request $request)
 	} else if (!isset($params['name'])) {
 		return new WP_Error('noName', __('No name', 'QVST'));
 
-	} else if (!isset($params['theme_id'])) {
-		return new WP_Error('noThemeID', __('No theme ID', 'QVST'));
+	   } else if (!isset($params['themes']) || !is_array($params['themes']) || count($params['themes']) === 0) {
+		   return new WP_Error('noThemes', __('No themes array provided', 'QVST'));
 
 	} else if (!isset($params['start_date'])) {
 		return new WP_Error('noStartDate', __('No start date', 'QVST'));
@@ -35,15 +37,16 @@ function api_post_campaign(WP_REST_Request $request)
 	} else {
 
 		try {
-			// get theme with id
-			$theme = $wpdb->get_row("SELECT * FROM $table_name_theme WHERE id=" . $params['theme_id']);
-			if (empty($theme)) {
-				return new WP_Error('noID', __('No theme found', 'QVST'));
+			// Vérifier que tous les thèmes existent
+			foreach ($params['themes'] as $theme_id) {
+				$theme = $wpdb->get_row("SELECT * FROM $table_name_theme WHERE id=" . intval($theme_id));
+				if (empty($theme)) {
+					return new WP_Error('noID', __('No theme found for id ' . $theme_id, 'QVST'));
+				}
 			}
 
 			$campaignToInsert = array(
 				'name' => $params['name'],
-				'theme_id' => $params['theme_id'],
 				'status' => 'DRAFT',
 				'start_date' => $params['start_date'],
 				'end_date' => $params['end_date']
@@ -57,6 +60,9 @@ function api_post_campaign(WP_REST_Request $request)
 
 			// get campaign id
 			$campaign_id = $wpdb->insert_id;
+
+			// Associer les thèmes à la campagne
+			set_themes_for_campaign($campaign_id, $params['themes']);
 
 			// save questions
 			foreach ($params['questions'] as $question) {

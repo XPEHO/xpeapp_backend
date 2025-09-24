@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/campaign_themes_utils.php';
+
 function api_get_campaigns(WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
@@ -15,7 +17,6 @@ function api_get_campaigns(WP_REST_Request $request)
 		SELECT 
 			campaign.id,
 			campaign.name,
-			theme.id as 'theme_id',
 			campaign.status,
 			campaign.start_date,
 			campaign.end_date,
@@ -23,10 +24,9 @@ function api_get_campaigns(WP_REST_Request $request)
 			-- Calcul du taux de participation
 			(COUNT(DISTINCT CASE WHEN user_answers.hasAnswered = 1 THEN user_answers.user_id END) / COUNT(DISTINCT users.id)) * 100 AS participation_rate
 		FROM $table_name_campaigns campaign
-		INNER JOIN wp_qvst_theme theme ON campaign.theme_id = theme.id
 		LEFT JOIN wp_qvst_user_answers user_answers ON user_answers.campaign_id = campaign.id
 		CROSS JOIN wp_users users
-		GROUP BY campaign.start_date, theme.name, campaign.status, campaign.action;
+		GROUP BY campaign.start_date, campaign.status, campaign.action;
 	";
 
 	$resultsCampaigns = $wpdb->get_results($queryCampaigns);
@@ -34,11 +34,11 @@ function api_get_campaigns(WP_REST_Request $request)
 	// Return all rows
 	$data = array();
 	foreach ($resultsCampaigns as $result) {
-		$theme = $wpdb->get_row("SELECT * FROM $table_name_theme WHERE id=" . $result->theme_id);
+		$themes = get_themes_for_campaign($result->id);
 		$data[] = array(
 			'id' => $result->id,
 			'name' => $result->name,
-			'theme' => $theme,
+			'themes' => $themes,
 			'status' => $result->status,
 			'start_date' => $result->start_date,
 			'end_date' => $result->end_date,
