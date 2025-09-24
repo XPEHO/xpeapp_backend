@@ -47,7 +47,7 @@ function api_get_qvst_stats_by_campaign_id(WP_REST_Request $request)
 		$questions = $wpdb->get_results($questionsSql);
 
 		// Récupérer les thèmes de la campagne
-		$themes = get_themes_for_campaign($campaign_id);
+		$themes = getThemesForCampaign($campaign_id);
 
 		// Get the answers of each question
 		foreach ($questions as &$question) {

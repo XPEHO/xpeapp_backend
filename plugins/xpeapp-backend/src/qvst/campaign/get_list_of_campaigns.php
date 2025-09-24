@@ -34,7 +34,7 @@ function api_get_campaigns(WP_REST_Request $request)
 	// Return all rows
 	$data = array();
 	foreach ($resultsCampaigns as $result) {
-		$themes = get_themes_for_campaign($result->id);
+		$themes = getThemesForCampaign($result->id);
 		$data[] = array(
 			'id' => $result->id,
 			'name' => $result->name,

@@ -17,68 +17,73 @@ function api_post_campaign(WP_REST_Request $request)
 
 	$params = $request->get_params();
 
+	// Validation des paramètres
+	$validation_error = null;
 	if (empty($params)) {
-		return new WP_Error('noParams', __('No parameters', 'QVST'));
+		$validation_error = new WP_Error('noParams', __('No parameters', 'QVST'));
+	} elseif (!isset($params['name'])) {
+		$validation_error = new WP_Error('noName', __('No name', 'QVST'));
+	} elseif (!isset($params['themes']) || !is_array($params['themes']) || count($params['themes']) === 0) {
+		$validation_error = new WP_Error('noThemes', __('No themes array provided', 'QVST'));
+	} elseif (!isset($params['start_date'])) {
+		$validation_error = new WP_Error('noStartDate', __('No start date', 'QVST'));
+	} elseif (!isset($params['end_date'])) {
+		$validation_error = new WP_Error('noEndDate', __('No end date', 'QVST'));
+	} elseif (!isset($params['questions'])) {
+		$validation_error = new WP_Error('noQuestions', __('No questions', 'QVST'));
+	}
 
-	} else if (!isset($params['name'])) {
-		return new WP_Error('noName', __('No name', 'QVST'));
+	if ($validation_error) {
+		return $validation_error;
+	}
 
-	   } else if (!isset($params['themes']) || !is_array($params['themes']) || count($params['themes']) === 0) {
-		   return new WP_Error('noThemes', __('No themes array provided', 'QVST'));
-
-	} else if (!isset($params['start_date'])) {
-		return new WP_Error('noStartDate', __('No start date', 'QVST'));
-
-	} else if (!isset($params['end_date'])) {
-		return new WP_Error('noEndDate', __('No end date', 'QVST'));
-
-	} else if (!isset($params['questions'])) {
-		return new WP_Error('noQuestions', __('No questions', 'QVST'));
-	} else {
-
-		try {
-			// Vérifier que tous les thèmes existent
-			foreach ($params['themes'] as $theme_id) {
-				$theme = $wpdb->get_row("SELECT * FROM $table_name_theme WHERE id=" . intval($theme_id));
-				if (empty($theme)) {
-					return new WP_Error('noID', __('No theme found for id ' . $theme_id, 'QVST'));
-				}
+	try {
+		// Vérifier que tous les thèmes existent
+		foreach ($params['themes'] as $theme_id) {
+			$theme = $wpdb->get_row("SELECT * FROM $table_name_theme WHERE id=" . intval($theme_id));
+			if (empty($theme)) {
+				$validation_error = new WP_Error('noID', __('No theme found for id ' . $theme_id, 'QVST'));
+				break;
 			}
-
-			$campaignToInsert = array(
-				'name' => $params['name'],
-				'status' => 'DRAFT',
-				'start_date' => $params['start_date'],
-				'end_date' => $params['end_date']
-			);
-
-			// save campaign
-			$wpdb->insert(
-				$table_name_campaigns,
-				$campaignToInsert,
-			);
-
-			// get campaign id
-			$campaign_id = $wpdb->insert_id;
-
-			// Associer les thèmes à la campagne
-			set_themes_for_campaign($campaign_id, $params['themes']);
-
-			// save questions
-			foreach ($params['questions'] as $question) {
-				$wpdb->insert(
-					$table_name_campaign_questions,
-					array(
-						'campaign_id' => $campaign_id,
-						'question_id' => $question['id']
-					)
-				);
-			}
-
-			// return 201 created status code if success
-			return new WP_REST_Response(null, 201);
-		} catch (\Throwable $th) {
-			return new WP_Error('error', __('Error', 'QVST'));
 		}
+
+		if ($validation_error) {
+			return $validation_error;
+		}
+
+		$campaignToInsert = array(
+			'name' => $params['name'],
+			'status' => 'DRAFT',
+			'start_date' => $params['start_date'],
+			'end_date' => $params['end_date']
+		);
+
+		// save campaign
+		$wpdb->insert(
+			$table_name_campaigns,
+			$campaignToInsert,
+		);
+
+		// get campaign id
+		$campaign_id = $wpdb->insert_id;
+
+		// Associer les thèmes à la campagne
+		setThemesForCampaign($campaign_id, $params['themes']);
+
+		// save questions
+		foreach ($params['questions'] as $question) {
+			$wpdb->insert(
+				$table_name_campaign_questions,
+				array(
+					'campaign_id' => $campaign_id,
+					'question_id' => $question['id']
+				)
+			);
+		}
+
+		// return 201 created status code if success
+		return new WP_REST_Response(null, 201);
+	} catch (\Throwable $th) {
+		return new WP_Error('error', __('Error', 'QVST'));
 	}
 }
