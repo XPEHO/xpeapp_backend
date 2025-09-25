@@ -1,6 +1,6 @@
 <?php
 /**
- * Utilitaires pour la gestion des thèmes multiples d'une campagne
+ * Utilities for managing multiple themes in a campaign
  */
 
 global $wpdb;
@@ -16,7 +16,6 @@ function getThemesForCampaign($campaign_id) {
         )
     );
 }
-// en anglais
 function setThemesForCampaign($campaign_id, $theme_ids) {
     global $wpdb;
     $table_name_campaign_themes = $wpdb->prefix . 'qvst_campaign_themes';
