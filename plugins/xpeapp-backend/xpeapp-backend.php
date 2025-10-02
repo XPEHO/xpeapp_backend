@@ -44,6 +44,8 @@ include 'src/qvst/campaign/get_stats_of_campaign.php';
 include 'src/qvst/campaign/post_campaign.php';
 include 'src/qvst/campaign/put_campaign_status.php';
 include_once 'src/qvst/campaign/get_csv_file_campaign.php';
+// Utilities for managing multiple themes in a campaign
+include_once 'src/qvst/campaign/campaign_themes_utils.php';
 
 /// Theme
 include 'src/qvst/themes/get_list_of_themes.php';

@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/campaign_themes_utils.php';
+
 function api_get_qvst_stats_by_campaign_id(WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
@@ -29,24 +31,23 @@ function api_get_qvst_stats_by_campaign_id(WP_REST_Request $request)
 		if (empty($campaign)) {
 			return new WP_Error('noID', __('No campaign found', 'QVST'));
 		}
-
-		// Get the questions of the campaign
+		// Get the questions of the campaign 
 		$questionsSql = "
 			SELECT 
 				questions.id as 'question_id',
 				questions.text as 'question',
 				questions.answer_repo_id,
-				theme.id as 'theme_id',
-				theme.name as 'theme',
 				campaign.status as 'status',
 				campaign.action as 'action' 
 			FROM $table_name_questions questions
 			INNER JOIN $table_name_campaign_questions c_q ON questions.id=c_q.question_id
 			INNER JOIN $table_name_campaigns campaign ON c_q.campaign_id=campaign.id
-			INNER JOIN $table_name_theme theme ON questions.theme_id=theme.id
 			WHERE campaign.id=$campaign_id";
 
 		$questions = $wpdb->get_results($questionsSql);
+
+		// Récupérer les thèmes de la campagne
+		$themes = getThemesForCampaign($campaign_id);
 
 		// Get the answers of each question
 		foreach ($questions as &$question) {
@@ -102,6 +103,7 @@ function api_get_qvst_stats_by_campaign_id(WP_REST_Request $request)
 			'startDate' => $campaign->start_date,
 			'endDate' => $campaign->end_date,
 			'action' => $campaign->action,
+			'themes' => $themes,
 			'questions' => $questions
 		);
 
