@@ -28,7 +28,6 @@ function apiPostIdea(WP_REST_Request $request)
         if ($result === false) {
             $response = createErrorResponse('db_insert_error', 'Could not insert idea', 500);
         } else {
-            $idea_id = $wpdb->insert_id;
             $response = createSuccessResponse(null, 201);
         }
     }
