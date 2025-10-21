@@ -85,6 +85,12 @@ include_once 'src/storage/get_image.php';
 include_once 'src/storage/get_all_folders_or_images_by_folder.php';
 include_once 'src/storage/delete_image.php';
 
+// Idea Box
+include_once 'src/idea_box/post_idea.php';
+include_once 'src/idea_box/get_all_ideas.php';
+include_once 'src/idea_box/get_idea_by_id.php';
+include_once 'src/idea_box/delete_idea_by_id.php';
+
 
 class Xpeapp_Backend {
 
@@ -123,6 +129,8 @@ class Xpeapp_Backend {
 	{
 		$userQvstParameter = 'userQvst';
 		$adminQvstParameter = 'adminQvst';
+		$userOfIdeaBoxParameter = 'userOfIdeaBox';
+		$adminOfIdeaBoxParameter = 'adminOfIdeaBox';
 		$editPasswordParameter = 'editPassword';
 		$userImageParameter = 'userImageParameter';
 		$adminImageParameter = 'adminImageParameter';
@@ -712,6 +720,59 @@ class Xpeapp_Backend {
 				'callback' => 'apiDeleteImage',
 				'permission_callback' => function () use ($adminImageParameter) {
 					return $this->secure_endpoint_with_parameter($adminImageParameter);
+				}
+			)
+		);
+
+		// === IDEA BOX ===
+		// Route pour soumettre une idée
+		register_rest_route(
+			$endpoint_namespace,
+			'/ideas',
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => 'apiPostIdea',
+				'permission_callback' => function () use ($userOfIdeaBoxParameter) {
+					return $this->secure_endpoint_with_parameter($userOfIdeaBoxParameter);
+				}
+			)
+		);
+
+		// Route pour récupérer toutes les idées
+		register_rest_route(
+			$endpoint_namespace,
+			'/ideas',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => 'apiGetAllIdeas',
+				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
+					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
+				}
+			)
+		);
+
+		// Route pour récupérer une idée par son ID
+		register_rest_route(
+			$endpoint_namespace,
+			'/ideas/(?P<id>[\d]+)',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => 'apiGetIdeaById',
+				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
+					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
+				}
+			)
+		);
+
+		// Route pour supprimer une idée par son ID
+		register_rest_route(
+			$endpoint_namespace,
+			'/ideas/(?P<id>[\d]+)',
+			array(
+				'methods' => WP_REST_Server::DELETABLE,
+				'callback' => 'apiDeleteIdea',
+				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
+					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
 				}
 			)
 		);

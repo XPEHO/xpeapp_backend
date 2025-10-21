@@ -34,6 +34,8 @@ function register_local_acf_fields() {
         'editPassword' => 'Modifier son mot de passe',
         'userImageParameter' => 'Accèder aux images (téléchargement, liste)',
         'adminImageParameter' => 'Ajouter/Supprimer des images',
+        'userOfIdeaBox' => 'Ajouter des idées dans la boîte à idées',
+        'adminOfIdeaBox' => 'Gérer et consulter les idées dans la boîte à idées',
     ));
 }
 
