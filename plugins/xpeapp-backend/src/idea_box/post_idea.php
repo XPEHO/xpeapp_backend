@@ -12,13 +12,13 @@ function apiPostIdea(WP_REST_Request $request)
     $params = $request->get_params();
 
     // Check if the parameters are valid
-    $validation_error = validateParams($params, ['title', 'description']);
+    $validation_error = validateParams($params, ['context', 'description']);
     if ($validation_error) {
         $response = $validation_error;
     } else {
-        // Prepare data for insertion (only title and description)
+        // Prepare data for insertion (only context and description)
         $data = [
-            'title' => sanitize_text_field($params['title']),
+            'context' => sanitize_text_field($params['context']),
             'description' => sanitize_textarea_field($params['description'])
         ];
 
