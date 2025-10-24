@@ -30,6 +30,11 @@ function register_local_acf_fields() {
         'adminAgenda' => 'Accèder à l\'administration de l\'agenda',
     ));
 
+    addAcfField('liste_des_droits_possibles_de_la_boite_à_idées', 'Liste des droits possibles de la boîte à idées', array(
+        'userOfIdeaBox' => 'Ajouter des idées dans la boîte à idées',
+        'adminOfIdeaBox' => 'Gérer et consulter les idées dans la boîte à idées',
+    ));
+
     addAcfField('liste_des_droits_possibles_de_utilisateur', 'Liste des droits possibles de l\'utilisateur', array(
         'editPassword' => 'Modifier son mot de passe',
         'userImageParameter' => 'Accèder aux images (téléchargement, liste)',
