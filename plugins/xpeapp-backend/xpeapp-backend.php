@@ -112,16 +112,17 @@ class Xpeapp_Backend {
 		$current_user = get_current_user_id();
 		$user_permission_for_qvst = get_field('liste_des_droits_possibles_de_qvst', 'user_' . $current_user);
 		$user_permission_for_user = get_field('liste_des_droits_possibles_de_utilisateur', 'user_' . $current_user);
+		$user_permission_for_idea_box = get_field('liste_des_droits_possibles_de_la_boite_à_idées', 'user_' . $current_user);
 		$user_permission_for_agenda = get_field('liste_des_droits_possibles_de_agenda', 'user_' . $current_user);
 		// if $param is null, we authorize all users
 		if ($param == null) {
 			return true;
 		} else {
-			if($user_permission_for_qvst == null && $user_permission_for_user == null && $user_permission_for_agenda == null) {
+			if($user_permission_for_qvst == null && $user_permission_for_user == null && $user_permission_for_agenda == null && $user_permission_for_idea_box == null) {
 				xpeapp_log(Xpeapp_Log_Level::Warn, "Unauthorized user \"$current_user\" tried to access an API route.");
 				return false;
 			}
-			return in_array($param, $user_permission_for_qvst) || in_array($param, $user_permission_for_user) || in_array($param, $user_permission_for_agenda);
+			return in_array($param, $user_permission_for_qvst) || in_array($param, $user_permission_for_user) || in_array($param, $user_permission_for_agenda) || in_array($param, $user_permission_for_idea_box);
 		}
 	}
 
