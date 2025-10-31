@@ -9,11 +9,18 @@ function apiGetAllIdeas(WP_REST_Request $request)
     global $wpdb;
     $table_idea_box = $wpdb->prefix . 'idea_box';
 
-    // Get the page parameter from the query parameters
+    // Get the page and status parameters from the query parameters
     $page = $request->get_param('page');
+    $status = $request->get_param('status');
+
+    // Build custom query with status filter if provided
+    $custom_query = null;
+    if (!empty($status) && in_array($status, ['pending', 'approved', 'implemented', 'rejected'])) {
+        $custom_query = $wpdb->prepare("SELECT * FROM $table_idea_box WHERE status = %s", $status);
+    }
 
     // Build the query using the utility function
-    $query = buildQueryWithPaginationAndFilters($table_idea_box, $page, 'created_at');
+    $query = buildQueryWithPaginationAndFilters($table_idea_box, $page, 'created_at', 10, $custom_query);
 
     return $wpdb->get_results($query);
 }

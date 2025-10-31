@@ -90,6 +90,7 @@ include_once 'src/idea_box/post_idea.php';
 include_once 'src/idea_box/get_all_ideas.php';
 include_once 'src/idea_box/get_idea_by_id.php';
 include_once 'src/idea_box/delete_idea_by_id.php';
+include_once 'src/idea_box/put_idea_status.php';
 
 
 class Xpeapp_Backend {
@@ -772,6 +773,19 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::DELETABLE,
 				'callback' => 'apiDeleteIdea',
+				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
+					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
+				}
+			)
+		);
+
+		// Route pour mettre à jour le status d'une idée
+		register_rest_route(
+			$endpoint_namespace,
+			'/ideas/(?P<id>[\d]+)/status',
+			array(
+				'methods' => WP_REST_Server::EDITABLE,
+				'callback' => 'apiPutIdeaStatus',
 				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
 					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
 				}
