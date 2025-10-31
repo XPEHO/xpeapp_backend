@@ -85,6 +85,13 @@ include_once 'src/storage/get_image.php';
 include_once 'src/storage/get_all_folders_or_images_by_folder.php';
 include_once 'src/storage/delete_image.php';
 
+// Idea Box
+include_once 'src/idea_box/post_idea.php';
+include_once 'src/idea_box/get_all_ideas.php';
+include_once 'src/idea_box/get_idea_by_id.php';
+include_once 'src/idea_box/delete_idea_by_id.php';
+include_once 'src/idea_box/put_idea_status.php';
+
 
 class Xpeapp_Backend {
 
@@ -106,16 +113,17 @@ class Xpeapp_Backend {
 		$current_user = get_current_user_id();
 		$user_permission_for_qvst = get_field('liste_des_droits_possibles_de_qvst', 'user_' . $current_user);
 		$user_permission_for_user = get_field('liste_des_droits_possibles_de_utilisateur', 'user_' . $current_user);
+		$user_permission_for_idea_box = get_field('liste_des_droits_possibles_de_la_boite_à_idées', 'user_' . $current_user);
 		$user_permission_for_agenda = get_field('liste_des_droits_possibles_de_agenda', 'user_' . $current_user);
 		// if $param is null, we authorize all users
 		if ($param == null) {
 			return true;
 		} else {
-			if($user_permission_for_qvst == null && $user_permission_for_user == null && $user_permission_for_agenda == null) {
+			if($user_permission_for_qvst == null && $user_permission_for_user == null && $user_permission_for_agenda == null && $user_permission_for_idea_box == null) {
 				xpeapp_log(Xpeapp_Log_Level::Warn, "Unauthorized user \"$current_user\" tried to access an API route.");
 				return false;
 			}
-			return in_array($param, $user_permission_for_qvst) || in_array($param, $user_permission_for_user) || in_array($param, $user_permission_for_agenda);
+			return in_array($param, $user_permission_for_qvst) || in_array($param, $user_permission_for_user) || in_array($param, $user_permission_for_agenda) || in_array($param, $user_permission_for_idea_box);
 		}
 	}
 
@@ -123,6 +131,8 @@ class Xpeapp_Backend {
 	{
 		$userQvstParameter = 'userQvst';
 		$adminQvstParameter = 'adminQvst';
+		$userOfIdeaBoxParameter = 'userOfIdeaBox';
+		$adminOfIdeaBoxParameter = 'adminOfIdeaBox';
 		$editPasswordParameter = 'editPassword';
 		$userImageParameter = 'userImageParameter';
 		$adminImageParameter = 'adminImageParameter';
@@ -712,6 +722,72 @@ class Xpeapp_Backend {
 				'callback' => 'apiDeleteImage',
 				'permission_callback' => function () use ($adminImageParameter) {
 					return $this->secure_endpoint_with_parameter($adminImageParameter);
+				}
+			)
+		);
+
+		// === IDEA BOX ===
+		// Route pour soumettre une idée
+		register_rest_route(
+			$endpoint_namespace,
+			'/ideas',
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => 'apiPostIdea',
+				'permission_callback' => function () use ($userOfIdeaBoxParameter) {
+					return $this->secure_endpoint_with_parameter($userOfIdeaBoxParameter);
+				}
+			)
+		);
+
+		// Route pour récupérer toutes les idées
+		register_rest_route(
+			$endpoint_namespace,
+			'/ideas',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => 'apiGetAllIdeas',
+				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
+					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
+				}
+			)
+		);
+
+		// Route pour récupérer une idée par son ID
+		register_rest_route(
+			$endpoint_namespace,
+			'/ideas/(?P<id>[\d]+)',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => 'apiGetIdeaById',
+				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
+					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
+				}
+			)
+		);
+
+		// Route pour supprimer une idée par son ID
+		register_rest_route(
+			$endpoint_namespace,
+			'/ideas/(?P<id>[\d]+)',
+			array(
+				'methods' => WP_REST_Server::DELETABLE,
+				'callback' => 'apiDeleteIdea',
+				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
+					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
+				}
+			)
+		);
+
+		// Route pour mettre à jour le status d'une idée
+		register_rest_route(
+			$endpoint_namespace,
+			'/ideas/(?P<id>[\d]+)/status',
+			array(
+				'methods' => WP_REST_Server::EDITABLE,
+				'callback' => 'apiPutIdeaStatus',
+				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
+					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
 				}
 			)
 		);
