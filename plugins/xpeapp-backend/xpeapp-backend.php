@@ -41,6 +41,7 @@ include 'src/qvst/campaign/get_list_of_campaigns.php';
 include 'src/qvst/campaign/get_active_campaign.php';
 include 'src/qvst/campaign/get_campaign_progress.php';
 include 'src/qvst/campaign/get_stats_of_campaign.php';
+include 'src/qvst/campaign/get_campaign_analysis.php';
 include 'src/qvst/campaign/post_campaign.php';
 include 'src/qvst/campaign/put_campaign_status.php';
 include_once 'src/qvst/campaign/get_csv_file_campaign.php';
@@ -367,6 +368,17 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_qvst_stats_by_campaign_id',
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
+				}
+			)
+		);
+		register_rest_route(
+			$endpoint_namespace,
+			'/qvst/campaigns/(?P<id>[\d]+):analysis',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => 'apiGetCampaignAnalysis',
 				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
