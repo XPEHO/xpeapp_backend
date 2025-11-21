@@ -7,7 +7,7 @@ require_once __DIR__ . '/campaign_themes_utils.php';
  */
 function analyzeQuestionsData($wpdb, $campaign_id, $table_campaign_questions, $table_questions, $table_theme, $table_answers, $table_campaign_answers)
 {
-    $questions_analysis = $wpdb->get_results("
+    $questions_analysis = $wpdb->get_results($wpdb->prepare("
         SELECT
             q.id as question_id,
             q.text as question_text,
@@ -22,13 +22,13 @@ function analyzeQuestionsData($wpdb, $campaign_id, $table_campaign_questions, $t
         INNER JOIN $table_theme t ON t.id = q.theme_id
         INNER JOIN $table_answers a ON a.answer_repo_id = q.answer_repo_id
         LEFT JOIN $table_campaign_answers ca
-            ON ca.campaign_id = $campaign_id
+            ON ca.campaign_id = %d
             AND ca.question_id = q.id
             AND ca.answer_id = a.id
-        WHERE cq.campaign_id = $campaign_id
+        WHERE cq.campaign_id = %d
         GROUP BY q.id, a.id
         ORDER BY q.id, a.value DESC
-    ");
+    ", $campaign_id, $campaign_id));
 
     $questions_data = [];
     $total_questions = 0;
@@ -136,7 +136,7 @@ function processEmployeeAnswer(&$employee_data, $row, $questions_data)
  */
 function analyzeEmployeesData($wpdb, $campaign_id, $questions_data, $table_campaign_answers, $table_answers, $table_open_answers)
 {
-    $employee_answers = $wpdb->get_results("
+    $employee_answers = $wpdb->get_results($wpdb->prepare("
         SELECT
             ca.answer_group_id,
             ca.question_id,
@@ -144,11 +144,11 @@ function analyzeEmployeesData($wpdb, $campaign_id, $questions_data, $table_campa
             a.name as answer_text
         FROM $table_campaign_answers ca
         INNER JOIN $table_answers a ON a.id = ca.answer_id
-        WHERE ca.campaign_id = $campaign_id
+        WHERE ca.campaign_id = %d
         ORDER BY ca.answer_group_id, ca.question_id
-    ");
+    ", $campaign_id));
 
-    $open_answers = $wpdb->get_results("
+    $open_answers = $wpdb->get_results($wpdb->prepare("
         SELECT
             oa.answer_group_id,
             oa.text as open_answer_text
@@ -156,9 +156,9 @@ function analyzeEmployeesData($wpdb, $campaign_id, $questions_data, $table_campa
         WHERE oa.answer_group_id IN (
             SELECT DISTINCT answer_group_id
             FROM $table_campaign_answers
-            WHERE campaign_id = $campaign_id
+            WHERE campaign_id = %d
         )
-    ");
+    ", $campaign_id));
 
     $employees_data = [];
     foreach ($employee_answers as $row) {
@@ -326,11 +326,11 @@ function apiGetCampaignAnalysis(WP_REST_Request $request)
     $params = $request->get_params();
     $campaign_id = $params['id'];
 
+    // Toujours retourner un tableau, même en cas d'erreur ou campagne non trouvée
     if (empty($campaign_id)) {
-        return new WP_Error('noParams', __('No parameters', 'QVST'));
+        xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - No parameters");
+        return [];
     }
-
-    $response = null;
 
     try {
         $table_campaign = $wpdb->prefix . 'qvst_campaign';
@@ -341,106 +341,103 @@ function apiGetCampaignAnalysis(WP_REST_Request $request)
         $table_theme = $wpdb->prefix . 'qvst_theme';
         $table_open_answers = $wpdb->prefix . 'qvst_open_answers';
 
-        // Vérifier que la campagne existe
-        $campaign = $wpdb->get_row("SELECT * FROM $table_campaign WHERE id=" . $campaign_id);
+        // Vérifier que la campagne existe (requête préparée)
+        $campaign = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_campaign WHERE id=%d", $campaign_id));
         if (empty($campaign)) {
-            $response = new WP_Error('noID', __('No campaign found', 'QVST'));
-        } else {
-            // Récupérer les thèmes de la campagne
-            $themes_raw = getThemesForCampaign($campaign_id);
-            
-            // Formater les thèmes avec ID et nom
-            $themes = [];
-            foreach ($themes_raw as $theme) {
-                $themes[] = [
-                    'theme_id' => $theme->id,
-                    'theme_name' => $theme->name
-                ];
-            }
-
-            // Analyse par question
-            $questions_result = analyzeQuestionsData(
-                $wpdb,
-                $campaign_id,
-                $table_campaign_questions,
-                $table_questions,
-                $table_theme,
-                $table_answers,
-                $table_campaign_answers
-            );
-            $questions_data = $questions_result['questions_data'];
-            $total_questions = $questions_result['total_questions'];
-
-            // Analyse par collaborateur
-            $employees_data = analyzeEmployeesData(
-                $wpdb,
-                $campaign_id,
-                $questions_data,
-                $table_campaign_answers,
-                $table_answers,
-                $table_open_answers
-            );
-
-            // Calcul des scores de risque
-            $risk_result = calculateRiskScores($employees_data);
-            $at_risk_employees = $risk_result['at_risk_employees'];
-            $satisfaction_scores = $risk_result['satisfaction_scores'];
-
-            // Statistiques globales
-            $total_respondents = count($employees_data);
-            $average_satisfaction = $total_respondents > 0
-                ? round(array_sum($satisfaction_scores) / count($satisfaction_scores), 2)
-                : 0;
-
-            // Questions nécessitant une action
-            $questions_requiring_action = array_values(array_filter($questions_data, function ($q) {
-                return $q['requires_action'];
-            }));
-
-            // Distribution globale
-            $global_distribution_array = calculateGlobalDistribution($questions_data);
-
-            // Analyse par thème
-            $themes_analysis = calculateThemesAnalysis($questions_data);
-
-            // Helper to always return a list (never null)
-            $ensure_list = function($v) {
-                return is_array($v) ? array_values($v) : [];
-            };
-
-            // Helper to always return a float (double)
-            $ensure_double = function($v) {
-                return is_numeric($v) ? (float)$v : 0.0;
-            };
-
-            // Always include all expected keys, even if empty
-            $data = [
-                'campaign_id' => (int)$campaign_id,
-                'campaign_name' => $campaign->name,
-                'campaign_status' => $campaign->status,
-                'start_date' => $campaign->start_date,
-                'end_date' => $campaign->end_date,
-                'themes' => $ensure_list($themes),
-                'global_stats' => [
-                    'total_respondents' => (int)$total_respondents,
-                    'total_questions' => (int)$total_questions,
-                    'average_satisfaction' => $ensure_double($average_satisfaction),
-                    'requires_action' => $ensure_double($average_satisfaction) < 75.0,
-                    'at_risk_count' => (int)count($at_risk_employees)
-                ],
-                'global_distribution' => $ensure_list($global_distribution_array),
-                'themes_analysis' => $ensure_list($themes_analysis),
-                'questions_analysis' => $ensure_list(array_values($questions_data)),
-                'questions_requiring_action' => $ensure_list($questions_requiring_action),
-                'at_risk_employees' => $ensure_list($at_risk_employees)
-            ];
-
-            $response = new WP_REST_Response($data, 200);
+            xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - No campaign found for id $campaign_id");
+            return [];
         }
+
+        // Récupérer les thèmes de la campagne
+        $themes_raw = getThemesForCampaign($campaign_id);
+        $themes = [];
+        foreach ($themes_raw as $theme) {
+            $themes[] = [
+                'theme_id' => $theme->id,
+                'theme_name' => $theme->name
+            ];
+        }
+
+        // Analyse par question
+        $questions_result = analyzeQuestionsData(
+            $wpdb,
+            $campaign_id,
+            $table_campaign_questions,
+            $table_questions,
+            $table_theme,
+            $table_answers,
+            $table_campaign_answers
+        );
+        $questions_data = $questions_result['questions_data'];
+        $total_questions = $questions_result['total_questions'];
+
+        // Analyse par collaborateur
+        $employees_data = analyzeEmployeesData(
+            $wpdb,
+            $campaign_id,
+            $questions_data,
+            $table_campaign_answers,
+            $table_answers,
+            $table_open_answers
+        );
+
+        // Calcul des scores de risque
+        $risk_result = calculateRiskScores($employees_data);
+        $at_risk_employees = $risk_result['at_risk_employees'];
+        $satisfaction_scores = $risk_result['satisfaction_scores'];
+
+        // Statistiques globales
+        $total_respondents = count($employees_data);
+        $average_satisfaction = $total_respondents > 0
+            ? round(array_sum($satisfaction_scores) / count($satisfaction_scores), 2)
+            : 0;
+
+        // Questions nécessitant une action
+        $questions_requiring_action = array_values(array_filter($questions_data, function ($q) {
+            return $q['requires_action'];
+        }));
+
+        // Distribution globale
+        $global_distribution_array = calculateGlobalDistribution($questions_data);
+
+        // Analyse par thème
+        $themes_analysis = calculateThemesAnalysis($questions_data);
+
+        // Helper to always return a list (never null)
+        $ensure_list = function($v) {
+            return is_array($v) ? array_values($v) : [];
+        };
+
+        // Helper to always return a float (double)
+        $ensure_double = function($v) {
+            return is_numeric($v) ? (float)$v : 0.0;
+        };
+
+        // Always include all expected keys, even if empty
+        $data = [
+            'campaign_id' => (int)$campaign_id,
+            'campaign_name' => $campaign->name,
+            'campaign_status' => $campaign->status,
+            'start_date' => $campaign->start_date,
+            'end_date' => $campaign->end_date,
+            'themes' => $ensure_list($themes),
+            'global_stats' => [
+                'total_respondents' => (int)$total_respondents,
+                'total_questions' => (int)$total_questions,
+                'average_satisfaction' => $ensure_double($average_satisfaction),
+                'requires_action' => $ensure_double($average_satisfaction) < 75.0,
+                'at_risk_count' => (int)count($at_risk_employees)
+            ],
+            'global_distribution' => $ensure_list($global_distribution_array),
+            'themes_analysis' => $ensure_list($themes_analysis),
+            'questions_analysis' => $ensure_list(array_values($questions_data)),
+            'questions_requiring_action' => $ensure_list($questions_requiring_action),
+            'at_risk_employees' => $ensure_list($at_risk_employees)
+        ];
+
+        return $data;
     } catch (\Throwable $th) {
         xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Error: " . $th->getMessage());
-        $response = new WP_Error('error', __('Error during campaign analysis', 'QVST'));
+        return [];
     }
-
-    return $response;
 }

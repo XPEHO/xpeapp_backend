@@ -41,7 +41,7 @@ include 'src/qvst/campaign/get_list_of_campaigns.php';
 include 'src/qvst/campaign/get_active_campaign.php';
 include 'src/qvst/campaign/get_campaign_progress.php';
 include 'src/qvst/campaign/get_stats_of_campaign.php';
-include 'src/qvst/campaign/get_campaign_analysis.php';
+include_once 'src/qvst/campaign/get_campaign_analysis.php';
 include 'src/qvst/campaign/post_campaign.php';
 include 'src/qvst/campaign/put_campaign_status.php';
 include_once 'src/qvst/campaign/get_csv_file_campaign.php';
