@@ -192,19 +192,14 @@ function calculateRiskScores($employees_data)
         if ($employee['response_count'] > 0 && $employee['max_possible_score'] > 0) {
             $employee['average_score'] = round($employee['total_score'] / $employee['response_count'], 2);
             $employee['satisfaction_percentage'] = round(($employee['total_score'] / $employee['max_possible_score']) * 100, 2);
-            
-            $risk_score = 0;
-            
-            if ($employee['satisfaction_percentage'] < 75) {
-                $risk_score += (75 - $employee['satisfaction_percentage']) / 75 * 5;
-            }
-            
+
+
             $low_score_ratio = $employee['low_scores_count'] / $employee['response_count'];
-            $risk_score += $low_score_ratio * 5;
-            
+            $risk_score = (10 - ($employee['satisfaction_percentage'] / 10)) + (10 * $low_score_ratio);
+            $risk_score = max(0, min(10, $risk_score));
             $employee['risk_score'] = round($risk_score, 2);
             $satisfaction_scores[] = $employee['satisfaction_percentage'];
-            
+
             if ($employee['satisfaction_percentage'] < 75 || $employee['risk_score'] > 3) {
                 $at_risk_employees[] = [
                     'anonymous_user_id' => $employee['answer_group_id'],
@@ -326,118 +321,118 @@ function apiGetCampaignAnalysis(WP_REST_Request $request)
     $params = $request->get_params();
     $campaign_id = $params['id'];
 
+    $result = [];
     // Toujours retourner un tableau, même en cas d'erreur ou campagne non trouvée
     if (empty($campaign_id)) {
         xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - No parameters");
-        return [];
-    }
+        $result = [];
+    } else {
+        try {
+            $table_campaign = $wpdb->prefix . 'qvst_campaign';
+            $table_campaign_answers = $wpdb->prefix . 'qvst_campaign_answers';
+            $table_campaign_questions = $wpdb->prefix . 'qvst_campaign_questions';
+            $table_answers = $wpdb->prefix . 'qvst_answers';
+            $table_questions = $wpdb->prefix . 'qvst_questions';
+            $table_theme = $wpdb->prefix . 'qvst_theme';
+            $table_open_answers = $wpdb->prefix . 'qvst_open_answers';
 
-    try {
-        $table_campaign = $wpdb->prefix . 'qvst_campaign';
-        $table_campaign_answers = $wpdb->prefix . 'qvst_campaign_answers';
-        $table_campaign_questions = $wpdb->prefix . 'qvst_campaign_questions';
-        $table_answers = $wpdb->prefix . 'qvst_answers';
-        $table_questions = $wpdb->prefix . 'qvst_questions';
-        $table_theme = $wpdb->prefix . 'qvst_theme';
-        $table_open_answers = $wpdb->prefix . 'qvst_open_answers';
+            // Vérifier que la campagne existe (requête préparée)
+            $campaign = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_campaign WHERE id=%d", $campaign_id));
+            if (empty($campaign)) {
+                xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - No campaign found for id $campaign_id");
+                $result = [];
+            } else {
+                // Récupérer les thèmes de la campagne
+                $themes_raw = getThemesForCampaign($campaign_id);
+                $themes = [];
+                foreach ($themes_raw as $theme) {
+                    $themes[] = [
+                        'theme_id' => $theme->id,
+                        'theme_name' => $theme->name
+                    ];
+                }
 
-        // Vérifier que la campagne existe (requête préparée)
-        $campaign = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_campaign WHERE id=%d", $campaign_id));
-        if (empty($campaign)) {
-            xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - No campaign found for id $campaign_id");
-            return [];
+                // Analyse par question
+                $questions_result = analyzeQuestionsData(
+                    $wpdb,
+                    $campaign_id,
+                    $table_campaign_questions,
+                    $table_questions,
+                    $table_theme,
+                    $table_answers,
+                    $table_campaign_answers
+                );
+                $questions_data = $questions_result['questions_data'];
+                $total_questions = $questions_result['total_questions'];
+
+                // Analyse par collaborateur
+                $employees_data = analyzeEmployeesData(
+                    $wpdb,
+                    $campaign_id,
+                    $questions_data,
+                    $table_campaign_answers,
+                    $table_answers,
+                    $table_open_answers
+                );
+
+                // Calcul des scores de risque
+                $risk_result = calculateRiskScores($employees_data);
+                $at_risk_employees = $risk_result['at_risk_employees'];
+                $satisfaction_scores = $risk_result['satisfaction_scores'];
+
+                // Statistiques globales
+                $total_respondents = count($employees_data);
+                $average_satisfaction = $total_respondents > 0
+                    ? round(array_sum($satisfaction_scores) / count($satisfaction_scores), 2)
+                    : 0;
+
+                // Questions nécessitant une action
+                $questions_requiring_action = array_values(array_filter($questions_data, function ($q) {
+                    return $q['requires_action'];
+                }));
+
+                // Distribution globale
+                $global_distribution_array = calculateGlobalDistribution($questions_data);
+
+                // Analyse par thème
+                $themes_analysis = calculateThemesAnalysis($questions_data);
+
+                // Helper to always return a list (never null)
+                $ensure_list = function($v) {
+                    return is_array($v) ? array_values($v) : [];
+                };
+
+                // Helper to always return a float (double)
+                $ensure_double = function($v) {
+                    return is_numeric($v) ? (float)$v : 0.0;
+                };
+
+                // Always include all expected keys, even if empty
+                $result = [
+                    'campaign_id' => (int)$campaign_id,
+                    'campaign_name' => $campaign->name,
+                    'campaign_status' => $campaign->status,
+                    'start_date' => $campaign->start_date,
+                    'end_date' => $campaign->end_date,
+                    'themes' => $ensure_list($themes),
+                    'global_stats' => [
+                        'total_respondents' => (int)$total_respondents,
+                        'total_questions' => (int)$total_questions,
+                        'average_satisfaction' => $ensure_double($average_satisfaction),
+                        'requires_action' => $ensure_double($average_satisfaction) < 75.0,
+                        'at_risk_count' => (int)count($at_risk_employees)
+                    ],
+                    'global_distribution' => $ensure_list($global_distribution_array),
+                    'themes_analysis' => $ensure_list($themes_analysis),
+                    'questions_analysis' => $ensure_list(array_values($questions_data)),
+                    'questions_requiring_action' => $ensure_list($questions_requiring_action),
+                    'at_risk_employees' => $ensure_list($at_risk_employees)
+                ];
+            }
+        } catch (\Throwable $th) {
+            xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Error: " . $th->getMessage());
+            $result = [];
         }
-
-        // Récupérer les thèmes de la campagne
-        $themes_raw = getThemesForCampaign($campaign_id);
-        $themes = [];
-        foreach ($themes_raw as $theme) {
-            $themes[] = [
-                'theme_id' => $theme->id,
-                'theme_name' => $theme->name
-            ];
-        }
-
-        // Analyse par question
-        $questions_result = analyzeQuestionsData(
-            $wpdb,
-            $campaign_id,
-            $table_campaign_questions,
-            $table_questions,
-            $table_theme,
-            $table_answers,
-            $table_campaign_answers
-        );
-        $questions_data = $questions_result['questions_data'];
-        $total_questions = $questions_result['total_questions'];
-
-        // Analyse par collaborateur
-        $employees_data = analyzeEmployeesData(
-            $wpdb,
-            $campaign_id,
-            $questions_data,
-            $table_campaign_answers,
-            $table_answers,
-            $table_open_answers
-        );
-
-        // Calcul des scores de risque
-        $risk_result = calculateRiskScores($employees_data);
-        $at_risk_employees = $risk_result['at_risk_employees'];
-        $satisfaction_scores = $risk_result['satisfaction_scores'];
-
-        // Statistiques globales
-        $total_respondents = count($employees_data);
-        $average_satisfaction = $total_respondents > 0
-            ? round(array_sum($satisfaction_scores) / count($satisfaction_scores), 2)
-            : 0;
-
-        // Questions nécessitant une action
-        $questions_requiring_action = array_values(array_filter($questions_data, function ($q) {
-            return $q['requires_action'];
-        }));
-
-        // Distribution globale
-        $global_distribution_array = calculateGlobalDistribution($questions_data);
-
-        // Analyse par thème
-        $themes_analysis = calculateThemesAnalysis($questions_data);
-
-        // Helper to always return a list (never null)
-        $ensure_list = function($v) {
-            return is_array($v) ? array_values($v) : [];
-        };
-
-        // Helper to always return a float (double)
-        $ensure_double = function($v) {
-            return is_numeric($v) ? (float)$v : 0.0;
-        };
-
-        // Always include all expected keys, even if empty
-        $data = [
-            'campaign_id' => (int)$campaign_id,
-            'campaign_name' => $campaign->name,
-            'campaign_status' => $campaign->status,
-            'start_date' => $campaign->start_date,
-            'end_date' => $campaign->end_date,
-            'themes' => $ensure_list($themes),
-            'global_stats' => [
-                'total_respondents' => (int)$total_respondents,
-                'total_questions' => (int)$total_questions,
-                'average_satisfaction' => $ensure_double($average_satisfaction),
-                'requires_action' => $ensure_double($average_satisfaction) < 75.0,
-                'at_risk_count' => (int)count($at_risk_employees)
-            ],
-            'global_distribution' => $ensure_list($global_distribution_array),
-            'themes_analysis' => $ensure_list($themes_analysis),
-            'questions_analysis' => $ensure_list(array_values($questions_data)),
-            'questions_requiring_action' => $ensure_list($questions_requiring_action),
-            'at_risk_employees' => $ensure_list($at_risk_employees)
-        ];
-
-        return $data;
-    } catch (\Throwable $th) {
-        xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Error: " . $th->getMessage());
-        return [];
     }
+    return $result;
 }
