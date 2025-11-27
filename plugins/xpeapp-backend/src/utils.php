@@ -61,7 +61,7 @@ function buildQueryWithPaginationAndFilters($table, $page, $date_field, $items_p
 
     // Initialize query parts
     $condition = "";
-    $sort = " ORDER BY $date_field ASC";
+    $sort = " ORDER BY $date_field DESC";
     $limits = "";
 
     $offset = 0;
