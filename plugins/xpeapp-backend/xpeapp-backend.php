@@ -143,6 +143,10 @@ class Xpeapp_Backend {
 		$userAgenda = 'userAgenda';
 		$adminAgenda = 'adminAgenda';
 
+		// === QVST Endpoints Constants ===
+		$qvst_base = '/qvst/';
+		$qvst_campaigns_base = '/qvst/campaigns/';
+
 		// GET USER 
 		// In: Header(email:)
 		// Out: User ID
@@ -223,7 +227,7 @@ class Xpeapp_Backend {
 		// === QVST Question ===
 		register_rest_route(
 			$endpoint_namespace,
-			'/qvst/' . $qvst_id_pattern,
+			$qvst_base . $qvst_id_pattern,
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_qvst_by_id',
@@ -234,7 +238,7 @@ class Xpeapp_Backend {
 		);
 		register_rest_route(
 			$endpoint_namespace,
-			'/qvst/' . $qvst_id_pattern . ':resume',
+			$qvst_base . $qvst_id_pattern . ':resume',
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_qvst_resume_by_id',
@@ -245,7 +249,7 @@ class Xpeapp_Backend {
 		);
 		register_rest_route(
 			$endpoint_namespace,
-			'/qvst/' . $qvst_id_pattern . ':update',
+			$qvst_base . $qvst_id_pattern . ':update',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'api_update_question',
@@ -256,7 +260,7 @@ class Xpeapp_Backend {
 		);
 		register_rest_route(
 			$endpoint_namespace,
-			'/qvst/' . $qvst_id_pattern . ':delete',
+			$qvst_base . $qvst_id_pattern . ':delete',
 			array(
 				'methods' => WP_REST_Server::DELETABLE,
 				'callback' => 'api_delete_qvst',
@@ -281,7 +285,7 @@ class Xpeapp_Backend {
 		// Questions of the theme
 		register_rest_route(
 			$endpoint_namespace,
-			'/qvst/themes/' . $qvst_id_pattern . '/questions',
+			$qvst_base . 'themes/' . $qvst_id_pattern . '/questions',
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_qvst_questions_by_theme_id',
@@ -307,7 +311,7 @@ class Xpeapp_Backend {
 		// === Answers Repo ===
 		register_rest_route(
 			$endpoint_namespace,
-			'/qvst/answers_repo/' . $qvst_id_pattern . ':update',
+			$qvst_base . 'answers_repo/' . $qvst_id_pattern . ':update',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'api_update_answers_repo',
@@ -355,7 +359,7 @@ class Xpeapp_Backend {
 		// === Campaign ===
 		register_rest_route( // Resource: qAndA Pair
 			$endpoint_namespace,
-			'/qvst/campaigns/' . $campaign_id_pattern . ':questions',
+			$qvst_campaigns_base . $campaign_id_pattern . ':questions',
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_questions_by_campaign_id',
@@ -366,7 +370,7 @@ class Xpeapp_Backend {
 		);
 		register_rest_route(
 			$endpoint_namespace,
-			'/qvst/campaigns/' . $campaign_id_pattern . ':stats',
+			$qvst_campaigns_base . $campaign_id_pattern . ':stats',
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_qvst_stats_by_campaign_id',
@@ -377,7 +381,7 @@ class Xpeapp_Backend {
 		);
 		register_rest_route(
 			$endpoint_namespace,
-			'/qvst/campaigns/' . $campaign_id_pattern . ':analysis',
+			$qvst_campaigns_base . $campaign_id_pattern . ':analysis',
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'apiGetCampaignAnalysis',
@@ -388,7 +392,7 @@ class Xpeapp_Backend {
 		);
 		register_rest_route(
 			$endpoint_namespace,
-			'/qvst/campaigns/' . $campaign_id_pattern . '/status:update',
+			$qvst_campaigns_base . $campaign_id_pattern . '/status:update',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'api_update_campaign_status',
@@ -399,7 +403,7 @@ class Xpeapp_Backend {
 		);
 		register_rest_route( // Resource: qAndA Pair
 			$endpoint_namespace,
-			'/qvst/campaigns/' . $campaign_id_pattern . '/questions',
+			$qvst_campaigns_base . $campaign_id_pattern . '/questions',
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => 'api_get_questions_by_campaign_id_and_user_id',
@@ -410,7 +414,7 @@ class Xpeapp_Backend {
 		);
 		register_rest_route(
 			$endpoint_namespace,
-			'/qvst/campaigns/' . $campaign_id_pattern . '/questions:answer',
+			$qvst_campaigns_base . $campaign_id_pattern . '/questions:answer',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'api_post_qvst_answers',
