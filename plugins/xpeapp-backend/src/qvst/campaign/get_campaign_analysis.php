@@ -1,159 +1,75 @@
 <?php
 
-require_once __DIR__ . '/campaign_themes_utils.php';
+require_once __DIR__ . '/get_stats_of_campaign.php';
 
-/**
- * Analyse les questions de la campagne et calcule les statistiques
- */
-function analyzeQuestionsData($wpdb, $campaign_id, $table_campaign_questions, $table_questions, $table_theme, $table_answers, $table_campaign_answers)
+function calculateQuestionSatisfaction($stats_data)
 {
-    $questions_analysis = $wpdb->get_results($wpdb->prepare("
-        SELECT
-            q.id as question_id,
-            q.text as question_text,
-            t.id as theme_id,
-            t.name as theme_name,
-            a.id as answer_id,
-            a.name as answer_text,
-            a.value as answer_value,
-            COUNT(ca.id) as count
-        FROM $table_campaign_questions cq
-        INNER JOIN $table_questions q ON q.id = cq.question_id
-        INNER JOIN $table_theme t ON t.id = q.theme_id
-        INNER JOIN $table_answers a ON a.answer_repo_id = q.answer_repo_id
-        LEFT JOIN $table_campaign_answers ca
-            ON ca.campaign_id = %d
-            AND ca.question_id = q.id
-            AND ca.answer_id = a.id
-        WHERE cq.campaign_id = %d
-        GROUP BY q.id, a.id
-        ORDER BY q.id, a.value DESC
-    ", $campaign_id, $campaign_id));
-
-    $questions_data = [];
-    $total_questions = 0;
+    $questions_analysis = [];
+    $questions_requiring_action = [];
+    $total_satisfaction = 0;
     
-    foreach ($questions_analysis as $row) {
-        $qid = $row->question_id;
+    foreach ($stats_data['questions'] as $question) {
+        $total_responses = 0;
+        $satisfied_count = 0;
         
-        if (!isset($questions_data[$qid])) {
-            $questions_data[$qid] = [
-                'question_id' => $qid,
-                'question_text' => $row->question_text,
-                'theme_id' => $row->theme_id,
-                'theme_name' => $row->theme_name,
-                'answers' => [],
-                'total_responses' => 0,
-                'weighted_sum' => 0,
-                'max_possible_score' => 0
-            ];
-            $total_questions++;
+        foreach ($question->answers as $answer) {
+            $count = (int)$answer->numberAnswered;
+            $value = (int)$answer->value;
+            
+            $total_responses += $count;
+            
+            if ($value >= 4) {
+                $satisfied_count += $count;
+            }
         }
         
-        $count = (int)$row->count;
-        $value = (int)$row->answer_value;
+        $satisfaction_percentage = $total_responses > 0 
+            ? round(($satisfied_count / $total_responses) * 100, 2) 
+            : 0;
         
-        $questions_data[$qid]['answers'][] = [
-            'answer_id' => $row->answer_id,
-            'answer_text' => $row->answer_text,
-            'score' => $value,
-            'count' => $count
+        $question_data = [
+            'question_id' => $question->question_id,
+            'question_text' => $question->question,
+            'satisfaction_percentage' => $satisfaction_percentage,
+            'total_responses' => $total_responses,
+            'requires_action' => $satisfaction_percentage < 75,
+            'answers' => $question->answers
         ];
         
-        $questions_data[$qid]['total_responses'] += $count;
-        $questions_data[$qid]['weighted_sum'] += ($value * $count);
+        $questions_analysis[] = $question_data;
+        $total_satisfaction += $satisfaction_percentage;
         
-        if ($value > $questions_data[$qid]['max_possible_score']) {
-            $questions_data[$qid]['max_possible_score'] = $value;
+        if ($question_data['requires_action']) {
+            $questions_requiring_action[] = $question_data;
         }
     }
-
-    // Calculer le pourcentage de satisfaction par question
-    foreach ($questions_data as &$question) {
-        if ($question['total_responses'] > 0 && $question['max_possible_score'] > 0) {
-            $average_score = $question['weighted_sum'] / $question['total_responses'];
-            $question['satisfaction_percentage'] = round(($average_score / $question['max_possible_score']) * 100, 2);
-            $question['average_score'] = round($average_score, 2);
-        } else {
-            $question['satisfaction_percentage'] = 0;
-            $question['average_score'] = 0;
-        }
-        
-        $question['requires_action'] = $question['satisfaction_percentage'] < 75;
-    }
-    unset($question);
-
-    return ['questions_data' => $questions_data, 'total_questions' => $total_questions];
-}
-
-/**
- * Initialise les données d'un employé
- */
-function initializeEmployeeData($group_id)
-{
+    
     return [
-        'answer_group_id' => $group_id,
-        'responses' => [],
-        'total_score' => 0,
-        'max_possible_score' => 0,
-        'response_count' => 0,
-        'low_scores_count' => 0,
-        'critical_themes' => []
+        'questions_analysis' => $questions_analysis,
+        'questions_requiring_action' => $questions_requiring_action,
+        'total_satisfaction' => $total_satisfaction
     ];
 }
 
-/**
- * Traite une réponse individuelle d'un employé
- */
-function processEmployeeAnswer(&$employee_data, $row, $questions_data)
+function analyzeEmployeesAtRisk($wpdb, $campaign_id)
 {
-    $value = (int)$row->answer_value;
-    
-    $employee_data['responses'][] = [
-        'question_id' => $row->question_id,
-        'answer_value' => $value,
-        'answer_text' => $row->answer_text
-    ];
-    
-    $employee_data['total_score'] += $value;
-    $employee_data['response_count']++;
-    
-    if ($value <= 2 && isset($questions_data[$row->question_id])) {
-        $employee_data['low_scores_count']++;
-        $theme_name = $questions_data[$row->question_id]['theme_name'];
-        if (!in_array($theme_name, $employee_data['critical_themes'])) {
-            $employee_data['critical_themes'][] = $theme_name;
-        }
-    }
-    
-    if (isset($questions_data[$row->question_id]['max_possible_score'])) {
-        $employee_data['max_possible_score'] += $questions_data[$row->question_id]['max_possible_score'];
-    }
-}
+    $table_campaign_answers = $wpdb->prefix . 'qvst_campaign_answers';
+    $table_answers = $wpdb->prefix . 'qvst_answers';
+    $table_open_answers = $wpdb->prefix . 'qvst_open_answers';
 
-/**
- * Analyse les réponses par collaborateur et calcule les scores de risque
- */
-function analyzeEmployeesData($wpdb, $campaign_id, $questions_data, $table_campaign_answers, $table_answers, $table_open_answers)
-{
     $employee_answers = $wpdb->get_results($wpdb->prepare("
-        SELECT
+        SELECT 
             ca.answer_group_id,
-            ca.question_id,
-            a.value as answer_value,
-            a.name as answer_text
+            a.value as answer_value
         FROM $table_campaign_answers ca
         INNER JOIN $table_answers a ON a.id = ca.answer_id
         WHERE ca.campaign_id = %d
-        ORDER BY ca.answer_group_id, ca.question_id
     ", $campaign_id));
 
     $open_answers = $wpdb->get_results($wpdb->prepare("
-        SELECT
-            oa.answer_group_id,
-            oa.text as open_answer_text
-        FROM $table_open_answers oa
-        WHERE oa.answer_group_id IN (
+        SELECT answer_group_id, text as open_answer_text
+        FROM $table_open_answers
+        WHERE answer_group_id IN (
             SELECT DISTINCT answer_group_id
             FROM $table_campaign_answers
             WHERE campaign_id = %d
@@ -163,12 +79,20 @@ function analyzeEmployeesData($wpdb, $campaign_id, $questions_data, $table_campa
     $employees_data = [];
     foreach ($employee_answers as $row) {
         $group_id = $row->answer_group_id;
+        $value = (int)$row->answer_value;
         
         if (!isset($employees_data[$group_id])) {
-            $employees_data[$group_id] = initializeEmployeeData($group_id);
+            $employees_data[$group_id] = [
+                'total_responses' => 0,
+                'satisfied_count' => 0,
+                'open_answer' => null
+            ];
         }
         
-        processEmployeeAnswer($employees_data[$group_id], $row, $questions_data);
+        $employees_data[$group_id]['total_responses']++;
+        if ($value >= 4) {
+            $employees_data[$group_id]['satisfied_count']++;
+        }
     }
 
     foreach ($open_answers as $open) {
@@ -177,73 +101,44 @@ function analyzeEmployeesData($wpdb, $campaign_id, $questions_data, $table_campa
         }
     }
 
-    return $employees_data;
-}
-
-/**
- * Calcule les scores de risque et identifie les collaborateurs à risque
- */
-function calculateRiskScores($employees_data)
-{
     $at_risk_employees = [];
-    $satisfaction_scores = [];
-    
-    foreach ($employees_data as &$employee) {
-        if ($employee['response_count'] > 0 && $employee['max_possible_score'] > 0) {
-            $employee['average_score'] = round($employee['total_score'] / $employee['response_count'], 2);
-            $employee['satisfaction_percentage'] = round(($employee['total_score'] / $employee['max_possible_score']) * 100, 2);
-
-
-            $low_score_ratio = $employee['low_scores_count'] / $employee['response_count'];
-            $risk_score = (10 - ($employee['satisfaction_percentage'] / 10)) + (10 * $low_score_ratio);
-            $risk_score = max(0, min(10, $risk_score));
-            $employee['risk_score'] = round($risk_score, 2);
-            $satisfaction_scores[] = $employee['satisfaction_percentage'];
-
-            if ($employee['satisfaction_percentage'] < 75 || $employee['risk_score'] > 3) {
+    foreach ($employees_data as $group_id => $employee) {
+        if ($employee['total_responses'] > 0) {
+            $satisfaction = round(($employee['satisfied_count'] / $employee['total_responses']) * 100, 2);
+            
+            if ($satisfaction < 75) {
                 $at_risk_employees[] = [
-                    'anonymous_user_id' => $employee['answer_group_id'],
-                    'satisfaction_percentage' => $employee['satisfaction_percentage'],
-                    'risk_score' => $employee['risk_score'],
-                    'low_scores_count' => $employee['low_scores_count'],
-                    'total_responses' => $employee['response_count'],
-                    'critical_themes' => $employee['critical_themes'],
-                    'open_answer' => $employee['open_answer'] ?? null
+                    'anonymous_user_id' => $group_id,
+                    'satisfaction_percentage' => $satisfaction,
+                    'total_responses' => $employee['total_responses'],
+                    'open_answer' => $employee['open_answer']
                 ];
             }
         }
     }
-    unset($employee);
 
-    usort($at_risk_employees, function ($a, $b) {
-        return $b['risk_score'] <=> $a['risk_score'];
-    });
-
-    return ['at_risk_employees' => $at_risk_employees, 'satisfaction_scores' => $satisfaction_scores];
+    return [
+        'employees_data' => $employees_data,
+        'at_risk_employees' => $at_risk_employees
+    ];
 }
 
-/**
- * Calcule la distribution globale des réponses
- */
-function calculateGlobalDistribution($questions_data)
+function calculateGlobalDistribution($questions_analysis)
 {
     $global_distribution = [];
-    foreach ($questions_data as $question) {
+    foreach ($questions_analysis as $question) {
         foreach ($question['answers'] as $answer) {
-            $score = $answer['score'];
+            $score = $answer->value;
             if (!isset($global_distribution[$score])) {
                 $global_distribution[$score] = 0;
             }
-            $global_distribution[$score] += $answer['count'];
+            $global_distribution[$score] += $answer->numberAnswered;
         }
     }
     
     $global_distribution_array = [];
     foreach ($global_distribution as $score => $count) {
-        $global_distribution_array[] = [
-            'score' => $score,
-            'count' => $count
-        ];
+        $global_distribution_array[] = ['score' => $score, 'count' => $count];
     }
     usort($global_distribution_array, function ($a, $b) {
         return $b['score'] <=> $a['score'];
@@ -252,187 +147,62 @@ function calculateGlobalDistribution($questions_data)
     return $global_distribution_array;
 }
 
-/**
- * Calcule l'analyse par thème
- */
-function calculateThemesAnalysis($questions_data)
-{
-    $themes_stats = [];
-    
-    foreach ($questions_data as $question) {
-        $theme_id = $question['theme_id'];
-        
-        if (!isset($themes_stats[$theme_id])) {
-            $themes_stats[$theme_id] = [
-                'theme_id' => $theme_id,
-                'theme_name' => $question['theme_name'],
-                'total_weighted_sum' => 0,
-                'total_responses' => 0,
-                'total_max_score' => 0,
-                'low_score_questions_count' => 0,
-                'questions_count' => 0
-            ];
-        }
-        
-        $themes_stats[$theme_id]['total_weighted_sum'] += $question['weighted_sum'];
-        $themes_stats[$theme_id]['total_responses'] += $question['total_responses'];
-        $themes_stats[$theme_id]['total_max_score'] += ($question['max_possible_score'] * $question['total_responses']);
-        $themes_stats[$theme_id]['questions_count']++;
-        
-        if ($question['requires_action']) {
-            $themes_stats[$theme_id]['low_score_questions_count']++;
-        }
-    }
-    
-    $themes_analysis = [];
-    foreach ($themes_stats as $theme) {
-        $average_score = 0;
-        $satisfaction_percentage = 0;
-        
-        if ($theme['total_responses'] > 0 && $theme['total_max_score'] > 0) {
-            $average_score = round($theme['total_weighted_sum'] / $theme['total_responses'], 2);
-            $satisfaction_percentage = round(($theme['total_weighted_sum'] / $theme['total_max_score']) * 100, 2);
-        }
-        
-        $themes_analysis[] = [
-            'theme_id' => $theme['theme_id'],
-            'theme_name' => $theme['theme_name'],
-            'average_score' => $average_score,
-            'satisfaction_percentage' => $satisfaction_percentage,
-            'requires_action' => $satisfaction_percentage < 75,
-            'low_score_questions_count' => $theme['low_score_questions_count'],
-            'total_questions' => $theme['questions_count']
-        ];
-    }
-    
-    usort($themes_analysis, function ($a, $b) {
-        return $a['satisfaction_percentage'] <=> $b['satisfaction_percentage'];
-    });
-
-    return $themes_analysis;
-}
-
 function apiGetCampaignAnalysis(WP_REST_Request $request)
 {
     xpeapp_log_request($request);
 
     global $wpdb;
-
     $params = $request->get_params();
     $campaign_id = $params['id'];
 
-    $result = [];
-    // Toujours retourner un tableau, même en cas d'erreur ou campagne non trouvée
     if (empty($campaign_id)) {
         xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - No parameters");
-        $result = [];
-    } else {
-        try {
-            $table_campaign = $wpdb->prefix . 'qvst_campaign';
-            $table_campaign_answers = $wpdb->prefix . 'qvst_campaign_answers';
-            $table_campaign_questions = $wpdb->prefix . 'qvst_campaign_questions';
-            $table_answers = $wpdb->prefix . 'qvst_answers';
-            $table_questions = $wpdb->prefix . 'qvst_questions';
-            $table_theme = $wpdb->prefix . 'qvst_theme';
-            $table_open_answers = $wpdb->prefix . 'qvst_open_answers';
-
-            // Vérifier que la campagne existe (requête préparée)
-            $campaign = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_campaign WHERE id=%d", $campaign_id));
-            if (empty($campaign)) {
-                xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - No campaign found for id $campaign_id");
-                $result = [];
-            } else {
-                // Récupérer les thèmes de la campagne
-                $themes_raw = getThemesForCampaign($campaign_id);
-                $themes = [];
-                foreach ($themes_raw as $theme) {
-                    $themes[] = [
-                        'theme_id' => $theme->id,
-                        'theme_name' => $theme->name
-                    ];
-                }
-
-                // Analyse par question
-                $questions_result = analyzeQuestionsData(
-                    $wpdb,
-                    $campaign_id,
-                    $table_campaign_questions,
-                    $table_questions,
-                    $table_theme,
-                    $table_answers,
-                    $table_campaign_answers
-                );
-                $questions_data = $questions_result['questions_data'];
-                $total_questions = $questions_result['total_questions'];
-
-                // Analyse par collaborateur
-                $employees_data = analyzeEmployeesData(
-                    $wpdb,
-                    $campaign_id,
-                    $questions_data,
-                    $table_campaign_answers,
-                    $table_answers,
-                    $table_open_answers
-                );
-
-                // Calcul des scores de risque
-                $risk_result = calculateRiskScores($employees_data);
-                $at_risk_employees = $risk_result['at_risk_employees'];
-                $satisfaction_scores = $risk_result['satisfaction_scores'];
-
-                // Statistiques globales
-                $total_respondents = count($employees_data);
-                $average_satisfaction = $total_respondents > 0
-                    ? round(array_sum($satisfaction_scores) / count($satisfaction_scores), 2)
-                    : 0;
-
-                // Questions nécessitant une action
-                $questions_requiring_action = array_values(array_filter($questions_data, function ($q) {
-                    return $q['requires_action'];
-                }));
-
-                // Distribution globale
-                $global_distribution_array = calculateGlobalDistribution($questions_data);
-
-                // Analyse par thème
-                $themes_analysis = calculateThemesAnalysis($questions_data);
-
-                // Helper to always return a list (never null)
-                $ensure_list = function($v) {
-                    return is_array($v) ? array_values($v) : [];
-                };
-
-                // Helper to always return a float (double)
-                $ensure_double = function($v) {
-                    return is_numeric($v) ? (float)$v : 0.0;
-                };
-
-                // Always include all expected keys, even if empty
-                $result = [
-                    'campaign_id' => (int)$campaign_id,
-                    'campaign_name' => $campaign->name,
-                    'campaign_status' => $campaign->status,
-                    'start_date' => $campaign->start_date,
-                    'end_date' => $campaign->end_date,
-                    'themes' => $ensure_list($themes),
-                    'global_stats' => [
-                        'total_respondents' => (int)$total_respondents,
-                        'total_questions' => (int)$total_questions,
-                        'average_satisfaction' => $ensure_double($average_satisfaction),
-                        'requires_action' => $ensure_double($average_satisfaction) < 75.0,
-                        'at_risk_count' => (int)count($at_risk_employees)
-                    ],
-                    'global_distribution' => $ensure_list($global_distribution_array),
-                    'themes_analysis' => $ensure_list($themes_analysis),
-                    'questions_analysis' => $ensure_list(array_values($questions_data)),
-                    'questions_requiring_action' => $ensure_list($questions_requiring_action),
-                    'at_risk_employees' => $ensure_list($at_risk_employees)
-                ];
-            }
-        } catch (\Throwable $th) {
-            xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Error: " . $th->getMessage());
-            $result = [];
-        }
+        return [];
     }
-    return $result;
+
+    try {
+        $stats_request = new WP_REST_Request('GET', '/qvst/campaigns/{id}/stats');
+        $stats_request->set_param('id', $campaign_id);
+        $stats_response = api_get_qvst_stats_by_campaign_id($stats_request);
+        
+        if (is_wp_error($stats_response)) {
+            xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Stats error: " . $stats_response->get_error_message());
+            return [];
+        }
+
+        $stats_data = $stats_response->get_data();
+        
+        $question_results = calculateQuestionSatisfaction($stats_data);
+        $employee_results = analyzeEmployeesAtRisk($wpdb, $campaign_id);
+        $global_distribution_array = calculateGlobalDistribution($question_results['questions_analysis']);
+
+        $total_questions = count($question_results['questions_analysis']);
+        $average_satisfaction = $total_questions > 0 
+            ? round($question_results['total_satisfaction'] / $total_questions, 2) 
+            : 0;
+
+        return [
+            'campaign_id' => (int)$campaign_id,
+            'campaign_name' => $stats_data['campaignName'],
+            'campaign_status' => $stats_data['campaignStatus'],
+            'start_date' => $stats_data['startDate'],
+            'end_date' => $stats_data['endDate'],
+            'themes' => $stats_data['themes'],
+            'global_stats' => [
+                'total_respondents' => count($employee_results['employees_data']),
+                'total_questions' => $total_questions,
+                'average_satisfaction' => $average_satisfaction,
+                'requires_action' => $average_satisfaction < 75.0,
+                'at_risk_count' => count($employee_results['at_risk_employees'])
+            ],
+            'global_distribution' => $global_distribution_array,
+            'questions_analysis' => $question_results['questions_analysis'],
+            'questions_requiring_action' => array_values($question_results['questions_requiring_action']),
+            'at_risk_employees' => $employee_results['at_risk_employees']
+        ];
+
+    } catch (\Throwable $th) {
+        xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Error: " . $th->getMessage());
+        return [];
+    }
 }
