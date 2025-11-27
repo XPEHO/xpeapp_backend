@@ -23,8 +23,8 @@ function calculateQuestionSatisfaction($stats_data)
             }
         }
         
-        $satisfaction_percentage = $total_responses > 0 
-            ? round(($satisfied_count / $total_responses) * 100, 2) 
+        $satisfaction_percentage = $total_responses > 0
+            ? round(($satisfied_count / $total_responses) * 100, 2)
             : 0;
         
         $question_data = [
@@ -58,7 +58,7 @@ function analyzeEmployeesAtRisk($wpdb, $campaign_id)
     $table_open_answers = $wpdb->prefix . 'qvst_open_answers';
 
     $employee_answers = $wpdb->get_results($wpdb->prepare("
-        SELECT 
+        SELECT
             ca.answer_group_id,
             a.value as answer_value
         FROM $table_campaign_answers ca
@@ -154,55 +154,55 @@ function apiGetCampaignAnalysis(WP_REST_Request $request)
     global $wpdb;
     $params = $request->get_params();
     $campaign_id = $params['id'];
+    $result = [];
 
     if (empty($campaign_id)) {
         xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - No parameters");
-        return [];
-    }
+    } else {
+        try {
+            $stats_request = new WP_REST_Request('GET', '/qvst/campaigns/{id}/stats');
+            $stats_request->set_param('id', $campaign_id);
+            $stats_response = api_get_qvst_stats_by_campaign_id($stats_request);
+            
+            if (!is_wp_error($stats_response)) {
+                $stats_data = $stats_response->get_data();
+                
+                $question_results = calculateQuestionSatisfaction($stats_data);
+                $employee_results = analyzeEmployeesAtRisk($wpdb, $campaign_id);
+                $global_distribution_array = calculateGlobalDistribution($question_results['questions_analysis']);
 
-    try {
-        $stats_request = new WP_REST_Request('GET', '/qvst/campaigns/{id}/stats');
-        $stats_request->set_param('id', $campaign_id);
-        $stats_response = api_get_qvst_stats_by_campaign_id($stats_request);
-        
-        if (is_wp_error($stats_response)) {
-            xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Stats error: " . $stats_response->get_error_message());
-            return [];
+                $total_questions = count($question_results['questions_analysis']);
+                $average_satisfaction = $total_questions > 0
+                    ? round($question_results['total_satisfaction'] / $total_questions, 2)
+                    : 0;
+
+                $result = [
+                    'campaign_id' => (int)$campaign_id,
+                    'campaign_name' => $stats_data['campaignName'],
+                    'campaign_status' => $stats_data['campaignStatus'],
+                    'start_date' => $stats_data['startDate'],
+                    'end_date' => $stats_data['endDate'],
+                    'themes' => $stats_data['themes'],
+                    'global_stats' => [
+                        'total_respondents' => count($employee_results['employees_data']),
+                        'total_questions' => $total_questions,
+                        'average_satisfaction' => $average_satisfaction,
+                        'requires_action' => $average_satisfaction < 75.0,
+                        'at_risk_count' => count($employee_results['at_risk_employees'])
+                    ],
+                    'global_distribution' => $global_distribution_array,
+                    'questions_analysis' => $question_results['questions_analysis'],
+                    'questions_requiring_action' => array_values($question_results['questions_requiring_action']),
+                    'at_risk_employees' => $employee_results['at_risk_employees']
+                ];
+            } else {
+                xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Stats error: " . $stats_response->get_error_message());
+            }
+
+        } catch (\Throwable $th) {
+            xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Error: " . $th->getMessage());
         }
-
-        $stats_data = $stats_response->get_data();
-        
-        $question_results = calculateQuestionSatisfaction($stats_data);
-        $employee_results = analyzeEmployeesAtRisk($wpdb, $campaign_id);
-        $global_distribution_array = calculateGlobalDistribution($question_results['questions_analysis']);
-
-        $total_questions = count($question_results['questions_analysis']);
-        $average_satisfaction = $total_questions > 0 
-            ? round($question_results['total_satisfaction'] / $total_questions, 2) 
-            : 0;
-
-        return [
-            'campaign_id' => (int)$campaign_id,
-            'campaign_name' => $stats_data['campaignName'],
-            'campaign_status' => $stats_data['campaignStatus'],
-            'start_date' => $stats_data['startDate'],
-            'end_date' => $stats_data['endDate'],
-            'themes' => $stats_data['themes'],
-            'global_stats' => [
-                'total_respondents' => count($employee_results['employees_data']),
-                'total_questions' => $total_questions,
-                'average_satisfaction' => $average_satisfaction,
-                'requires_action' => $average_satisfaction < 75.0,
-                'at_risk_count' => count($employee_results['at_risk_employees'])
-            ],
-            'global_distribution' => $global_distribution_array,
-            'questions_analysis' => $question_results['questions_analysis'],
-            'questions_requiring_action' => array_values($question_results['questions_requiring_action']),
-            'at_risk_employees' => $employee_results['at_risk_employees']
-        ];
-
-    } catch (\Throwable $th) {
-        xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Error: " . $th->getMessage());
-        return [];
     }
+
+    return $result;
 }
