@@ -22,6 +22,9 @@ function api_update_campaign_status(WP_REST_Request $request)
 			if (empty($campaign)) {
 				return new WP_Error('noID', __('No campaign found', 'QVST'));
 			} else {
+				// Store old status to detect DRAFT -> OPEN transition
+				$old_status = $campaign->status;
+				
 				// Update status of the campaign with status in the body and action if the status is 'CLOSED'
 				if ($body->status == 'ARCHIVED') {
 					$wpdb->update(
@@ -45,6 +48,24 @@ function api_update_campaign_status(WP_REST_Request $request)
 						)
 					);
 				}
+				
+			// Send notification when campaign moves from DRAFT to OPEN
+			if ($old_status === 'DRAFT' && $body->status === 'OPEN') {
+				// Immediate notification
+				send_fcm_notification(
+					'Nouvelle campagne QVST !',
+					'Donnez votre avis dans la nouvelle campagne QVST !'
+				);
+				xpeapp_log(Xpeapp_Log_Level::Info, "Sent notification for campaign opening: {$campaign->name}");
+				
+				// Schedule reminder in 7 days
+				wp_schedule_single_event(
+					time() + (7 * DAY_IN_SECONDS),
+					'xpeapp_campaign_reminder',
+					array($params['id'])
+				);
+				xpeapp_log(Xpeapp_Log_Level::Info, "Scheduled reminder in 7 days for campaign: {$campaign->name}");
+			}
 			}
 
 			return new WP_REST_Response(null, 201);
