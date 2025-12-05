@@ -52,7 +52,33 @@ services:
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_HOME', 'http://localhost:7830');
         define('WP_SITEURL', 'http://localhost:7830');
-    
+
+      # Firebase Admin SDK
+      TYPE: ${TYPE}
+      PROJECT_ID: ${PROJECT_ID}
+      PRIVATE_KEY_ID: ${PRIVATE_KEY_ID}
+      PRIVATE_KEY: ${PRIVATE_KEY}
+      CLIENT_EMAIL: ${CLIENT_EMAIL}
+      CLIENT_ID: ${CLIENT_ID}
+      AUTH_URI: ${AUTH_URI}
+      TOKEN_URI: ${TOKEN_URI}
+      AUTH_PROVIDER_X509_CERT_URL: ${AUTH_PROVIDER_X509_CERT_URL}
+      CLIENT_X509_CERT_URL: ${CLIENT_X509_CERT_URL}
+
+  cron:
+      container_name: xpeapp_wordpress_cron
+      image: alpine:latest
+      depends_on:
+        - wordpress
+      restart: always
+      entrypoint: /bin/sh
+      command: >
+        -c "
+        apk add --no-cache curl &&
+        echo '* * * * * curl -s http://xpeapp_wordpress_uat/wp-cron.php?doing_wp_cron >/dev/null 2>&1' > /etc/crontabs/root &&
+        crond -f -l 2
+        "
+
 
 volumes:
   xpeapp_wordpress_db:

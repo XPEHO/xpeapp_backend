@@ -115,6 +115,9 @@ define('WP_DEBUG_DISPLAY', getenv_docker('DEBUG', false));
 
 /* Add any custom values between this line and the "stop editing" line. */
 
+// Désactiver le cron WordPress (on utilise un vrai cron système)
+define('DISABLE_WP_CRON', true);
+
 define('FORCE_SSL_ADMIN', false);
 // If we're behind a proxy server and using HTTPS, we need to alert WordPress of that fact
 // see also https://wordpress.org/support/article/administration-over-ssl/#using-a-reverse-proxy
