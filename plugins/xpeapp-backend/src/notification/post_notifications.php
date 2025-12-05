@@ -53,18 +53,18 @@ function api_post_notification(WP_REST_Request $request)
 
 		$messaging->send($cloudMessage);
 
-		xpeapp_insert_fcm_send([
+		xpeappInsertFcmSend([
 			'title' => $title,
 			'message' => $message,
 			'status' => 'sent',
 		]);
-
-		return createSuccessResponse(null, 200);
 	} catch (\Throwable $e) {
 		xpeapp_log(Xpeapp_Log_Level::Error, 'FCM send failed: ' . $e->getMessage());
 		logNotificationAttempt($params, 'failed', $e->getMessage());
 		return createErrorResponse('notification_send_failed', 'Notification send failed', 500);
 	}
+
+	return createSuccessResponse(null, 200);
 }
 
 function buildServiceAccountData()
@@ -98,7 +98,7 @@ function buildServiceAccountData()
 
 function logNotificationAttempt($params, $status, $error = null)
 {
-	xpeapp_insert_fcm_send([
+	xpeappInsertFcmSend([
 		'title' => $params['title'] ?? '',
 		'message' => $params['message'] ?? '',
 		'status' => $status,

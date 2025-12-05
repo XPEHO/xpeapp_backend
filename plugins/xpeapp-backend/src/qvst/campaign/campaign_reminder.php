@@ -3,7 +3,7 @@
 /**
  * Envoyer une notification de rappel pour une campagne
  */
-function send_campaign_reminder($campaign_id)
+function sendCampaignReminder($campaign_id)
 {
 	global $wpdb;
 	$table_name = $wpdb->prefix . 'qvst_campaign';
@@ -11,7 +11,7 @@ function send_campaign_reminder($campaign_id)
 	$campaign = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $campaign_id));
 
 	if ($campaign && $campaign->status === 'OPEN') {
-		send_fcm_notification(
+		sendFcmNotification(
 			'Rappel campagne QVST !',
 			'Dernier jour, n\'oubliez pas de donner votre avis dans la campagne QVST !'
 		);
@@ -22,4 +22,4 @@ function send_campaign_reminder($campaign_id)
 }
 
 // Hook pour l'événement programmé
-add_action('xpeapp_campaign_reminder', 'send_campaign_reminder');
+add_action('xpeapp_campaign_reminder', 'sendCampaignReminder');

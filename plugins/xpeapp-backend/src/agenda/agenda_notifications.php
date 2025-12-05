@@ -3,7 +3,7 @@
 /**
  * Vérifier et envoyer les notifications pour les anniversaires du jour
  */
-function check_and_send_birthday_notifications()
+function checkAndSendBirthdayNotifications()
 {
 	global $wpdb;
 	$table_name = $wpdb->prefix . 'agenda_birthday';
@@ -22,7 +22,7 @@ function check_and_send_birthday_notifications()
 	);
 	
 	foreach ($birthdays_today as $birthday) {
-		send_fcm_notification(
+		sendFcmNotification(
 			"Joyeux anniversaire !",
 			"Aujourd'hui c'est l'anniversaire de {$birthday->first_name} !"
 		);
@@ -33,7 +33,7 @@ function check_and_send_birthday_notifications()
 /**
  * Vérifier et envoyer les notifications pour les événements du jour
  */
-function check_and_send_event_notifications()
+function checkAndSendEventNotifications()
 {
 	global $wpdb;
 	$table_name = $wpdb->prefix . 'agenda_events';
@@ -49,7 +49,7 @@ function check_and_send_event_notifications()
 	);
 	
 	foreach ($events_today as $event) {
-		send_fcm_notification(
+		sendFcmNotification(
 			"Événement aujourd'hui !",
 			"{$event->title}"
 		);
@@ -73,8 +73,8 @@ function schedule_daily_notifications()
 add_action('wp', 'schedule_daily_notifications');
 
 // Hooks pour les événements programmés
-add_action('xpeapp_check_birthdays', 'check_and_send_birthday_notifications');
-add_action('xpeapp_check_events', 'check_and_send_event_notifications');
+add_action('xpeapp_check_birthdays', 'checkAndSendBirthdayNotifications');
+add_action('xpeapp_check_events', 'checkAndSendEventNotifications');
 
 // Cleanup lors de la désactivation du plugin
 register_deactivation_hook(__FILE__, function() {

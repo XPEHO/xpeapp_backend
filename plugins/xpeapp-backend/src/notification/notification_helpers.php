@@ -2,13 +2,12 @@
 
 /**
  * Send a notification via the internal notifications endpoint
- * 
  * @param string $title Notification title
  * @param string $message Notification message
  * @param string $redirection Optional redirection action (default: OPEN_XPEAPP)
  * @return bool True if notification sent successfully, false otherwise
  */
-function send_fcm_notification($title, $message, $redirection = 'OPEN_XPEAPP')
+function sendFcmNotification($title, $message, $redirection = 'OPEN_XPEAPP')
 {
 	// Prepare notification data
 	$notification_data = buildServiceAccountData();
@@ -38,7 +37,7 @@ function send_fcm_notification($title, $message, $redirection = 'OPEN_XPEAPP')
 
 		$messaging->send($cloudMessage);
 
-		xpeapp_insert_fcm_send([
+		xpeappInsertFcmSend([
 			'title' => $title,
 			'message' => $message,
 			'status' => 'sent',
@@ -48,7 +47,7 @@ function send_fcm_notification($title, $message, $redirection = 'OPEN_XPEAPP')
 		return true;
 	} catch (\Throwable $e) {
 		xpeapp_log(Xpeapp_Log_Level::Error, 'FCM send failed: ' . $e->getMessage());
-		xpeapp_insert_fcm_send([
+		xpeappInsertFcmSend([
 			'title' => $title,
 			'message' => $message,
 			'status' => 'failed',

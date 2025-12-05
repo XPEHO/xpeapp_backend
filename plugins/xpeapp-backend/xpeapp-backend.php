@@ -17,12 +17,12 @@ require 'vendor/autoload.php';
 
 include 'src/logging.php';
 include 'src/acf.php';
-include 'src/notification/fcm_log.php';
-include 'src/notification/notification_helpers.php';
+include_once 'src/notification/fcm_log.php';
+include_once 'src/notification/notification_helpers.php';
 
 // Include all endpoints API
 /// Notification XpeApp
-include 'src/notification/post_notifications.php';
+include_once 'src/notification/post_notifications.php';
 
 /// Question
 include 'src/qvst/questions/get_list_of_qvst_questions.php';
@@ -47,7 +47,7 @@ include_once 'src/qvst/campaign/get_campaign_analysis.php';
 include 'src/qvst/campaign/post_campaign.php';
 include 'src/qvst/campaign/put_campaign_status.php';
 include_once 'src/qvst/campaign/get_csv_file_campaign.php';
-include 'src/qvst/campaign/campaign_reminder.php';
+include_once 'src/qvst/campaign/campaign_reminder.php';
 // Utilities for managing multiple themes in a campaign
 include_once 'src/qvst/campaign/campaign_themes_utils.php';
 
