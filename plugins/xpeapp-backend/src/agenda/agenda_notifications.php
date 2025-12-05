@@ -58,7 +58,7 @@ function checkAndSendEventNotifications()
 }
 
 // Programmer les vérifications quotidiennes à 9h du matin
-function schedule_daily_notifications()
+function scheduleDailyNotifications()
 {
 	// Anniversaires
 	if (!wp_next_scheduled('xpeapp_check_birthdays')) {
@@ -70,7 +70,7 @@ function schedule_daily_notifications()
 		wp_schedule_event(strtotime('09:00:00'), 'daily', 'xpeapp_check_events');
 	}
 }
-add_action('wp', 'schedule_daily_notifications');
+add_action('wp', 'scheduleDailyNotifications');
 
 // Hooks pour les événements programmés
 add_action('xpeapp_check_birthdays', 'checkAndSendBirthdayNotifications');

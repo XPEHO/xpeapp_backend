@@ -18,7 +18,7 @@ function api_update_campaign_status(WP_REST_Request $request)
 
 	try {
 		// Check if the campaign exists
-		$campaign = $wpdb->get_row("SELECT * FROM $table_name_campaigns WHERE id=" . $params['id']);
+		$campaign = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name_campaigns WHERE id = %d", $params['id']));
 		if (empty($campaign)) {
 			return new WP_Error('noID', __('No campaign found', 'QVST'));
 		}

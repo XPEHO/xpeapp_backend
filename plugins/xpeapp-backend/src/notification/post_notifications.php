@@ -6,7 +6,7 @@ use Kreait\Firebase\Messaging\CloudMessage;
 include_once __DIR__ . '/../utils.php';
 include_once __DIR__ . '/fcm_log.php';
 
-function api_post_notification(WP_REST_Request $request)
+function apiPostNotification(WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 
@@ -32,10 +32,14 @@ function api_post_notification(WP_REST_Request $request)
 		return createErrorResponse('firebase_credentials_missing', 'Firebase credentials not configured', 500);
 	}
 
-	// Send notification via FCM
+	return sendNotificationToFCM($title, $message, $redirection, $topic, $params);
+}
+
+function sendNotificationToFCM($title, $message, $redirection, $topic, $params)
+{
 	try {
 		$messaging = (new Factory)
-			->withServiceAccount($serviceAccountData)
+			->withServiceAccount(buildServiceAccountData())
 			->createMessaging();
 
 		$cloudMessage = CloudMessage::fromArray([
@@ -58,13 +62,13 @@ function api_post_notification(WP_REST_Request $request)
 			'message' => $message,
 			'status' => 'sent',
 		]);
+
+		return createSuccessResponse(null, 200);
 	} catch (\Throwable $e) {
 		xpeapp_log(Xpeapp_Log_Level::Error, 'FCM send failed: ' . $e->getMessage());
 		logNotificationAttempt($params, 'failed', $e->getMessage());
 		return createErrorResponse('notification_send_failed', 'Notification send failed', 500);
 	}
-
-	return createSuccessResponse(null, 200);
 }
 
 function buildServiceAccountData()

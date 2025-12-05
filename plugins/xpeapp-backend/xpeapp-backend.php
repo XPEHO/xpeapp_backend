@@ -174,14 +174,14 @@ class Xpeapp_Backend {
 			)
 		);
 		// POST NOTIFICATION
-		// In: ???? TODO
-		// Out: Nothing
+		// In: title, message, redirection
+		// Out: Success or error message
 		register_rest_route(
 			$endpoint_namespace,
 			'/notifications',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
-				'callback' => 'api_post_notification',
+				'callback' => 'apiPostNotification',
 				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
