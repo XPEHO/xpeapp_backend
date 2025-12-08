@@ -1,0 +1,22 @@
+default:
+    suites:
+        calculate_satisfaction:
+            paths:
+                - '%paths.base%/features'
+            contexts:
+                - CalculateQuestionSatisfactionContext
+    
+    extensions:
+        Behat\MinkExtension:
+            base_url: 'http://localhost'
+            sessions:
+                default:
+                    symfony2: ~
+
+    formatters:
+        pretty:
+            verbose: true
+            paths: false
+            snippets: false
+        progress:
+            verbose: true
