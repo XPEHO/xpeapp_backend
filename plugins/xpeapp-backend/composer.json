@@ -2,5 +2,21 @@
     "require": {
         "php": "^8.2.0",
         "kreait/firebase-php": "^5.10"
+    },
+    "require-dev": {
+        "behat/behat": "^3.14",
+        "phpunit/phpunit": "^10.5",
+        "behat/mink": "^1.11",
+        "behat/mink-extension": "^2.3"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "": "test/features/bootstrap/"
+        }
+    },
+    "scripts": {
+        "test": "behat --config test/behat.yml",
+        "test:pretty": "behat --config test/behat.yml --format=pretty",
+        "test:suite": "behat --config test/behat.yml --suite=calculate_satisfaction"
     }
 }
