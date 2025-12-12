@@ -1,38 +1,39 @@
 <?php
 
-include_once __DIR__ . '/../../utils.php';
+namespace XpeApp\Agenda\Birthday;
 
-function apiGetBirthdayById(WP_REST_Request $request)
-{
-    xpeapp_log_request($request);
+class BirthdayApi {
+    public static function getBirthdayById(\WP_REST_Request $request)
+    {
+        xpeapp_log_request($request);
 
-    global $wpdb;
+        global $wpdb;
 
-    $table_birthday = $wpdb->prefix . 'agenda_birthday';
+        $table_birthday = $wpdb->prefix . 'agenda_birthday';
 
-    $id = $request->get_param('id');
+        $id = $request->get_param('id');
 
-    // Check if the parameters are valid
-    if (empty($id)) {
-        $response = createErrorResponse('missing_id', 'Missing id parameter', 400);
-    // Check if the birthday exists
-    } elseif (!entityExists($id, $table_birthday)) {
-        $response = createErrorResponse('not_found', 'Birthday not found', 404);
-    } else {
-        // Get the birthday from the database
-        $query = $wpdb->prepare("
-            SELECT *
-            FROM $table_birthday
-            WHERE id = %d
-        ", intval($id));
-        $birthday = $wpdb->get_row($query);
-
-        if ($birthday) {
-            $response = createSuccessResponse($birthday);
+        // Check if the parameters are valid
+        if (empty($id)) {
+            $response = createErrorResponse('missing_id', 'Missing id parameter', 400);
+        // Check if the birthday exists
+        } elseif (!entityExists($id, $table_birthday)) {
+            $response = createErrorResponse('not_found', 'Birthday not found', 404);
         } else {
-            $response = createErrorResponse('db_get_error', 'Could not get birthday', 400);
-        }
-    }
+            // Get the birthday from the database
+            $query = $wpdb->prepare(
+                "SELECT * FROM $table_birthday WHERE id = %d",
+                intval($id)
+            );
+            $birthday = $wpdb->get_row($query);
 
-    return $response;
+            if ($birthday) {
+                $response = createSuccessResponse($birthday);
+            } else {
+                $response = createErrorResponse('db_get_error', 'Could not get birthday', 400);
+            }
+        }
+
+        return $response;
+    }
 }

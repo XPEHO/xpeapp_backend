@@ -1,43 +1,46 @@
 <?php
 
-function apiDeleteEventsTypes(WP_REST_Request $request)
-{
-    xpeapp_log_request($request);
+namespace XpeApp\Agenda\EventsTypes;
 
-    // Utiliser la classe $wpdb pour effectuer une requête SQL
-    global $wpdb;
+class EventsTypesApi {
+    public static function deleteEventsTypes(\WP_REST_Request $request)
+    {
+        xpeapp_log_request($request);
 
-    $table_events_type = $wpdb->prefix . 'agenda_events_type';
-    $table_events = $wpdb->prefix . 'agenda_events';
+        global $wpdb;
 
-    $id = $request->get_param('id');
+        $table_events_type = $wpdb->prefix . 'agenda_events_type';
+        $table_events = $wpdb->prefix . 'agenda_events';
 
-    // Check if the parameters are valid
-    if (empty($id)) {
-        $response = createErrorResponse('missing_id', 'Missing id parameter', 400);
-    // Check if the event type exists
-    } elseif (!entityExists($id, $table_events_type)) {
-        $response = createErrorResponse('not_found', 'Event type not found', 404);
-    // Check if an event has this type assigned
-    } elseif (entityExists($id, $table_events, 'type_id')) {
-        $response = createErrorResponse('event_exists', 'Cannot delete because event type has assigned events', 409);
-    } else {
-        // Delete the event type from the database
-        $result = $wpdb->delete(
-            $table_events_type,
-            array(
-                'id' => intval($id)
-            )
-        );
+        $id = $request->get_param('id');
 
-        // Check if the delete was successful
-        if ($result === false) {
-            $response = createErrorResponse('db_delete_error', 'Could not delete event type', 500);
+        // Check if the parameters are valid
+        if (empty($id)) {
+            $response = createErrorResponse('missing_id', 'Missing id parameter', 400);
+        // Check if the event type exists
+        } elseif (!entityExists($id, $table_events_type)) {
+            $response = createErrorResponse('not_found', 'Event type not found', 404);
+        // Check if an event has this type assigned
+        } elseif (entityExists($id, $table_events, 'type_id')) {
+            $response = createErrorResponse('event_exists', 'Cannot delete because event type has assigned events', 409);
         } else {
-            // Return a 204 response
-            $response = createSuccessResponse('Event type deleted', 204);
-        }
-    }
+            // Delete the event type from the database
+            $result = $wpdb->delete(
+                $table_events_type,
+                array(
+                    'id' => intval($id)
+                )
+            );
 
-    return $response;
+            // Check if the delete was successful
+            if ($result === false) {
+                $response = createErrorResponse('db_delete_error', 'Could not delete event type', 500);
+            } else {
+                // Return a 204 response
+                $response = createSuccessResponse('Event type deleted', 204);
+            }
+        }
+
+        return $response;
+    }
 }

@@ -1,20 +1,22 @@
 <?php
 
-include_once __DIR__ . '/../../utils.php';
+namespace XpeApp\Agenda\Birthday;
 
-function apiGetAllBirthdays(WP_REST_Request $request)
-{
-    xpeapp_log_request($request);
+class BirthdayApi {
+    public static function getAllBirthdays(\WP_REST_Request $request)
+    {
+        xpeapp_log_request($request);
 
-    global $wpdb;
+        global $wpdb;
 
-    $table_birthday = $wpdb->prefix . 'agenda_birthday';
+        $table_birthday = $wpdb->prefix . 'agenda_birthday';
 
-    // Get the page parameter from the query parameters
-    $page = $request->get_param('page');
+        // Get the page parameter from the query parameters
+        $page = $request->get_param('page');
 
-    // Build the query using the utility function
-    $query = buildQueryWithPaginationAndFilters($table_birthday, $page, 'birthdate');
+        // Build the query using the utility function
+        $query = buildQueryWithPaginationAndFilters($table_birthday, $page, 'birthdate');
 
-    return $wpdb->get_results($query);
+        return $wpdb->get_results($query);
+    }
 }

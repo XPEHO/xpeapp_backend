@@ -1,15 +1,16 @@
 <?php
+namespace XpeApp\Agenda\EventsTypes;
 
-function apiGetAllEventsTypes(WP_REST_Request $request)
-{
-    xpeapp_log_request($request);
+class EventsTypesApi {
+    public static function getAllEventsTypes(\WP_REST_Request $request)
+    {
+        xpeapp_log_request($request);
 
-    // Utiliser la classe $wpdb pour effectuer une requête SQL
-    global $wpdb;
+        global $wpdb;
 
-    $table_events_type = $wpdb->prefix . 'agenda_events_type';
+        $table_events_type = $wpdb->prefix . 'agenda_events_type';
 
-    $query = $wpdb->prepare("SELECT * FROM $table_events_type");
-    return $wpdb->get_results($query);
-    
+        $query = $wpdb->prepare("SELECT * FROM $table_events_type");
+        return $wpdb->get_results($query);
+    }
 }
