@@ -1,9 +1,13 @@
 <?php
-
+namespace XpeApp\qvst\campaign;
 /**
  * Envoyer une notification de rappel pour une campagne
  */
-function sendCampaignReminder($campaign_id)
+include_once __DIR__ . '/../../logging.php';
+include_once __DIR__ . '/../../notification/notification_helpers.php';
+
+class campaign_reminder {
+	public static function sendCampaignReminder($campaign_id)
 {
 	global $wpdb;
 	$table_name = $wpdb->prefix . 'qvst_campaign';
@@ -15,11 +19,12 @@ function sendCampaignReminder($campaign_id)
 			'Rappel campagne QVST !',
 			'Dernier jour, n\'oubliez pas de donner votre avis dans la campagne QVST !'
 		);
-		xpeapp_log(Xpeapp_Log_Level::Info, "Sent reminder notification for campaign: {$campaign->name}");
+		xpeapp_log(\Xpeapp_Log_Level::Info, "Sent reminder notification for campaign: {$campaign->name}");
 	} else {
-		xpeapp_log(Xpeapp_Log_Level::Info, "Campaign $campaign_id not found or not OPEN, skipping reminder");
+		xpeapp_log(\Xpeapp_Log_Level::Info, "Campaign $campaign_id not found or not OPEN, skipping reminder");
 	}
+}
 }
 
 // Hook pour l'événement programmé
-add_action('xpeapp_campaign_reminder', 'sendCampaignReminder');
+add_action('xpeapp_campaign_reminder', [campaign_reminder::class, 'sendCampaignReminder']);

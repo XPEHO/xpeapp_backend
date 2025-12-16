@@ -1,8 +1,8 @@
 <?php
 
-namespace XpeApp\Agenda\Birthday;
+namespace XpeApp\agenda\birthday;
 
-class BirthdayApi {
+class get_birthday_by_id {
     public static function getBirthdayById(\WP_REST_Request $request)
     {
         xpeapp_log_request($request);

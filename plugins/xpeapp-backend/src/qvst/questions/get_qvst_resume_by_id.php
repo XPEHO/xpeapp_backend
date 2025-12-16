@@ -1,6 +1,9 @@
 <?php
 
-function api_get_qvst_resume_by_id(WP_REST_Request $request)
+namespace XpeApp\qvst\questions;
+
+class get_qvst_resume_by_id {
+	public static function api_get_qvst_resume_by_id(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	// Utiliser la classe $wpdb pour effectuer une requête SQL
@@ -18,8 +21,8 @@ function api_get_qvst_resume_by_id(WP_REST_Request $request)
 
 	if (!empty($params)) {
 		if (!isset($params['id'])) {
-			xpeapp_log(Xpeapp_Log_Level::Warn, "GET xpeho/v1/qvst/{id}:resume - No ID parameter");
-			return new WP_Error('noID', __('No ID', 'QVST'));
+			xpeapp_log(\Xpeapp_Log_Level::Warn, "GET xpeho/v1/qvst/{id}:resume - No ID parameter");
+			return new \WP_Error('noID', __('No ID', 'QVST'));
 		} else {
 			// renvoyer le congé concerné
 			$question_id = $params['id'];
@@ -51,4 +54,5 @@ function api_get_qvst_resume_by_id(WP_REST_Request $request)
 			return $data;
 		}
 	}
+}
 }

@@ -1,10 +1,8 @@
 <?php
 
-namespace XpeApp\Agenda\Events;
+namespace XpeApp\agenda\events;
 
-error_log('EventsApi loaded');
-
-class EventsApi {
+class get_all_events {
     public static function getAllEvents(\WP_REST_Request $request)
     {
 

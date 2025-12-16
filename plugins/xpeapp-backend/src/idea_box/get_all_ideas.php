@@ -1,8 +1,12 @@
 <?php
+namespace XpeApp\idea_box;
+
+use WP_REST_Request;
 
 include_once __DIR__ . '/../utils.php';
 
-function apiGetAllIdeas(WP_REST_Request $request)
+class get_all_ideas {
+    public static function apiGetAllIdeas(WP_REST_Request $request)
 {
     xpeapp_log_request($request);
 
@@ -23,4 +27,5 @@ function apiGetAllIdeas(WP_REST_Request $request)
     $query = buildQueryWithPaginationAndFilters($table_idea_box, $page, 'created_at', 10, $custom_query);
 
     return $wpdb->get_results($query);
+}
 }

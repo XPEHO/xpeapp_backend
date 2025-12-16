@@ -1,6 +1,9 @@
-<?php 
+<?php
 
-function api_delete_qvst(WP_REST_Request $request)
+namespace XpeApp\qvst\questions;
+
+class delete_qvst_question {
+	public static function api_delete_qvst(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	// Utiliser la classe $wpdb pour effectuer une requête SQL
@@ -15,12 +18,13 @@ function api_delete_qvst(WP_REST_Request $request)
 	$question = $wpdb->get_row("SELECT * FROM $table_name_questions WHERE id=" . $request->get_param('id'));
 
 	if (empty($question)) {
-		return new WP_Error('noID', __('No question found', 'QVST'));
+		return new \WP_Error('noID', __('No question found', 'QVST'));
 	}
 
 	// delete question
 	$wpdb->delete($table_name_questions, array('id' => $question->id));
 
 	// return 204 no content status code if success
-	return new WP_REST_Response(null, 204);
+	return new \WP_REST_Response(null, 204);
+}
 }

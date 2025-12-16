@@ -1,6 +1,9 @@
 <?php
 
-function api_campaign_progress(WP_REST_Request $request) {
+namespace XpeApp\qvst\campaign;
+
+class get_campaign_progress {
+	public static function api_get_campaign_progress(\WP_REST_Request $request) {
 	xpeapp_log_request($request);
 
 	$user_id = $request->get_param('userId');
@@ -48,4 +51,5 @@ function api_campaign_progress(WP_REST_Request $request) {
 	$res = $wpdb->get_results($query);
 
 	return $res;
+}
 }

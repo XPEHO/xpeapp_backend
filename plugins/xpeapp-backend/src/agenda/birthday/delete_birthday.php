@@ -1,8 +1,8 @@
 <?php
 
-namespace XpeApp\Agenda\Birthday;
+namespace XpeApp\agenda\birthday;
 
-class BirthdayApi {
+class delete_birthday {
     public static function deleteBirthday(\WP_REST_Request $request)
     {
         xpeapp_log_request($request);

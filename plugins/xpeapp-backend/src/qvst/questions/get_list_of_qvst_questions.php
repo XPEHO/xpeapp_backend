@@ -1,6 +1,9 @@
 <?php
 
-function api_get_qvst(WP_REST_Request $request)
+namespace XpeApp\qvst\questions;
+
+class get_list_of_qvst_questions {
+	public static function api_get_qvst(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	// Utiliser la classe $wpdb pour effectuer une requête SQL
@@ -81,9 +84,10 @@ function api_get_qvst(WP_REST_Request $request)
 		return $data;
 	} else {
 		xpeapp_log(Xpeapp_Log_Level::Warn, "GET xpeho/v1/qvst No query result found");
-		return new WP_REST_Response(array(
+		return new \WP_REST_Response(array(
 			"error" => "Not Found",
 			"message" => "No QVST have been found"
 		), 404);
 	}
+}
 }

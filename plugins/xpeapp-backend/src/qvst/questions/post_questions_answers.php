@@ -1,7 +1,10 @@
 <?php
 
-// Todo: This duplicates answers if they already have been made, Fix!
-function api_post_qvst_answers(WP_REST_Request $request)
+namespace XpeApp\qvst\questions;
+
+class post_questions_answers {
+	// Todo: This duplicates answers if they already have been made, Fix!
+	public static function api_post_qvst_answers(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	
@@ -79,4 +82,5 @@ function api_post_qvst_answers(WP_REST_Request $request)
 		}
 
 	}
+}
 }

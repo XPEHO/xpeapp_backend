@@ -1,9 +1,10 @@
 <?php
 
+namespace XpeApp\qvst\campaign;
 require_once __DIR__ . '/campaign_themes_utils.php';
 
-
-function api_post_campaign(WP_REST_Request $request)
+class post_campaign {
+	public static function api_post_campaign(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	
@@ -20,17 +21,17 @@ function api_post_campaign(WP_REST_Request $request)
 	// Validation des paramètres
 	$validation_error = null;
 	if (empty($params)) {
-		$validation_error = new WP_Error('noParams', __('No parameters', 'QVST'));
+		$validation_error = new \WP_Error('noParams', __('No parameters', 'QVST'));
 	} elseif (!isset($params['name'])) {
-		$validation_error = new WP_Error('noName', __('No name', 'QVST'));
+		$validation_error = new \WP_Error('noName', __('No name', 'QVST'));
 	} elseif (!isset($params['themes']) || !is_array($params['themes']) || count($params['themes']) === 0) {
-		$validation_error = new WP_Error('noThemes', __('No themes array provided', 'QVST'));
+		$validation_error = new \WP_Error('noThemes', __('No themes array provided', 'QVST'));
 	} elseif (!isset($params['start_date'])) {
-		$validation_error = new WP_Error('noStartDate', __('No start date', 'QVST'));
+		$validation_error = new \WP_Error('noStartDate', __('No start date', 'QVST'));
 	} elseif (!isset($params['end_date'])) {
-		$validation_error = new WP_Error('noEndDate', __('No end date', 'QVST'));
+		$validation_error = new \WP_Error('noEndDate', __('No end date', 'QVST'));
 	} elseif (!isset($params['questions'])) {
-		$validation_error = new WP_Error('noQuestions', __('No questions', 'QVST'));
+		$validation_error = new \WP_Error('noQuestions', __('No questions', 'QVST'));
 	}
 
 	try {
@@ -39,7 +40,7 @@ function api_post_campaign(WP_REST_Request $request)
 			foreach ($params['themes'] as $theme_id) {
 				$theme = $wpdb->get_row("SELECT * FROM $table_name_theme WHERE id=" . intval($theme_id));
 				if (empty($theme)) {
-					$validation_error = new WP_Error('noID', __('No theme found for id ' . $theme_id, 'QVST'));
+					$validation_error = new \WP_Error('noID', __('No theme found for id ' . $theme_id, 'QVST'));
 					break;
 				}
 			}
@@ -80,8 +81,9 @@ function api_post_campaign(WP_REST_Request $request)
 		}
 
 		// return 201 created status code if success
-		return new WP_REST_Response(null, 201);
+		return new \WP_REST_Response(null, 201);
 	} catch (\Throwable $th) {
-		return new WP_Error('error', __('Error', 'QVST'));
+		return new \WP_Error('error', __('Error', 'QVST'));
 	}
+}
 }

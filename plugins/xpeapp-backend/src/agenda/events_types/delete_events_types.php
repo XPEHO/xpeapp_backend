@@ -1,8 +1,8 @@
 <?php
 
-namespace XpeApp\Agenda\EventsTypes;
+namespace XpeApp\agenda\events_types;
 
-class EventsTypesApi {
+class delete_events_types {
     public static function deleteEventsTypes(\WP_REST_Request $request)
     {
         xpeapp_log_request($request);

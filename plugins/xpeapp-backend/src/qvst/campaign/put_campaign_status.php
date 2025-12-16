@@ -1,6 +1,9 @@
 <?php
 
-function api_update_campaign_status(WP_REST_Request $request)
+namespace XpeApp\qvst\campaign;
+
+class put_campaign_status {
+	public static function api_update_campaign_status(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 
@@ -13,14 +16,14 @@ function api_update_campaign_status(WP_REST_Request $request)
 	$body = json_decode($request->get_body());
 
 	if (empty($params) || empty($body)) {
-		return new WP_Error('noParams', __('No parameters or body', 'QVST'));
+		return new \WP_Error('noParams', __('No parameters or body', 'QVST'));
 	}
 
 	try {
 		// Check if the campaign exists
 		$campaign = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name_campaigns WHERE id = %d", $params['id']));
 		if (empty($campaign)) {
-			return new WP_Error('noID', __('No campaign found', 'QVST'));
+			return new \WP_Error('noID', __('No campaign found', 'QVST'));
 		}
 
 		// Store old status to detect DRAFT -> OPEN transition
@@ -56,10 +59,11 @@ function api_update_campaign_status(WP_REST_Request $request)
 			xpeapp_log(Xpeapp_Log_Level::Info, "Scheduled reminder in 7 days for campaign: {$campaign->name}");
 		}
 
-		return new WP_REST_Response(null, 201);
+		return new \WP_REST_Response(null, 201);
 
 	} catch (\Throwable $th) {
 		echo $th;
-		return new WP_Error('error', __('Error', 'QVST'));
+		return new \WP_Error('error', __('Error', 'QVST'));
 	}
+}
 }

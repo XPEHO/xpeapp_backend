@@ -1,8 +1,8 @@
 <?php
 
-namespace XpeApp\Agenda\Events;
+namespace XpeApp\agenda\events;
 
-class EventsApi {
+class post_events {
     public static function postEvents(\WP_REST_Request $request)
     {
         xpeapp_log_request($request);

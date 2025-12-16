@@ -25,82 +25,77 @@ include_once 'src/notification/notification_helpers.php';
 include_once 'src/notification/post_notifications.php';
 
 /// Question
-include 'src/qvst/questions/get_list_of_qvst_questions.php';
-include 'src/qvst/questions/get_qvst_question_by_id.php';
-include 'src/qvst/questions/get_qvst_resume_by_id.php';
-include 'src/qvst/questions/get_qvst_questions_by_theme.php';
-include 'src/qvst/questions/post_qvst_question.php';
-include 'src/qvst/questions/delete_qvst_question.php';
-include 'src/qvst/questions/import_qvst_questions.php';
-include 'src/qvst/questions/get_questions_by_campaign_and_user.php';
-include 'src/qvst/questions/get_questions_by_campaign.php';
-include 'src/qvst/questions/put_qvst_question.php';
-include 'src/qvst/questions/post_questions_answers.php';
-include_once 'src/qvst/questions/post_open_answers.php';
+use XpeApp\qvst\questions\get_list_of_qvst_questions;
+use XpeApp\qvst\questions\get_qvst_question_by_id;
+use XpeApp\qvst\questions\get_qvst_resume_by_id;
+use XpeApp\qvst\questions\get_qvst_questions_by_theme;
+use XpeApp\qvst\questions\post_qvst_question;
+use XpeApp\qvst\questions\delete_qvst_question;
+use XpeApp\qvst\questions\import_qvst_questions;
+use XpeApp\qvst\questions\get_questions_by_campaign_and_user;
+use XpeApp\qvst\questions\get_questions_by_campaign;
+use XpeApp\qvst\questions\put_qvst_question;
+use XpeApp\qvst\questions\post_questions_answers;
+use XpeApp\qvst\questions\post_open_answers;
 
 /// Campaign
-include 'src/qvst/campaign/get_list_of_campaigns.php';
-include 'src/qvst/campaign/get_active_campaign.php';
-include 'src/qvst/campaign/get_campaign_progress.php';
-include 'src/qvst/campaign/get_stats_of_campaign.php';
-include_once 'src/qvst/campaign/get_campaign_analysis.php';
-include 'src/qvst/campaign/post_campaign.php';
-include 'src/qvst/campaign/put_campaign_status.php';
-include_once 'src/qvst/campaign/get_csv_file_campaign.php';
-include_once 'src/qvst/campaign/campaign_reminder.php';
+use XpeApp\qvst\campaign\get_list_of_campaigns;
+use XpeApp\qvst\campaign\get_active_campaign;
+use XpeApp\qvst\campaign\get_campaign_progress;
+use XpeApp\qvst\campaign\get_stats_of_campaign;
+use XpeApp\qvst\campaign\get_campaign_analysis;
+use XpeApp\qvst\campaign\post_campaign;
+use XpeApp\qvst\campaign\put_campaign_status;
+use XpeApp\qvst\campaign\get_csv_file_campaign;
+use XpeApp\qvst\campaign\campaign_reminder;	
 // Utilities for managing multiple themes in a campaign
 include_once 'src/qvst/campaign/campaign_themes_utils.php';
 
 /// Theme
-include 'src/qvst/themes/get_list_of_themes.php';
+use XpeApp\qvst\themes\get_list_of_themes;
 
 /// Answer repository
 include 'src/qvst/answer_repository/get_answers_repo_list.php';
 include 'src/qvst/answer_repository/put_answer_repo.php';
 
 /// User
-include 'src/qvst/user/get_user.php';
-include_once 'src/qvst/user/put_user.php';
-include_once 'src/qvst/user/get_user_infos.php';
-
+use XpeApp\qvst\user\get_user;
+use XpeApp\qvst\user\put_user;
+use XpeApp\qvst\user\get_user_infos;
 // Agenda
- // Events-types
-include_once 'src/agenda/events_types/get_events_types_by_id.php';
-include_once 'src/agenda/events_types/get_all_events_types.php';
-include_once 'src/agenda/events_types/post_events_types.php';
-include_once 'src/agenda/events_types/put_events_types.php';
-include_once 'src/agenda/events_types/delete_events_types.php';
-// Events
-include_once 'src/agenda/events/post_events.php';
-include_once 'src/agenda/events/get_all_events.php';
-include_once 'src/agenda/events/get_events_by_id.php';
-include_once 'src/agenda/events/delete_events.php';
-include_once 'src/agenda/events/put_events.php';
-// Birthday
-include_once 'src/agenda/birthday/post_birthday.php';
-include_once 'src/agenda/birthday/get_all_birthday.php';
-include_once 'src/agenda/birthday/get_birthday_by_id.php';
-include_once 'src/agenda/birthday/delete_birthday.php';
-include_once 'src/agenda/birthday/put_birthday.php';
 // Notifications agenda
 include_once 'src/agenda/agenda_notifications.php';
-// Agenda (using namespaces)
-use XpeApp\Agenda\EventsTypes\EventsTypesApi;
-use XpeApp\Agenda\Events\EventsApi;
-use XpeApp\Agenda\Birthday\BirthdayApi;
+// Event Types
+use XpeApp\agenda\events_types\get_events_types_by_id;
+use XpeApp\agenda\events_types\get_all_events_types;
+use XpeApp\agenda\events_types\post_events_types;
+use XpeApp\agenda\events_types\put_events_types;
+use XpeApp\agenda\events_types\delete_events_types;
+// Events
+use XpeApp\agenda\events\get_all_events;
+use XpeApp\agenda\events\post_events;
+use XpeApp\agenda\events\get_events_by_id;
+use XpeApp\agenda\events\delete_events;
+use XpeApp\agenda\events\put_events;
+// Birthday
+use XpeApp\agenda\birthday\get_all_birthday;
+use XpeApp\agenda\birthday\post_birthday;
+use XpeApp\agenda\birthday\get_birthday_by_id;
+use XpeApp\agenda\birthday\delete_birthday;
+use XpeApp\agenda\birthday\put_birthday;
 
 // Storage
-include_once 'src/storage/post_image.php';
-include_once 'src/storage/get_image.php';
-include_once 'src/storage/get_all_folders_or_images_by_folder.php';
-include_once 'src/storage/delete_image.php';
+use XpeApp\storage\get_all_folders_or_images_by_folder;
+use XpeApp\storage\post_image;
+use XpeApp\storage\delete_image;
+use XpeApp\storage\get_image;
 
 // Idea Box
-include_once 'src/idea_box/post_idea.php';
-include_once 'src/idea_box/get_all_ideas.php';
-include_once 'src/idea_box/get_idea_by_id.php';
-include_once 'src/idea_box/delete_idea_by_id.php';
-include_once 'src/idea_box/put_idea_status.php';
+use XpeApp\idea_box\post_idea;
+use XpeApp\idea_box\get_all_ideas;
+use XpeApp\idea_box\get_idea_by_id;
+use XpeApp\idea_box\put_idea_status;
+use XpeApp\idea_box\delete_idea_by_id;
 
 
 class Xpeapp_Backend {
@@ -171,7 +166,7 @@ class Xpeapp_Backend {
 			'/user',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'api_get_user',
+				'callback' => [get_user::class, 'api_get_user'],
 				'permission_callback' => function () {
 					return $this->secure_endpoint_with_parameter(null);
 				}
@@ -201,7 +196,7 @@ class Xpeapp_Backend {
 			'/qvst',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'api_get_qvst',
+				'callback' => [get_list_of_qvst_questions::class, 'api_get_qvst'],
 				'permission_callback' => function () use ($userQvstParameter) {
 					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
@@ -215,7 +210,7 @@ class Xpeapp_Backend {
 			'/qvst:add',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
-				'callback' => 'api_post_qvst',
+				'callback' => [post_qvst_question::class, 'api_post_qvst'],
 				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
@@ -226,7 +221,7 @@ class Xpeapp_Backend {
 			'/qvst:import',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
-				'callback' => 'api_import_qvst',
+				'callback' => [import_qvst_questions::class, 'api_import_qvst'],
 				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
@@ -239,7 +234,7 @@ class Xpeapp_Backend {
 			$qvst_base . $qvst_id_pattern,
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'api_get_qvst_by_id',
+				'callback' => [get_qvst_question_by_id::class, 'api_get_qvst_by_id'],
 				'permission_callback' => function () use ($userQvstParameter) {
 					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
@@ -250,7 +245,7 @@ class Xpeapp_Backend {
 			$qvst_base . $qvst_id_pattern . ':resume',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'api_get_qvst_resume_by_id',
+				'callback' => [get_qvst_resume_by_id::class, 'api_get_qvst_resume_by_id'],
 				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
@@ -272,7 +267,7 @@ class Xpeapp_Backend {
 			$qvst_base . $qvst_id_pattern . ':delete',
 			array(
 				'methods' => WP_REST_Server::DELETABLE,
-				'callback' => 'api_delete_qvst',
+				'callback' => [delete_qvst_question::class, 'api_delete_qvst'],
 				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
@@ -285,7 +280,7 @@ class Xpeapp_Backend {
 			'/qvst/themes',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'api_get_qvst_themes',
+				'callback' => [get_list_of_themes::class, 'api_get_qvst_themes'],
 				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
@@ -297,7 +292,7 @@ class Xpeapp_Backend {
 			$qvst_base . 'themes/' . $qvst_id_pattern . '/questions',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'api_get_qvst_questions_by_theme_id',
+				'callback' => [get_qvst_questions_by_theme::class, 'api_get_qvst_questions_by_theme_id'],
 				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
@@ -336,7 +331,7 @@ class Xpeapp_Backend {
 			'/qvst/campaigns',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'api_get_campaigns',
+				'callback' => [get_list_of_campaigns::class, 'api_get_campaigns'],
 				'permission_callback' => function () use ($userQvstParameter) {
 					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
@@ -347,7 +342,7 @@ class Xpeapp_Backend {
 			'/qvst/campaigns:add',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
-				'callback' => 'api_post_campaign',
+				'callback' => [post_campaign::class, 'api_post_campaign'],
 				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
@@ -358,7 +353,7 @@ class Xpeapp_Backend {
 			'/qvst/campaigns:active',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'get_open_campaign',
+				'callback' => [get_active_campaign::class, 'get_open_campaign'],
 				'permission_callback' => function () use ($userQvstParameter) {
 					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
@@ -371,7 +366,7 @@ class Xpeapp_Backend {
 			$qvst_campaigns_base . $campaign_id_pattern . ':questions',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'api_get_questions_by_campaign_id',
+				'callback' => [get_questions_by_campaign::class, 'api_get_questions_by_campaign_id'],
 				'permission_callback' => function () use ($userQvstParameter) {
 					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
@@ -382,7 +377,7 @@ class Xpeapp_Backend {
 			$qvst_campaigns_base . $campaign_id_pattern . ':stats',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'api_get_qvst_stats_by_campaign_id',
+				'callback' => [get_stats_of_campaign::class, 'api_get_qvst_stats_by_campaign_id'],
 				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
@@ -393,7 +388,7 @@ class Xpeapp_Backend {
 			$qvst_campaigns_base . $campaign_id_pattern . ':analysis',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'apiGetCampaignAnalysis',
+				'callback' => [get_campaign_analysis::class, 'apiGetCampaignAnalysis'],
 				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
@@ -404,7 +399,7 @@ class Xpeapp_Backend {
 			$qvst_campaigns_base . $campaign_id_pattern . '/status:update',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
-				'callback' => 'api_update_campaign_status',
+				'callback' => [put_campaign_status::class, 'api_update_campaign_status'],
 				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
@@ -415,7 +410,7 @@ class Xpeapp_Backend {
 			$qvst_campaigns_base . $campaign_id_pattern . '/questions',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'api_get_questions_by_campaign_id_and_user_id',
+				'callback' => [get_questions_by_campaign_and_user::class, 'api_get_questions_by_campaign_id_and_user_id'],
 				'permission_callback' => function () use ($userQvstParameter) {
 					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
@@ -426,7 +421,7 @@ class Xpeapp_Backend {
 			$qvst_campaigns_base . $campaign_id_pattern . '/questions:answer',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
-				'callback' => 'api_post_qvst_answers',
+				'callback' => [post_questions_answers::class, 'api_post_qvst_answers'],
 				'permission_callback' => function () use ($userQvstParameter) {
 					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
@@ -437,7 +432,7 @@ class Xpeapp_Backend {
 			'/campaign-progress',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'api_campaign_progress',
+				'callback' => [get_campaign_progress::class, 'api_get_campaign_progress'],
 				'permission_callback' => function () use ($userQvstParameter) {
 					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
@@ -449,7 +444,7 @@ class Xpeapp_Backend {
             '/update-password',
             array(
                 'methods' => WP_REST_Server::EDITABLE,
-                'callback' => 'apiUpdateUserPassword',
+				'callback' => [put_user::class, 'apiUpdateUserPassword'],
                 'permission_callback' => function () use ($editPasswordParameter) {
                     return $this->secure_endpoint_with_parameter($editPasswordParameter);
                 }
@@ -462,7 +457,7 @@ class Xpeapp_Backend {
             '/user-infos',
             array(
                 'methods' => WP_REST_Server::READABLE,
-                'callback' => 'apiGetUserInfos',
+				'callback' => [get_user_infos::class, 'apiGetUserInfos'],
                 'permission_callback' => function () {
                     return $this->secure_endpoint_with_parameter(null);
                 }
@@ -475,7 +470,7 @@ class Xpeapp_Backend {
 			'/qvst/open-answers',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
-				'callback' => 'postOpenAnswers',
+				'callback' => [post_open_answers::class, 'postOpenAnswers'],
 				'permission_callback' => function () use ($userQvstParameter) {
 					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
@@ -488,7 +483,7 @@ class Xpeapp_Backend {
             '/qvst/campaigns/csv',
             array(
                 'methods' => WP_REST_Server::READABLE,
-                'callback' => 'apiGetCsvFileCampaign',
+                'callback' => [get_csv_file_campaign::class, 'apiGetCsvFileCampaign'],
                 'permission_callback' => function () use ($userQvstParameter) {
                     return $this->secure_endpoint_with_parameter($userQvstParameter);
                 }
@@ -510,7 +505,7 @@ class Xpeapp_Backend {
 			$events_types_endpoint_with_id,
 			array(
 				'methods' => \WP_REST_Server::READABLE,
-				'callback' => [EventsTypesApi::class, 'getEventsTypesById'],
+				'callback' => [get_events_types_by_id::class, 'getEventsTypesById'],
 				'permission_callback' => function () use ($userAgenda) {
 					return $this->secure_endpoint_with_parameter($userAgenda);
 				}
@@ -521,7 +516,7 @@ class Xpeapp_Backend {
 			$events_types_endpoint,
 			array(
 				'methods' => \WP_REST_Server::READABLE,
-				'callback' => [EventsTypesApi::class, 'getAllEventsTypes'],
+				'callback' => [get_all_events_types::class, 'getAllEventsTypes'],
 				'permission_callback' => function () use ($userAgenda) {
 					return $this->secure_endpoint_with_parameter($userAgenda);
 				}
@@ -532,7 +527,7 @@ class Xpeapp_Backend {
 			$events_types_endpoint,
 			array(
 				'methods' => \WP_REST_Server::CREATABLE,
-				'callback' => [EventsTypesApi::class, 'postEventsTypes'],
+				'callback' => [post_events_types::class, 'postEventsTypes'],
 				'permission_callback' => function () use ($adminAgenda) {
 					return $this->secure_endpoint_with_parameter($adminAgenda);
 				}
@@ -543,7 +538,7 @@ class Xpeapp_Backend {
 			$events_types_endpoint_with_id,
 			array(
 				'methods' => \WP_REST_Server::EDITABLE,
-				'callback' => [EventsTypesApi::class, 'putEventsTypes'],
+				'callback' => [put_events_types::class, 'putEventsTypes'],
 				'permission_callback' => function () use ($adminAgenda) {
 					return $this->secure_endpoint_with_parameter($adminAgenda);
 				}
@@ -554,7 +549,7 @@ class Xpeapp_Backend {
 			$events_types_endpoint_with_id,
 			array(
 				'methods' => \WP_REST_Server::DELETABLE,
-				'callback' => [EventsTypesApi::class, 'deleteEventsTypes'],
+				'callback' => [delete_events_types::class, 'deleteEventsTypes'],
 				'permission_callback' => function () use ($adminAgenda) {
 					return $this->secure_endpoint_with_parameter($adminAgenda);
 				}
@@ -567,7 +562,7 @@ class Xpeapp_Backend {
 			$events_endpoint,
 			array(
 				'methods' => \WP_REST_Server::CREATABLE,
-				'callback' => [EventsApi::class, 'postEvents'],
+				'callback' => [post_events::class, 'postEvents'],
 				'permission_callback' => function () use ($adminAgenda) {
 					return $this->secure_endpoint_with_parameter($adminAgenda);
 				}
@@ -578,7 +573,7 @@ class Xpeapp_Backend {
 			$events_endpoint,
 			array(
 				'methods' => \WP_REST_Server::READABLE,
-				'callback' => [EventsApi::class, 'getAllEvents'],
+				'callback' => [get_all_events::class, 'getAllEvents'],
 				'permission_callback' => function () use ($userAgenda) {
 					return $this->secure_endpoint_with_parameter($userAgenda);
 				}
@@ -589,7 +584,7 @@ class Xpeapp_Backend {
 			$events_endpoint_with_id,
 			array(
 				'methods' => \WP_REST_Server::READABLE,
-				'callback' => [EventsApi::class, 'getEventsById'],
+				'callback' => [get_events_by_id::class, 'getEventsById'],
 				'permission_callback' => function () use ($userAgenda) {
 					return $this->secure_endpoint_with_parameter($userAgenda);
 				}
@@ -600,7 +595,7 @@ class Xpeapp_Backend {
 			$events_endpoint_with_id,
 			array(
 				'methods' => \WP_REST_Server::DELETABLE,
-				'callback' => [EventsApi::class, 'deleteEvents'],
+				'callback' => [delete_events::class, 'deleteEvents'],
 				'permission_callback' => function () use ($adminAgenda) {
 					return $this->secure_endpoint_with_parameter($adminAgenda);
 				}
@@ -611,7 +606,7 @@ class Xpeapp_Backend {
 			$events_endpoint_with_id,
 			array(
 				'methods' => \WP_REST_Server::EDITABLE,
-				'callback' => [EventsApi::class, 'putEvents'],
+				'callback' => [put_events::class, 'putEvents'],
 				'permission_callback' => function () use ($adminAgenda) {
 					return $this->secure_endpoint_with_parameter($adminAgenda);
 				}
@@ -624,7 +619,7 @@ class Xpeapp_Backend {
 			$birthday_endpoint,
 			array(
 				'methods' => \WP_REST_Server::CREATABLE,
-				'callback' => [BirthdayApi::class, 'postBirthday'],
+				'callback' => [post_birthday::class, 'postBirthday'],
 				'permission_callback' => function () use ($adminAgenda) {
 					return $this->secure_endpoint_with_parameter($adminAgenda);
 				}
@@ -635,7 +630,7 @@ class Xpeapp_Backend {
 			$birthday_endpoint,
 			array(
 				'methods' => \WP_REST_Server::READABLE,
-				'callback' => [BirthdayApi::class, 'getAllBirthdays'],
+				'callback' => [get_all_birthday::class, 'getAllBirthdays'],
 				'permission_callback' => function () use ($userAgenda) {
 					return $this->secure_endpoint_with_parameter($userAgenda);
 				}
@@ -646,7 +641,7 @@ class Xpeapp_Backend {
 			$birthday_endpoint_with_id,
 			array(
 				'methods' => \WP_REST_Server::READABLE,
-				'callback' => [BirthdayApi::class, 'getBirthdayById'],
+				'callback' => [get_birthday_by_id::class, 'getBirthdayById'],
 				'permission_callback' => function () use ($userAgenda) {
 					return $this->secure_endpoint_with_parameter($userAgenda);
 				}
@@ -657,7 +652,7 @@ class Xpeapp_Backend {
 			$birthday_endpoint_with_id,
 			array(
 				'methods' => \WP_REST_Server::DELETABLE,
-				'callback' => [BirthdayApi::class, 'deleteBirthday'],
+				'callback' => [delete_birthday::class, 'deleteBirthday'],
 				'permission_callback' => function () use ($adminAgenda) {
 					return $this->secure_endpoint_with_parameter($adminAgenda);
 				}
@@ -668,7 +663,7 @@ class Xpeapp_Backend {
 			$birthday_endpoint_with_id,
 			array(
 				'methods' => \WP_REST_Server::EDITABLE,
-				'callback' => [BirthdayApi::class, 'putBirthday'],
+				'callback' => [put_birthday::class, 'putBirthday'],
 				'permission_callback' => function () use ($adminAgenda) {
 					return $this->secure_endpoint_with_parameter($adminAgenda);
 				}
@@ -682,7 +677,7 @@ class Xpeapp_Backend {
 			'/image-storage',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
-				'callback' => 'apiPostImage',
+				'callback' => [post_image::class, 'apiPostImage'],
 				'permission_callback' => function () use ($adminImageParameter) {
 					return $this->secure_endpoint_with_parameter($adminImageParameter);
 				}
@@ -694,7 +689,7 @@ class Xpeapp_Backend {
 			'/image-storage/(?P<folder>[^/]+)/(?P<filename>[^/]+)',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'apiGetImage',
+				'callback' => [get_image::class, 'apiGetImage'],
 				'permission_callback' => function () use ($userImageParameter) {
 					return $this->secure_endpoint_with_parameter($userImageParameter);
 				}
@@ -706,7 +701,7 @@ class Xpeapp_Backend {
 			'/image-storage',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'apiGetAllFoldersOrImagesByFolder',
+				'callback' => [get_all_folders_or_images_by_folder::class, 'apiGetAllFoldersOrImagesByFolder'],
 				'permission_callback' => function () use ($userImageParameter) {
 					return $this->secure_endpoint_with_parameter($userImageParameter);
 				}
@@ -719,7 +714,7 @@ class Xpeapp_Backend {
 			'/image-storage/(?P<id>[\d]+)',
 			array(
 				'methods' => WP_REST_Server::DELETABLE,
-				'callback' => 'apiDeleteImage',
+				'callback' => [delete_image::class, 'apiDeleteImage'],
 				'permission_callback' => function () use ($adminImageParameter) {
 					return $this->secure_endpoint_with_parameter($adminImageParameter);
 				}
@@ -733,7 +728,7 @@ class Xpeapp_Backend {
 			'/ideas',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
-				'callback' => 'apiPostIdea',
+				'callback' => [post_idea::class, 'apiPostIdea'],
 				'permission_callback' => function () use ($userOfIdeaBoxParameter) {
 					return $this->secure_endpoint_with_parameter($userOfIdeaBoxParameter);
 				}
@@ -746,7 +741,7 @@ class Xpeapp_Backend {
 			'/ideas',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'apiGetAllIdeas',
+				'callback' => [get_all_ideas::class, 'apiGetAllIdeas'],
 				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
 					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
 				}
@@ -759,7 +754,7 @@ class Xpeapp_Backend {
 			'/ideas/(?P<id>[\d]+)',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => 'apiGetIdeaById',
+				'callback' => [get_idea_by_id::class, 'apiGetIdeaById'],
 				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
 					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
 				}
@@ -772,7 +767,7 @@ class Xpeapp_Backend {
 			'/ideas/(?P<id>[\d]+)',
 			array(
 				'methods' => WP_REST_Server::DELETABLE,
-				'callback' => 'apiDeleteIdea',
+				'callback' => [delete_idea_by_id::class, 'deleteIdeaById'],
 				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
 					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
 				}
@@ -785,7 +780,7 @@ class Xpeapp_Backend {
 			'/ideas/(?P<id>[\d]+)/status',
 			array(
 				'methods' => WP_REST_Server::EDITABLE,
-				'callback' => 'apiPutIdeaStatus',
+				'callback' => [put_idea_status::class, 'apiPutIdeaStatus'],
 				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
 					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
 				}

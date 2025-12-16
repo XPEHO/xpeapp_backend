@@ -1,6 +1,9 @@
 <?php
 
-function postOpenAnswers(WP_REST_Request $request) {
+namespace XpeApp\qvst\questions;
+
+class post_open_answers {
+	public static function postOpenAnswers(\WP_REST_Request $request) {
 
     xpeapp_log_request($request);
     
@@ -17,9 +20,9 @@ function postOpenAnswers(WP_REST_Request $request) {
     $response = null;
 
     if (empty($params)) {
-        $response = new WP_Error('noParams', __('No parameters found', 'QVST'));
+        $response = new \WP_Error('noParams', __('No parameters found', 'QVST'));
     } elseif (!isset($params['text'])) {
-        $response = new WP_Error('noText', __('No text found', 'QVST'));
+        $response = new \WP_Error('noText', __('No text found', 'QVST'));
     } else {
         try {
             $openAnswersToInsert = array(
@@ -34,11 +37,12 @@ function postOpenAnswers(WP_REST_Request $request) {
             );
 
             // return 201 created status code if success
-            $response = new WP_REST_Response(null, 201);
+            $response = new \WP_REST_Response(null, 201);
         } catch (\Throwable $th) {
-            $response = new WP_Error('error', __('Error', 'QVST'));
+            $response = new \WP_Error('error', __('Error', 'QVST'));
         }
     }
 
     return $response;
+}
 }

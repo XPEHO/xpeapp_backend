@@ -75,6 +75,10 @@ You copy the token field and paste it in the header of the request as follows:
 
 After every merge to the main branch, a docker image will be created in packages, you can see it on the package section at the right of the code page of the repository.
 
+## Usage of PSR-4 autoloading standard
+
+The project uses the PSR-4 autoloading standard. You can find a documentation about it [here](https://bookstack.infra.xpeho.com/books/xpeapp/page/autoload-composer-psr-4-pour-les-imports).
+
 ### Use Github action to deploy
 
 You can use the Github action to deploy the project on your server. See [deploy workflow](.github/workflows/deploy.yaml).

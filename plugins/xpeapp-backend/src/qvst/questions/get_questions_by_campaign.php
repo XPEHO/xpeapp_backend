@@ -1,6 +1,9 @@
 <?php
 
-function api_get_questions_by_campaign_id(WP_REST_Request $request)
+namespace XpeApp\qvst\questions;
+
+class get_questions_by_campaign {
+	public static function api_get_questions_by_campaign_id(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	
@@ -17,13 +20,13 @@ function api_get_questions_by_campaign_id(WP_REST_Request $request)
 
 	if (!empty($params)) {
 		if (!isset($params['id'])) {
-			return new WP_Error('noID', __('No ID', 'QVST'));
+			return new \WP_Error('noID', __('No ID', 'QVST'));
 		} else {
 
 			// Get the campaign with the id
 			$campaign = $wpdb->get_row("SELECT * FROM $table_name_campaigns WHERE id=" . $params['id']);
 			if (empty($campaign)) {
-				return new WP_Error('noID', __('No campaign found', 'QVST'));
+				return new \WP_Error('noID', __('No campaign found', 'QVST'));
 			} else {
 
 				// Get the questions of the campaign
@@ -78,4 +81,5 @@ function api_get_questions_by_campaign_id(WP_REST_Request $request)
 			}
 		}
 	}
+}
 }

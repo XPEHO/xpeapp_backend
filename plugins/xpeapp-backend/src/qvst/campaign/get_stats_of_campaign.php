@@ -1,8 +1,10 @@
 <?php
+namespace XpeApp\qvst\campaign;
 
 require_once __DIR__ . '/campaign_themes_utils.php';
 
-function api_get_qvst_stats_by_campaign_id(WP_REST_Request $request)
+class get_stats_of_campaign {
+	public static function api_get_qvst_stats_by_campaign_id(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	
@@ -22,14 +24,14 @@ function api_get_qvst_stats_by_campaign_id(WP_REST_Request $request)
 	$campaign_id = $params['id'];
 
 	if (empty($campaign_id)) {
-		return new WP_Error('noParams', __('No parameters', 'QVST'));
+		return new \WP_Error('noParams', __('No parameters', 'QVST'));
 	}
 
 	try {
 		// Get the campaign with the id
 		$campaign = $wpdb->get_row("SELECT * FROM $table_name_campaigns WHERE id=" . $campaign_id);
 		if (empty($campaign)) {
-			return new WP_Error('noID', __('No campaign found', 'QVST'));
+			return new \WP_Error('noID', __('No campaign found', 'QVST'));
 		}
 		// Get the questions of the campaign 
 		$questionsSql = "
@@ -109,9 +111,10 @@ function api_get_qvst_stats_by_campaign_id(WP_REST_Request $request)
 
 
 		// Return 200 OK status code if success with datas
-		return new WP_REST_Response($data, 200);
+		return new \WP_REST_Response($data, 200);
 	} catch (\Throwable $th) {
 		xpeapp_log(Xpeapp_Log_Level::Error, "");
-		return new WP_Error('error', __('Error', 'QVST'));
+		return new \WP_Error('error', __('Error', 'QVST'));
 	}
+}
 }

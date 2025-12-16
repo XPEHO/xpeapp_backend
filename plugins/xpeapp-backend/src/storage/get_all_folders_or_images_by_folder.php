@@ -1,9 +1,13 @@
 <?php
+namespace XpeApp\storage;
+
+use WP_REST_Request;
 
 include_once __DIR__ . '/../utils.php';
 
-// Fetch all images, optionally filtered by folder
-function apiGetAllFoldersOrImagesByFolder(WP_REST_Request $request) {
+// Fetch all folders or images by folder
+class get_all_folders_or_images_by_folder {
+    public static function apiGetAllFoldersOrImagesByFolder(WP_REST_Request $request) {
 
     xpeapp_log_request($request);
 
@@ -33,4 +37,5 @@ function apiGetAllFoldersOrImagesByFolder(WP_REST_Request $request) {
         }
     }
     return $response;
+    }
 }

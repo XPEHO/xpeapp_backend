@@ -1,8 +1,12 @@
 <?php
+namespace XpeApp\idea_box;
+
+use WP_REST_Request;
 
 include_once __DIR__ . '/../utils.php';
 
-function apiGetIdeaById(WP_REST_Request $request)
+class get_idea_by_id {
+    public static function apiGetIdeaById(WP_REST_Request $request)
 {
     xpeapp_log_request($request);
 
@@ -35,4 +39,5 @@ function apiGetIdeaById(WP_REST_Request $request)
     }
 
     return $response;
+}
 }

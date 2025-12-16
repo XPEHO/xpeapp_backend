@@ -1,7 +1,14 @@
 <?php
+namespace XpeApp\storage;
+
+use WP_REST_Request;
+
 include_once __DIR__ . '/../utils.php';
 
-function apiPostImage(WP_REST_Request $request) {
+// Upload an image to a folder
+
+class post_image {
+    public static function apiPostImage(WP_REST_Request $request) {
 
     xpeapp_log_request($request);
 
@@ -32,4 +39,5 @@ function apiPostImage(WP_REST_Request $request) {
         }
     }
     return $response;
+    }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace XpeApp\Agenda\EventsTypes;
+namespace XpeApp\agenda\events_types;
 
-class EventsTypesApi {
+class get_events_types_by_id {
     public static function getEventsTypesById(\WP_REST_Request $request)
     {
         xpeapp_log_request($request);

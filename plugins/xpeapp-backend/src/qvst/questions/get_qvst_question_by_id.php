@@ -1,6 +1,9 @@
 <?php
 
-function api_get_qvst_by_id(WP_REST_Request $request)
+namespace XpeApp\qvst\questions;
+
+class get_qvst_question_by_id {
+	public static function api_get_qvst_by_id(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 
@@ -17,8 +20,8 @@ function api_get_qvst_by_id(WP_REST_Request $request)
 
 	if (!empty($params)) {
 		if (!isset($params['id'])) {
-			xpeapp_log(Xpeapp_Log_Level::Warn, "GET xpeho/v1/qvst/{id} - No ID parameter");
-			return new WP_Error('noID', __('No ID', 'QVST'));
+			xpeapp_log(\Xpeapp_Log_Level::Warn, "GET xpeho/v1/qvst/{id} - No ID parameter");
+			return new \WP_Error('noID', __('No ID', 'QVST'));
 		} else {
 			// renvoyer le congé concerné
 			$question_id = $params['id'];
@@ -53,9 +56,10 @@ function api_get_qvst_by_id(WP_REST_Request $request)
 				$data['answers'] = $listOfAnswers;
 				return $data;
 			} else {
-				xpeapp_log(Xpeapp_Log_Level::Warn, "GET xpeho/v1/qvst/$question_id - No data found for ID");
-				return new WP_Error('noID', __('No ID', 'QVST'));
+				xpeapp_log(\Xpeapp_Log_Level::Warn, "GET xpeho/v1/qvst/$question_id - No data found for ID");
+				return new \WP_Error('noID', __('No ID', 'QVST'));
 			}
 		}
 	}
+}
 }

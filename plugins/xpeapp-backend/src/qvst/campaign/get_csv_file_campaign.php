@@ -1,7 +1,10 @@
 <?php
+namespace XpeApp\qvst\campaign;
+
 include_once 'get_answer_by_group_id.php';
 
-function apiGetCsvFileCampaign($request) {
+class get_csv_file_campaign {
+	public static function apiGetCsvFileCampaign($request) {
     
     xpeapp_log_request($request);
     
@@ -37,7 +40,7 @@ function apiGetCsvFileCampaign($request) {
 
     // Check if the data is empty
     if (empty($data['answers']) || empty($data['questions'] || empty($data['open_answers']))) {
-        return new WP_Error('noData', __('Aucune donnée trouvée', 'QVST'));
+        return new \WP_Error('noData', __('Aucune donnée trouvée', 'QVST'));
     }
 
     // Name of the CSV file
@@ -92,4 +95,4 @@ function apiGetCsvFileCampaign($request) {
     fclose($file);
     exit();
 }
-
+}

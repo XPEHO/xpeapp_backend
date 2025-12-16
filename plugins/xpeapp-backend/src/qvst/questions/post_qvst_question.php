@@ -1,6 +1,9 @@
 <?php
 
-function api_post_qvst($request)
+namespace XpeApp\qvst\questions;
+
+class post_qvst_question {
+	public static function api_post_qvst(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	// Utiliser la classe $wpdb pour effectuer une requête SQL
@@ -65,4 +68,5 @@ function api_post_qvst($request)
 			return new WP_Error('error', __('Error', 'QVST'));
 		}
 	}
+}
 }

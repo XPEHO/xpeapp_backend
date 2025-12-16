@@ -1,9 +1,14 @@
 <?php
+namespace XpeApp\storage;
+
+use WP_REST_Request;
 
 include_once __DIR__ . '/../utils.php';
 
-// Delete an image by its ID
-function apiDeleteImage(WP_REST_Request $request) {
+// Delete an image by ID
+
+class delete_image {
+    public static function apiDeleteImage(WP_REST_Request $request) {
     
     xpeapp_log_request($request);
 
@@ -24,4 +29,5 @@ function apiDeleteImage(WP_REST_Request $request) {
 		}
 	}
 	return $response;
+}
 }

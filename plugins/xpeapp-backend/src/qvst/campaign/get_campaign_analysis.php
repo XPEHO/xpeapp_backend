@@ -1,5 +1,7 @@
 <?php
+namespace XpeApp\qvst\campaign;
 
+include_once __DIR__ . '/../../logging.php';
 require_once __DIR__ . '/get_stats_of_campaign.php';
 
 function calculateQuestionSatisfaction($stats_data)
@@ -147,7 +149,9 @@ function calculateGlobalDistribution($questions_analysis)
     return $global_distribution_array;
 }
 
-function apiGetCampaignAnalysis(WP_REST_Request $request)
+
+class get_campaign_analysis {
+	public static function apiGetCampaignAnalysis(\WP_REST_Request $request)
 {
     xpeapp_log_request($request);
 
@@ -157,13 +161,12 @@ function apiGetCampaignAnalysis(WP_REST_Request $request)
     $result = [];
 
     if (empty($campaign_id)) {
-        xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - No parameters");
+        xpeapp_log(\Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - No parameters");
     } else {
         try {
-            $stats_request = new WP_REST_Request('GET', '/qvst/campaigns/{id}/stats');
+            $stats_request = new \WP_REST_Request('GET', '/qvst/campaigns/{id}/stats');
             $stats_request->set_param('id', $campaign_id);
-            $stats_response = api_get_qvst_stats_by_campaign_id($stats_request);
-            
+            $stats_response = get_stats_of_campaign::api_get_qvst_stats_by_campaign_id($stats_request);
             if (!is_wp_error($stats_response)) {
                 $stats_data = $stats_response->get_data();
                 
@@ -196,13 +199,14 @@ function apiGetCampaignAnalysis(WP_REST_Request $request)
                     'at_risk_employees' => $employee_results['at_risk_employees']
                 ];
             } else {
-                xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Stats error: " . $stats_response->get_error_message());
+                xpeapp_log(\Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Stats error: " . $stats_response->get_error_message());
             }
 
         } catch (\Throwable $th) {
-            xpeapp_log(Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Error: " . $th->getMessage());
+            xpeapp_log(\Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Error: " . $th->getMessage());
         }
     }
 
     return $result;
+}
 }

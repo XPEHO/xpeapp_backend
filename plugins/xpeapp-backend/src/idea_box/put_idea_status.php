@@ -1,8 +1,12 @@
 <?php
+namespace XpeApp\idea_box;
+
+use WP_REST_Request;
 
 include_once __DIR__ . '/../utils.php';
 
-function apiPutIdeaStatus(WP_REST_Request $request)
+class put_idea_status {
+    public static function apiPutIdeaStatus(WP_REST_Request $request)
 {
     xpeapp_log_request($request);
 
@@ -34,4 +38,5 @@ function apiPutIdeaStatus(WP_REST_Request $request)
     }
 
     return $response;
+}
 }

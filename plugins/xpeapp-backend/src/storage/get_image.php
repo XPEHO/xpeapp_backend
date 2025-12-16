@@ -1,9 +1,14 @@
 <?php
+namespace XpeApp\storage;
+
+use WP_REST_Request;
 
 include_once __DIR__ . '/../utils.php';
 
 // Fetch an image by folder and filename (binary direct)
-function apiGetImage(WP_REST_Request $request) {
+
+class get_image {
+    public static function apiGetImage(\WP_REST_Request $request) {
 
     xpeapp_log_request($request);
 
@@ -47,4 +52,5 @@ function apiGetImage(WP_REST_Request $request) {
         }
     }
     return $response;
+    }
 }

@@ -1,6 +1,9 @@
 <?php
 
-function api_get_qvst_themes(WP_REST_Request $request)
+namespace XpeApp\qvst\themes;
+
+class get_list_of_themes {
+	public static function api_get_qvst_themes(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	
@@ -27,4 +30,5 @@ function api_get_qvst_themes(WP_REST_Request $request)
 		);
 	}
 	return $data;
+}
 }
