@@ -16,7 +16,6 @@ class get_stats_of_campaign {
 	$table_name_campaign_questions = $wpdb->prefix . 'qvst_campaign_questions';
 	$table_name_questions = $wpdb->prefix . 'qvst_questions';
 	$table_name_answers = $wpdb->prefix . 'qvst_answers';
-	$table_name_theme = $wpdb->prefix . 'qvst_theme';
 	$table_name_campaign_answers = $wpdb->prefix . 'qvst_campaign_answers';
 
 	$params = $request->get_params();
@@ -33,7 +32,7 @@ class get_stats_of_campaign {
 		if (empty($campaign)) {
 			return new \WP_Error('noID', __('No campaign found', 'QVST'));
 		}
-		// Get the questions of the campaign 
+		// Get the questions of the campaign
 		$questionsSql = "
 			SELECT 
 				questions.id as 'question_id',
