@@ -19,7 +19,7 @@ COPY plugins/ /var/www/html/wp-content/plugins/
 
 # Lancer la commande composer install pour installer les dépendances de xpeapp-backend
 WORKDIR /var/www/html/wp-content/plugins/xpeapp-backend
-RUN composer update
+RUN composer update && composer dump-autoload -o
 
 # Go back to the root directory
 WORKDIR /var/www/html
