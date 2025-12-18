@@ -3,7 +3,7 @@
 namespace XpeApp\agenda\events;
 
 class GetAllEvents {
-    public static function getAllEvents(\WP_REST_Request $request)
+    public static function ApiGetAllEvents(\WP_REST_Request $request)
     {
 
         error_log('getAllEvents called');

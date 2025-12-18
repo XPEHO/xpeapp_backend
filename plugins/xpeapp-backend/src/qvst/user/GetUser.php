@@ -3,7 +3,7 @@
 namespace XpeApp\qvst\user;
 
 class GetUser {
-	public static function api_get_user(\WP_REST_Request $request)
+	public static function ApiGetUser(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 

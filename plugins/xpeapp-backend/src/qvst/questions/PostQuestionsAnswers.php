@@ -4,7 +4,7 @@ namespace XpeApp\qvst\questions;
 
 class PostQuestionsAnswers {
 	// Todo: This duplicates answers if they already have been made, Fix!
-	public static function api_post_qvst_answers(\WP_REST_Request $request)
+	public static function ApiPostQvstAnswers(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	

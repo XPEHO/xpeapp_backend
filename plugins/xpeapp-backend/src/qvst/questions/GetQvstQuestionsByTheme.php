@@ -3,7 +3,7 @@
 namespace XpeApp\qvst\questions;
 
 class GetQvstQuestionsByTheme {
-	public static function api_get_qvst_questions_by_theme_id(\WP_REST_Request $request)
+	public static function ApiGetQvstQuestionsByThemeId(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	

@@ -7,7 +7,7 @@ include_once __DIR__ . '/../../logging.php';
 include_once __DIR__ . '/../../notification/notification_helpers.php';
 
 class CampaignReminder {
-	public static function sendCampaignReminder($campaign_id)
+	public static function SendCampaignReminder($campaign_id)
 {
 	global $wpdb;
 
@@ -29,4 +29,4 @@ class CampaignReminder {
 }
 
 // Hook pour l'événement programmé
-add_action('xpeapp_CampaignReminder', [CampaignReminder::class, 'sendCampaignReminder']);
+add_action('xpeapp_CampaignReminder', [CampaignReminder::class, 'SendCampaignReminder']);

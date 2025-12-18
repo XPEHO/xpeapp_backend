@@ -8,7 +8,7 @@ include_once __DIR__ . '/../utils.php';
 // Fetch an image by folder and filename (binary direct)
 
 class GetImage {
-    public static function apiGetImage(\WP_REST_Request $request) {
+    public static function ApiGetImage(\WP_REST_Request $request) {
 
     xpeapp_log_request($request);
 

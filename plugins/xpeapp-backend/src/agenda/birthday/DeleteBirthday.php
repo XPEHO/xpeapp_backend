@@ -3,7 +3,7 @@
 namespace XpeApp\agenda\birthday;
 
 class DeleteBirthday {
-    public static function deleteBirthday(\WP_REST_Request $request)
+    public static function ApiDeleteBirthday(\WP_REST_Request $request)
     {
         xpeapp_log_request($request);
 

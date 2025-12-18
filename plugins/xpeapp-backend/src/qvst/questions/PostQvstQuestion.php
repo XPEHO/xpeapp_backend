@@ -3,7 +3,7 @@
 namespace XpeApp\qvst\questions;
 
 class PostQvstQuestion {
-	public static function api_post_qvst(\WP_REST_Request $request)
+	public static function ApiPostQvst(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	// Utiliser la classe $wpdb pour effectuer une requête SQL

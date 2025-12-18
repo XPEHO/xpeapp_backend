@@ -3,7 +3,7 @@
 namespace XpeApp\qvst\questions;
 
 class PutQvstQuestion {
-	public static function api_update_question(\WP_REST_Request $request)
+	public static function ApiUpdateQuestion(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	

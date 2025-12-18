@@ -6,7 +6,7 @@ use WP_REST_Request;
 include_once __DIR__ . '/../utils.php';
 
 class GetIdeaById {
-    public static function apiGetIdeaById(WP_REST_Request $request)
+    public static function ApiGetIdeaById(WP_REST_Request $request)
 {
     xpeapp_log_request($request);
 

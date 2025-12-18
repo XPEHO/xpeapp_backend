@@ -2,7 +2,7 @@
 namespace XpeApp\agenda\events_types;
 
 class GetAllEventsTypes {
-    public static function getAllEventsTypes(\WP_REST_Request $request)
+    public static function ApiGetAllEventsTypes(\WP_REST_Request $request)
     {
         xpeapp_log_request($request);
 

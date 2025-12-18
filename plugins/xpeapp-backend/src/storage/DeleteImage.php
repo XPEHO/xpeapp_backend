@@ -8,7 +8,7 @@ include_once __DIR__ . '/../utils.php';
 // Delete an image by ID
 
 class DeleteImage {
-    public static function apiDeleteImage(WP_REST_Request $request) {
+    public static function ApiDeleteImage(WP_REST_Request $request) {
     
     xpeapp_log_request($request);
 

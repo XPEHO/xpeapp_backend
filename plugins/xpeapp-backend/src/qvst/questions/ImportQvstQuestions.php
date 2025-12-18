@@ -3,7 +3,7 @@
 namespace XpeApp\qvst\questions;
 
 class ImportQvstQuestions {
-	public static function api_import_qvst($request)
+	public static function ApiImportQvst($request)
 {
 	xpeapp_log_request($request);
 

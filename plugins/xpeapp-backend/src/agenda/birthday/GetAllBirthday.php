@@ -3,7 +3,7 @@
 namespace XpeApp\agenda\birthday;
 
 class GetAllBirthday {
-    public static function getAllBirthdays(\WP_REST_Request $request)
+    public static function ApiGetAllBirthdays(\WP_REST_Request $request)
     {
         xpeapp_log_request($request);
 

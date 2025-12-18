@@ -6,7 +6,7 @@ require_once __DIR__ . '/campaign_themes_utils.php';
 class GetListOfCampaigns {
 	// Format results with associated themes
 	// Build query for all campaigns (no filter)
-	public static function api_get_campaigns(\WP_REST_Request $request)
+	public static function ApiGetCampaigns(\WP_REST_Request $request)
 	{
 		xpeapp_log_request($request);
 		global $wpdb;

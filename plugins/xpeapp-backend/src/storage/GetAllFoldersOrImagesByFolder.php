@@ -7,7 +7,7 @@ include_once __DIR__ . '/../utils.php';
 
 // Fetch all folders or images by folder
 class GetAllFoldersOrImagesByFolder {
-    public static function apiGetAllFoldersOrImagesByFolder(WP_REST_Request $request) {
+    public static function ApiGetAllFoldersOrImagesByFolder(WP_REST_Request $request) {
 
     xpeapp_log_request($request);
 

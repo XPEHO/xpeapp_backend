@@ -8,7 +8,7 @@ include_once __DIR__ . '/../utils.php';
 // Upload an image to a folder
 
 class PostImage {
-    public static function apiPostImage(WP_REST_Request $request) {
+    public static function ApiPostImage(WP_REST_Request $request) {
 
     xpeapp_log_request($request);
 
