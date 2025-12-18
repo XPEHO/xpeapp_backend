@@ -2,8 +2,8 @@
 
 namespace XpeApp\qvst\questions;
 
-class post_open_answers {
-	public static function postOpenAnswers(\WP_REST_Request $request) {
+class PostOpenAnswers {
+	public static function apiPostOpenAnswers(\WP_REST_Request $request) {
 
     xpeapp_log_request($request);
     

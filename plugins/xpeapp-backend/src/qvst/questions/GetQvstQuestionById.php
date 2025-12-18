@@ -3,7 +3,7 @@
 namespace XpeApp\qvst\questions;
 
 class GetQvstQuestionById {
-	public static function ApiGetQvstById(\WP_REST_Request $request)
+	public static function apiGetQvstById(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 

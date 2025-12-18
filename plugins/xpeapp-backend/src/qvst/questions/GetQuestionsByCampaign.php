@@ -3,7 +3,7 @@
 namespace XpeApp\qvst\questions;
 
 class GetQuestionsByCampaign {
-	public static function ApiGetQuestionsByCampaignId(\WP_REST_Request $request)
+	public static function apiGetQuestionsByCampaignId(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	

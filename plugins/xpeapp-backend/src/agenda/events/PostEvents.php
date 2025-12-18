@@ -3,7 +3,7 @@
 namespace XpeApp\agenda\events;
 
 class PostEvents {
-    public static function ApiPostEvents(\WP_REST_Request $request)
+    public static function apiPostEvents(\WP_REST_Request $request)
     {
         xpeapp_log_request($request);
 

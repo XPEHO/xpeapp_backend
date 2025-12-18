@@ -3,7 +3,7 @@
 namespace XpeApp\qvst\campaign;
 
 class PutCampaignStatus {
-	public static function ApiUpdateCampaignStatus(\WP_REST_Request $request)
+	public static function apiUpdateCampaignStatus(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 

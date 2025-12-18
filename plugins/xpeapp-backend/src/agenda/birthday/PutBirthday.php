@@ -3,7 +3,7 @@
 namespace XpeApp\agenda\birthday;
 
 class PutBirthday {
-    public static function ApiPutBirthday(\WP_REST_Request $request)
+    public static function apiPutBirthday(\WP_REST_Request $request)
     {
         xpeapp_log_request($request);
 

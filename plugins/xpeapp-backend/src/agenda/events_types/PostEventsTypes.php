@@ -3,7 +3,7 @@
 namespace XpeApp\agenda\events_types;
 
 class PostEventsTypes {
-    public static function ApiPostEventsTypes(\WP_REST_Request $request)
+    public static function apiPostEventsTypes(\WP_REST_Request $request)
     {
         xpeapp_log_request($request);
 

@@ -8,7 +8,7 @@ use XpeApp\Xpeapp_Log_Level;
 // Fonction pour mettre à jour le mot de passe de l'utilisateur
 
 class PutUser {
-    public static function ApiUpdateUserPassword(\WP_REST_Request $request) {
+    public static function apiUpdateUserPassword(\WP_REST_Request $request) {
     xpeapp_log_request($request);
 
     $user_id = get_current_user_id();

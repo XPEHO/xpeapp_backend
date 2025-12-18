@@ -3,7 +3,7 @@
 namespace XpeApp\qvst\questions;
 
 class GetListOfQvstQuestions {
-	public static function ApiGetQvst(\WP_REST_Request $request)
+	public static function apiGetQvst(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	// Utiliser la classe $wpdb pour effectuer une requête SQL

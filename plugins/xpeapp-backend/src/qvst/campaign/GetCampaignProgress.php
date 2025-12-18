@@ -3,7 +3,7 @@
 namespace XpeApp\qvst\campaign;
 
 class GetCampaignProgress {
-	public static function ApiGetCampaignProgress(\WP_REST_Request $request) {
+	public static function apiGetCampaignProgress(\WP_REST_Request $request) {
 	xpeapp_log_request($request);
 
 	$user_id = $request->get_param('userId');

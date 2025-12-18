@@ -3,7 +3,7 @@
 namespace XpeApp\qvst\questions;
 
 class GetQvstResumeById {
-	public static function ApiGetQvstResumeById(\WP_REST_Request $request)
+	public static function apiGetQvstResumeById(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	// Utiliser la classe $wpdb pour effectuer une requête SQL

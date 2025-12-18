@@ -6,7 +6,7 @@ use WP_REST_Request;
 include_once __DIR__ . '/../utils.php';
 
 class PostIdea {
-    public static function ApiPostIdea(WP_REST_Request $request)
+    public static function apiPostIdea(WP_REST_Request $request)
 {
     xpeapp_log_request($request);
 

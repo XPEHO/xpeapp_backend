@@ -4,7 +4,7 @@ namespace XpeApp\qvst\campaign;
 include_once 'get_answer_by_group_id.php';
 
 class GetCsvFileCampaign {
-	public static function ApiGetCsvFileCampaign($request) {
+	public static function apiGetCsvFileCampaign($request) {
     
     xpeapp_log_request($request);
     

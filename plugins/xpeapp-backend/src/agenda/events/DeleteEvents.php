@@ -3,7 +3,7 @@
 namespace XpeApp\agenda\events;
 
 class DeleteEvents {
-    public static function ApiDeleteEvents(\WP_REST_Request $request)
+    public static function apiDeleteEvents(\WP_REST_Request $request)
     {
         xpeapp_log_request($request);
 

@@ -4,7 +4,7 @@ namespace XpeApp\qvst\campaign;
 require_once __DIR__ . '/campaign_themes_utils.php';
 
 class PostCampaign {
-	public static function ApiPostCampaign(\WP_REST_Request $request)
+	public static function apiPostCampaign(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	

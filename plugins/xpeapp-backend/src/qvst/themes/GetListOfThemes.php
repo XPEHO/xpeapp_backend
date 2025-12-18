@@ -3,7 +3,7 @@
 namespace XpeApp\qvst\themes;
 
 class GetListOfThemes {
-	public static function ApiGetQvstThemes(\WP_REST_Request $request)
+	public static function apiGetQvstThemes(\WP_REST_Request $request)
 {
 	xpeapp_log_request($request);
 	

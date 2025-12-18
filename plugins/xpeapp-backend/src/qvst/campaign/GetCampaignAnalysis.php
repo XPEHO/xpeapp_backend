@@ -166,7 +166,7 @@ class GetCampaignAnalysis {
         try {
             $stats_request = new \WP_REST_Request('GET', '/qvst/campaigns/{id}/stats');
             $stats_request->set_param('id', $campaign_id);
-            $stats_response = GetStatsOfCampaign::ApiGetQvstStatsByCampaignId($stats_request);
+            $stats_response = GetStatsOfCampaign::apiGetQvstStatsByCampaignId($stats_request);
             if (!is_wp_error($stats_response)) {
                 $stats_data = $stats_response->get_data();
                 
