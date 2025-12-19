@@ -6,7 +6,7 @@ namespace XpeApp\qvst\questions;
  * @param int $question_id
  * @return array ['meta' => stdClass|null, 'answers' => array]
  */
-function get_question_details(int $question_id): array
+function GetQuestionDetails(int $question_id): array
 {
     /** @var wpdb $wpdb */
     global $wpdb;

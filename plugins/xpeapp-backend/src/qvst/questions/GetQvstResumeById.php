@@ -17,7 +17,7 @@ class GetQvstResumeById {
 	$question_id = intval($params['id']);
 
 	require_once __DIR__ . '/questions_utils.php';
-	$details = get_question_details($question_id);
+	$details = GetQuestionDetails($question_id);
 
 	$meta = $details['meta'];
 	if (empty($meta)) {
