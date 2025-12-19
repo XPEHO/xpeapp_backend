@@ -34,7 +34,7 @@ class GetStatsOfCampaign {
 		}
 		// Get the questions of the campaign
 		$questionsSql = "
-			SELECT 
+			SELECT
 				questions.id as question_id,
 				questions.text as question,
 				questions.answer_repo_id,
@@ -73,6 +73,7 @@ class GetStatsOfCampaign {
 			foreach ($question->answers as &$answer) {
 				$answer->numberAnswered = (int) $answer->numberAnswered;
 			}
+			unset($answer);
 
 			$answer_repo_id = intval($question->answer_repo_id);
 			$answersSql = "
@@ -97,7 +98,9 @@ class GetStatsOfCampaign {
 			foreach ($question->answers as &$answer) {
 				$answer->numberAnswered = (int) $answer->numberAnswered;
 			}
+			unset($answer);
 		}
+		unset($question);
 
 		$data = array(
 			'campaignId' => $campaign_id,
