@@ -23,42 +23,33 @@ class GetQvstQuestionById {
 			xpeapp_log(\Xpeapp_Log_Level::Warn, "GET xpeho/v1/qvst/{id} - No ID parameter");
 			return new \WP_Error('noID', __('No ID', 'QVST'));
 		} else {
-			// renvoyer le congé concerné (sanitize + prepared)
 			$question_id = isset($params['id']) ? intval($params['id']) : 0;
-			$queryAnswer = "
-			SELECT
-				theme.id as theme_id,
-				theme.name as theme,
-				question.id as question_id,
-				question.text as question,
-				answers.name,
-				answers.value
-			FROM {$table_name_answers} answers
-			INNER JOIN {$table_name_questions} question ON question.answer_repo_id = answers.answer_repo_id
-			INNER JOIN {$table_name_theme} theme ON question.theme_id = theme.id
-			WHERE question.id = %d
-			";
+			require_once __DIR__ . '/questions_utils.php';
+			$details = get_question_details($question_id);
 
-			$resultsAnswer = $wpdb->get_results($wpdb->prepare($queryAnswer, $question_id));
-			// Return one row
-			$data = array();
-			if ($resultsAnswer) {
-				foreach ($resultsAnswer as $result) {
-					$listOfAnswers[] = array(
-						'answer' => $result->name,
-						'value' => $result->value
-					);
-				}
-				$data['id'] = $result->question_id;
-				$data['theme'] = $result->theme;
-				$data['id_theme'] = $result->theme_id;
-				$data['question'] = $result->question;
-				$data['answers'] = $listOfAnswers;
-				return $data;
-			} else {
+			if (empty($details['meta'])) {
 				xpeapp_log(\Xpeapp_Log_Level::Warn, "GET xpeho/v1/qvst/$question_id - No data found for ID");
 				return new \WP_Error('noID', __('No ID', 'QVST'));
 			}
+
+			$meta = $details['meta'];
+			$listOfAnswers = [];
+			foreach ($details['answers'] as $ans) {
+				$listOfAnswers[] = [
+					'answer' => $ans->name,
+					'value' => $ans->value,
+				];
+			}
+
+			$data = [
+				'id' => $meta->id,
+				'theme' => $meta->theme,
+				'id_theme' => $meta->theme_id,
+				'question' => $meta->question,
+				'answers' => $listOfAnswers,
+			];
+
+			return $data;
 		}
 	}
 }
