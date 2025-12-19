@@ -23,23 +23,23 @@ class GetQvstQuestionById {
 			xpeapp_log(\Xpeapp_Log_Level::Warn, "GET xpeho/v1/qvst/{id} - No ID parameter");
 			return new \WP_Error('noID', __('No ID', 'QVST'));
 		} else {
-			// renvoyer le congé concerné
-			$question_id = $params['id'];
+			// renvoyer le congé concerné (sanitize + prepared)
+			$question_id = isset($params['id']) ? intval($params['id']) : 0;
 			$queryAnswer = "
-			SELECT 
-				theme.id as 'theme_id',
-				theme.name as 'name',
-				question.id as 'question_id',
-				question.text as 'question', 
+			SELECT
+				theme.id as theme_id,
+				theme.name as theme,
+				question.id as question_id,
+				question.text as question,
 				answers.name,
-				answers.value 
-			FROM $table_name_answers answers
-			INNER JOIN $table_name_questions question ON question.answer_repo_id=answers.answer_repo_id
-			INNER JOIN $table_name_theme theme ON question.theme_id=theme.id
-			WHERE question.id=$question_id
+				answers.value
+			FROM {$table_name_answers} answers
+			INNER JOIN {$table_name_questions} question ON question.answer_repo_id = answers.answer_repo_id
+			INNER JOIN {$table_name_theme} theme ON question.theme_id = theme.id
+			WHERE question.id = %d
 			";
 
-			$resultsAnswer = $wpdb->get_results($queryAnswer);
+			$resultsAnswer = $wpdb->get_results($wpdb->prepare($queryAnswer, $question_id));
 			// Return one row
 			$data = array();
 			if ($resultsAnswer) {

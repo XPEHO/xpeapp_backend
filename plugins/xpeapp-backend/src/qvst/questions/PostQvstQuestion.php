@@ -36,23 +36,27 @@ class PostQvstQuestion {
 	} else {
 
 		try {
-			// get theme with id
-			$theme = $wpdb->get_row("SELECT * FROM $table_name_theme WHERE id=" . $params['theme_id']);
+			// sanitize and prepare ids
+			$theme_id = intval($params['theme_id']);
+			$repo_id = isset($params['answer_repo_id']) ? intval($params['answer_repo_id']) : 0;
+
+			// get theme with id (prepared)
+			$theme = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_name_theme} WHERE id = %d", $theme_id));
 			if (empty($theme)) {
-				xpeapp_log(Xpeapp_Log_Level::Warn, "POST xpeho/v1/qvst:add - No theme found for ID: " . $params['theme_id']);
+				xpeapp_log(Xpeapp_Log_Level::Warn, "POST xpeho/v1/qvst:add - No theme found for ID: " . $theme_id);
 				return new WP_Error('noID', __('No theme found', 'QVST'));
 			}
 
-			$repo = $wpdb->get_row("SELECT * FROM $table_name_answers_repository WHERE id=" . $params['answer_repo_id']);
+			$repo = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_name_answers_repository} WHERE id = %d", $repo_id));
 			if (empty($repo)) {
-				xpeapp_log(Xpeapp_Log_Level::Warn, "POST xpeho/v1/qvst:add - No repository found for ID: " . $params['answer_repo_id']);
+				xpeapp_log(Xpeapp_Log_Level::Warn, "POST xpeho/v1/qvst:add - No repository found for ID: " . $repo_id);
 				return new WP_Error('noID', __('No repository found', 'QVST'));
 			}
 
 			$questionToInsert = array(
 				'text' => $params['question'],
-				'theme_id' => $params['theme_id'],
-				'answer_repo_id' => $params['answer_repo_id']
+				'theme_id' => $theme_id,
+				'answer_repo_id' => $repo_id
 			);
 
 			// save question

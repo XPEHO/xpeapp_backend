@@ -22,9 +22,10 @@ class GetQuestionsByCampaign {
 		if (!isset($params['id'])) {
 			return new \WP_Error('noID', __('No ID', 'QVST'));
 		} else {
+			$campaign_id = isset($params['id']) ? intval($params['id']) : 0;
 
-			// Get the campaign with the id
-			$campaign = $wpdb->get_row("SELECT * FROM $table_name_campaigns WHERE id=" . $params['id']);
+			// Get the campaign with the id (prepared)
+			$campaign = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_name_campaigns} WHERE id = %d", $campaign_id));
 			if (empty($campaign)) {
 				return new \WP_Error('noID', __('No campaign found', 'QVST'));
 			} else {
@@ -32,21 +33,21 @@ class GetQuestionsByCampaign {
 				// Get the questions of the campaign
 				$questionsSql = "
 				SELECT
-					question.id AS 'question_id',
-					question.text AS 'question',
-					answers.id AS 'answer_id',
+					question.id AS question_id,
+					question.text AS question,
+					answers.id AS answer_id,
 					answers.name,
-					answers.value 
+					answers.value
 				FROM
-					$table_name_questions question
-					INNER JOIN $table_name_campaign_questions campaigns ON question.id = campaigns.question_id
-					INNER JOIN $table_name_answers_repository answersRepo ON question.answer_repo_id = answersRepo.id
-					INNER JOIN $table_name_answers answers ON answers.answer_repo_id = answersRepo.id
+					{$table_name_questions} question
+					INNER JOIN {$table_name_campaign_questions} campaigns ON question.id = campaigns.question_id
+					INNER JOIN {$table_name_answers_repository} answersRepo ON question.answer_repo_id = answersRepo.id
+					INNER JOIN {$table_name_answers} answers ON answers.answer_repo_id = answersRepo.id
 				WHERE
-					campaigns.campaign_id = " . $params['id'] . "
+					campaigns.campaign_id = %d
 				";
 
-				$questions = $wpdb->get_results($questionsSql);
+			$questions = $wpdb->get_results($wpdb->prepare($questionsSql, $campaign_id));
 
 				$data = array();
 				foreach ($questions as $question) {

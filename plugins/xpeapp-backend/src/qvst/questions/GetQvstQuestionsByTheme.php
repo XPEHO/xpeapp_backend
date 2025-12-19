@@ -22,31 +22,31 @@ class GetQvstQuestionsByTheme {
 		if (!isset($params['id'])) {
 			return new \WP_Error('noID', __('No ID', 'QVST'));
 		} else {
-			// renvoyer le congé concerné
-			$theme_id = $params['id'];
+			// renvoyer le congé concerné (sanitize and prepare)
+			$theme_id = isset($params['id']) ? intval($params['id']) : 0;
 			$queryAnswer = "
-			SELECT 
-				theme.id as 'theme_id',
-				theme.name as 'theme_name',
-				question.id as 'question_id',
-				question.text as 'question', 
+			SELECT
+				theme.id as theme_id,
+				theme.name as theme_name,
+				question.id as question_id,
+				question.text as question,
 				question.answer_repo_id,
-				answers.id as 'answer_id',
+				answers.id as answer_id,
 				answers.name,
 				answers.value,
-				COALESCE(cq.num_occurrences, 0) as 'numberAsked'
-			FROM $table_name_answers answers
-			INNER JOIN $table_name_questions question ON question.answer_repo_id=answers.answer_repo_id
-			INNER JOIN $table_name_theme theme ON question.theme_id=theme.id
+				COALESCE(cq.num_occurrences, 0) as numberAsked
+			FROM {$table_name_answers} answers
+			INNER JOIN {$table_name_questions} question ON question.answer_repo_id = answers.answer_repo_id
+			INNER JOIN {$table_name_theme} theme ON question.theme_id = theme.id
 			LEFT JOIN (
 				SELECT question_id, COUNT(campaign_id) as num_occurrences
-				FROM $table_name_campaign_questions
+				FROM {$table_name_campaign_questions}
 				GROUP BY question_id
 			) cq ON question.id = cq.question_id
-			WHERE theme.id=$theme_id
+			WHERE theme.id = %d
 			";
 
-			$resultsAnswer = $wpdb->get_results($queryAnswer);
+			$resultsAnswer = $wpdb->get_results($wpdb->prepare($queryAnswer, $theme_id));
 			// Return all rows
 			$data = array();
 			foreach ($resultsAnswer as $result) {

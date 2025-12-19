@@ -15,12 +15,12 @@ class PutQvstQuestion {
 	$table_name_answers_repository = $wpdb->prefix . 'qvst_answers_repository';
 
 	$params = $request->get_params();
-	$id_question = $params['id'];
+	$id_question = isset($params['id']) ? intval($params['id']) : 0;
 	$body = json_decode($request->get_body());
 
 
-	// Check if the question exists
-	$question = $wpdb->get_row("SELECT * FROM $table_name_questions WHERE id=" . $id_question);
+	// Check if the question exists (prepared)
+	$question = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_name_questions} WHERE id = %d", $id_question));
 	if (empty($question)) {
 		return new \WP_Error('noID', __('No question found', 'QVST'));
 	}
@@ -32,7 +32,8 @@ class PutQvstQuestion {
 
 			// Check if the theme exists if the theme is in the body
 			if (isset($body->theme_id)) {
-				$theme = $wpdb->get_row("SELECT * FROM $table_name_theme WHERE id=" . $body->theme_id);
+				$theme_id = intval($body->theme_id);
+				$theme = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_name_theme} WHERE id = %d", $theme_id));
 				if (empty($theme)) {
 					return new \WP_Error('noID', __('No theme found', 'QVST'));
 				}
@@ -40,7 +41,8 @@ class PutQvstQuestion {
 
 			// Check if the answers repo exists if the answers repo is in the body
 			if (isset($body->answer_repo_id)) {
-				$repo = $wpdb->get_row("SELECT * FROM $table_name_answers_repository WHERE id=" . $body->answer_repo_id);
+				$repo_id = intval($body->answer_repo_id);
+				$repo = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_name_answers_repository} WHERE id = %d", $repo_id));
 				if (empty($repo)) {
 					return new \WP_Error('noID', __('No repository found', 'QVST'));
 				}
@@ -65,8 +67,8 @@ class PutQvstQuestion {
 				);
 			}
 
-			// Get the question updated
-			$questionUpdated = $wpdb->get_row("SELECT * FROM $table_name_questions WHERE id=" . $id_question);
+			// Get the question updated (prepared)
+			$questionUpdated = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_name_questions} WHERE id = %d", $id_question));
 
 			return new \WP_REST_Response($questionUpdated, 201);
 

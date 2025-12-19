@@ -17,34 +17,37 @@ class GetListOfQvstQuestions {
 	$table_name_campaign_questions = $wpdb->prefix . 'qvst_campaign_questions';
 
 	// Requête SQL pour récupérer toutes les lignes de la table
-	$query = "
-			SELECT
-			question.id as 'question_id',
-			question.text as 'question', 
-			theme.id as 'theme_id',
-			theme.name as 'theme_name',
-			question.answer_repo_id,
-			answer.id,
-			answer.name,
-			answer.value,
-			COALESCE(cq.num_occurrences, 0) as 'numberAsked' 
-		FROM $table_name_questions question
-		INNER JOIN $table_name_theme theme on question.theme_id=theme.id
-		INNER JOIN $table_name_answers answer on answer.answer_repo_id=question.answer_repo_id
+	$baseQuery = "
+		SELECT
+		question.id as question_id,
+		question.text as question,
+		theme.id as theme_id,
+		theme.name as theme_name,
+		question.answer_repo_id,
+		answer.id,
+		answer.name,
+		answer.value,
+		COALESCE(cq.num_occurrences, 0) as numberAsked
+		FROM {$table_name_questions} question
+		INNER JOIN {$table_name_theme} theme on question.theme_id = theme.id
+		INNER JOIN {$table_name_answers} answer on answer.answer_repo_id = question.answer_repo_id
 		LEFT JOIN (
 			SELECT question_id, COUNT(campaign_id) as num_occurrences
-			FROM $table_name_campaign_questions
+			FROM {$table_name_campaign_questions}
 			GROUP BY question_id
 		) cq ON question.id = cq.question_id
 	";
 
-	if ($request->get_param('id')) {
-		$query .= " WHERE question.id=" . $request->get_param('id');
+	// If an id param is provided, prepare the query with that id
+	$idParam = $request->get_param('id');
+	if (!empty($idParam)) {
+		$question_id = intval($idParam);
+		$query = $baseQuery . " WHERE question.id = %d";
+		$results = $wpdb->get_results($wpdb->prepare($query, $question_id));
+	} else {
+		// Récupérer les résultats sans filtre
+		$results = $wpdb->get_results($baseQuery);
 	}
-
-
-	// Récupérer les résultats de la requête
-	$results = $wpdb->get_results($query);
 
 	// Vérifier s'il y a des résultats
 	if ($results) {

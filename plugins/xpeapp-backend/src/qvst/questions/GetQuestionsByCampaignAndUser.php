@@ -18,15 +18,16 @@ class GetQuestionsByCampaignAndUser {
 	$table_name_user_answers = $wpdb->prefix . 'qvst_user_answers';
 
 	$params = $request->get_params();
-	$userId = $request->get_header('userId');
+	$userId = intval($request->get_header('userId'));
+	$campaign_id = isset($params['id']) ? intval($params['id']) : 0;
 
 	if (!empty($params)) {
 		if (!isset($params['id'])) {
 			return new \WP_Error('noID', __('No ID', 'QVST'));
 		} else {
 
-			// Get the campaign with the id
-			$campaign = $wpdb->get_row("SELECT * FROM $table_name_campaigns WHERE id=" . $params['id']);
+			// Get the campaign with the id (prepared)
+			$campaign = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_name_campaigns} WHERE id = %d", $campaign_id));
 			if (empty($campaign)) {
 				return new \WP_Error('noID', __('No campaign found', 'QVST'));
 			} else {
@@ -34,26 +35,26 @@ class GetQuestionsByCampaignAndUser {
 				// Get the questions of the campaign
 				$questionsSql = "
 				SELECT
-					question.id AS 'question_id',
-					question.text AS 'question',
-					answers.id AS 'answer_id',
+					question.id AS question_id,
+					question.text AS question,
+					answers.id AS answer_id,
 					answers.name,
 					answers.value,
-					IF(user_answers.id IS NOT NULL, 1, 0) AS 'hasAnswered'
+					IF(user_answers.id IS NOT NULL, 1, 0) AS hasAnswered
 				FROM
-					$table_name_questions question
-					INNER JOIN $table_name_campaign_questions campaigns ON question.id = campaigns.question_id
-					INNER JOIN $table_name_answers_repository answersRepo ON question.answer_repo_id = answersRepo.id
-					INNER JOIN $table_name_answers answers ON answers.answer_repo_id = answersRepo.id
-					LEFT JOIN $table_name_user_answers user_answers
+					{$table_name_questions} question
+					INNER JOIN {$table_name_campaign_questions} campaigns ON question.id = campaigns.question_id
+					INNER JOIN {$table_name_answers_repository} answersRepo ON question.answer_repo_id = answersRepo.id
+					INNER JOIN {$table_name_answers} answers ON answers.answer_repo_id = answersRepo.id
+					LEFT JOIN {$table_name_user_answers} user_answers
 						ON user_answers.campaign_id = campaigns.campaign_id
 						AND user_answers.question_id = question.id
-						AND user_answers.user_id = $userId
+						AND user_answers.user_id = %d
 				WHERE
-					campaigns.campaign_id = " . $params['id'] . "
+					campaigns.campaign_id = %d
 				";
 
-				$questions = $wpdb->get_results($questionsSql);
+			$questions = $wpdb->get_results($wpdb->prepare($questionsSql, $userId, $campaign_id));
 
 				$data = array();
 				foreach ($questions as $question) {

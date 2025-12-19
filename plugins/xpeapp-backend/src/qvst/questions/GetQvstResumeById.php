@@ -25,22 +25,23 @@ class GetQvstResumeById {
 			return new \WP_Error('noID', __('No ID', 'QVST'));
 		} else {
 			// renvoyer le congé concerné
-			$question_id = $params['id'];
+			$question_id = isset($params['id']) ? intval($params['id']) : 0;
+
 			$queryAnswer = "
-			SELECT 
-				question.id as 'id',
-				theme.name as 'theme',
-				question.text as 'question',
-				COUNT(answer.id) as 'numberOfAnswers',
-				ROUND(AVG(answer.value)) as 'averageAnswer',
-				MAX(answer.value) AS 'maxValueAnswer'  
-			FROM $table_name_answers answer
-			INNER JOIN $table_name_questions question ON question.answer_repo_id=answer.answer_repo_id
-			INNER JOIN $table_name_theme theme ON theme.id=question.theme_id
-			WHERE question.id=$question_id
+			SELECT
+				question.id as id,
+				theme.name as theme,
+				question.text as question,
+				COUNT(answer.id) as numberOfAnswers,
+				ROUND(AVG(answer.value)) as averageAnswer,
+				MAX(answer.value) AS maxValueAnswer
+			FROM {$table_name_answers} answer
+			INNER JOIN {$table_name_questions} question ON question.answer_repo_id = answer.answer_repo_id
+			INNER JOIN {$table_name_theme} theme ON theme.id = question.theme_id
+			WHERE question.id = %d
 			";
 
-			$resultsAnswer = $wpdb->get_results($queryAnswer);
+			$resultsAnswer = $wpdb->get_results($wpdb->prepare($queryAnswer, $question_id));
 			// Return one row
 			$data = array();
 			foreach ($resultsAnswer as $result) {
