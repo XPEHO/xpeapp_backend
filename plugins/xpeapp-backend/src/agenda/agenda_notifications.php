@@ -9,25 +9,26 @@ function checkAndSendBirthdayNotifications()
 	$table_name = $wpdb->prefix . 'agenda_birthday';
 	
 	// Récupérer les anniversaires du jour (même jour et mois, peu importe l'année)
-	$today = current_time('mysql');
-	$day = date('d', strtotime($today));
-	$month = date('m', strtotime($today));
+    $today = current_time('mysql');
+    $day = date('d', strtotime($today));
+    $month = date('m', strtotime($today));
 	
-	$birthdays_today = $wpdb->get_results(
-		$wpdb->prepare(
-			"SELECT * FROM $table_name WHERE DAY(birthdate) = %s AND MONTH(birthdate) = %s",
-			$day,
-			$month
-		)
-	);
+
+    $birthdays_today = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM $table_name WHERE DAY(birthdate) = %s AND MONTH(birthdate) = %s",
+            $day,
+            $month
+        )
+    );
 	
-	foreach ($birthdays_today as $birthday) {
-		sendFcmNotification(
-			"Joyeux anniversaire !",
-			"Aujourd'hui c'est l'anniversaire de {$birthday->first_name} !"
-		);
-		xpeapp_log(Xpeapp_Log_Level::Info, "Sent birthday notification for: {$birthday->first_name}");
-	}
+    foreach ($birthdays_today as $birthday) {
+        sendFcmNotification(
+            "Joyeux anniversaire !",
+            "Aujourd'hui c'est l'anniversaire de {$birthday->first_name} !"
+        );
+        xpeapp_log(Xpeapp_Log_Level::Info, "Sent birthday notification for: {$birthday->first_name}");
+    }
 }
 
 /**
@@ -36,39 +37,42 @@ function checkAndSendBirthdayNotifications()
 function checkAndSendEventNotifications()
 {
 	global $wpdb;
-	$table_name = $wpdb->prefix . 'agenda_events';
+
+    $table_name = $wpdb->prefix . 'agenda_events';
 	
-	// Récupérer les événements qui commencent aujourd'hui
-	$today = current_time('Y-m-d');
+
+    // Récupérer les événements qui commencent aujourd'hui
+    $today = current_time('Y-m-d');
 	
-	$events_today = $wpdb->get_results(
-		$wpdb->prepare(
-			"SELECT * FROM $table_name WHERE DATE(date) = %s",
-			$today
-		)
-	);
+
+    $events_today = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM $table_name WHERE DATE(date) = %s",
+            $today
+        )
+    );
 	
-	foreach ($events_today as $event) {
-		sendFcmNotification(
-			"Événement aujourd'hui !",
-			"{$event->title}"
-		);
-		xpeapp_log(Xpeapp_Log_Level::Info, "Sent event notification for: {$event->title}");
-	}
+    foreach ($events_today as $event) {
+        sendFcmNotification(
+            "Événement aujourd'hui !",
+            "{$event->title}"
+        );
+        xpeapp_log(Xpeapp_Log_Level::Info, "Sent event notification for: {$event->title}");
+    }
 }
 
 // Programmer les vérifications quotidiennes à 9h du matin
 function scheduleDailyNotifications()
 {
-	// Anniversaires
-	if (!wp_next_scheduled('xpeapp_check_birthdays')) {
-		wp_schedule_event(strtotime('09:00:00'), 'daily', 'xpeapp_check_birthdays');
-	}
-	
-	// Événements
-	if (!wp_next_scheduled('xpeapp_check_events')) {
-		wp_schedule_event(strtotime('09:00:00'), 'daily', 'xpeapp_check_events');
-	}
+    // Anniversaires
+    if (!wp_next_scheduled('xpeapp_check_birthdays')) {
+        wp_schedule_event(strtotime('09:00:00'), 'daily', 'xpeapp_check_birthdays');
+    }
+    
+    // Événements
+    if (!wp_next_scheduled('xpeapp_check_events')) {
+        wp_schedule_event(strtotime('09:00:00'), 'daily', 'xpeapp_check_events');
+    }
 }
 add_action('wp', 'scheduleDailyNotifications');
 

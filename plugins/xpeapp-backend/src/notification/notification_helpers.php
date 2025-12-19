@@ -9,50 +9,50 @@
  */
 function sendFcmNotification($title, $message, $redirection = 'OPEN_XPEAPP')
 {
-	// Prepare notification data
-	$notification_data = buildServiceAccountData();
-	
-	if (!$notification_data) {
-		xpeapp_log(Xpeapp_Log_Level::Error, 'Cannot send notification: Firebase credentials missing');
-		return false;
-	}
+    // Prepare notification data
+    $notification_data = buildServiceAccountData();
+    
+    if (!$notification_data) {
+        xpeapp_log(Xpeapp_Log_Level::Error, 'Cannot send notification: Firebase credentials missing');
+        return false;
+    }
 
-	try {
-		$messaging = (new \Kreait\Firebase\Factory)
-			->withServiceAccount($notification_data)
-			->createMessaging();
+    try {
+        $messaging = (new \Kreait\Firebase\Factory)
+            ->withServiceAccount($notification_data)
+            ->createMessaging();
 
-		$cloudMessage = \Kreait\Firebase\Messaging\CloudMessage::fromArray([
-			'topic' => 'all',
-			'notification' => [
-				'title' => $title,
-				'body' => $message,
-			],
-			'android' => [
-				'notification' => [
-					'click_action' => $redirection,
-				],
-			],
-		]);
+        $cloudMessage = \Kreait\Firebase\Messaging\CloudMessage::fromArray([
+            'topic' => 'all',
+            'notification' => [
+                'title' => $title,
+                'body' => $message,
+            ],
+            'android' => [
+                'notification' => [
+                    'click_action' => $redirection,
+                ],
+            ],
+        ]);
 
-		$messaging->send($cloudMessage);
+        $messaging->send($cloudMessage);
 
-		xpeappInsertFcmSend([
-			'title' => $title,
-			'message' => $message,
-			'status' => 'sent',
-		]);
+        xpeappInsertFcmSend([
+            'title' => $title,
+            'message' => $message,
+            'status' => 'sent',
+        ]);
 
-		xpeapp_log(Xpeapp_Log_Level::Info, "Notification sent: $title");
-		return true;
-	} catch (\Throwable $e) {
-		xpeapp_log(Xpeapp_Log_Level::Error, 'FCM send failed: ' . $e->getMessage());
-		xpeappInsertFcmSend([
-			'title' => $title,
-			'message' => $message,
-			'status' => 'failed',
-			'error' => $e->getMessage(),
-		]);
-		return false;
-	}
+        xpeapp_log(Xpeapp_Log_Level::Info, "Notification sent: $title");
+        return true;
+    } catch (\Throwable $e) {
+        xpeapp_log(Xpeapp_Log_Level::Error, 'FCM send failed: ' . $e->getMessage());
+        xpeappInsertFcmSend([
+            'title' => $title,
+            'message' => $message,
+            'status' => 'failed',
+            'error' => $e->getMessage(),
+        ]);
+        return false;
+    }
 }
