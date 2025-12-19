@@ -21,7 +21,7 @@ class GetQvstQuestionById {
 			return new \WP_Error('noID', __('No ID', 'QVST'));
 		} else {
 			$question_id = isset($params['id']) ? intval($params['id']) : 0;
-			$details = GetQuestionDetails($question_id);
+			$details = getQuestionDetails($question_id);
 
 			if (empty($details['meta'])) {
 				xpeapp_log(\Xpeapp_Log_Level::Warn, "GET xpeho/v1/qvst/$question_id - No data found for ID");

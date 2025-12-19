@@ -17,7 +17,7 @@ class GetQvstResumeById {
 	$question_id = intval($params['id']);
 
 	require_once __DIR__ . '/questions_utils.php';
-	$details = GetQuestionDetails($question_id);
+	$details = getQuestionDetails($question_id);
 
 	$meta = $details['meta'];
 	if (empty($meta)) {
@@ -25,7 +25,7 @@ class GetQvstResumeById {
 		return new \WP_Error('noID', __('No ID', 'QVST'));
 	}
 
-	$data = [
+	return [
 		'id' => $meta->id,
 		'theme' => $meta->theme,
 		'question' => $meta->question,
@@ -33,7 +33,5 @@ class GetQvstResumeById {
 		'averageAnswer' => $meta->averageAnswer,
 		'maxValueAnswer' => $meta->maxValueAnswer,
 	];
-
-	return $data;
 }
 }
