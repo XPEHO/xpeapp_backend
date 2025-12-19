@@ -59,9 +59,7 @@ include 'src/qvst/answer_repository/get_answers_repo_list.php';
 include 'src/qvst/answer_repository/put_answer_repo.php';
 
 /// User
-use XpeApp\qvst\user\GetUser;
-use XpeApp\qvst\user\PutUser;
-use XpeApp\qvst\user\GetUserInfos;
+use XpeApp\qvst\user\UserController;
 // Agenda
 // Notifications agenda
 include_once 'src/agenda/agenda_notifications.php';
@@ -85,10 +83,7 @@ use XpeApp\agenda\birthday\DeleteBirthday;
 use XpeApp\agenda\birthday\PutBirthday;
 
 // Storage
-use XpeApp\storage\GetAllFoldersOrImagesByFolder;
-use XpeApp\storage\PostImage;
-use XpeApp\storage\DeleteImage;
-use XpeApp\storage\GetImage;
+use XpeApp\storage\ImageController;
 
 // Idea Box
 use XpeApp\idea_box\PostIdea;
@@ -166,7 +161,7 @@ class Xpeapp_Backend {
 			'/user',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => [GetUser::class, 'apiGetUser'],
+				'callback' => [UserController::class, 'apiGetUser'],
 				'permission_callback' => function () {
 					return $this->secure_endpoint_with_parameter(null);
 				}
@@ -444,7 +439,7 @@ class Xpeapp_Backend {
             '/update-password',
             array(
                 'methods' => WP_REST_Server::EDITABLE,
-				'callback' => [PutUser::class, 'apiUpdateUserPassword'],
+				'callback' => [UserController::class, 'apiUpdateUserPassword'],
                 'permission_callback' => function () use ($editPasswordParameter) {
                     return $this->secure_endpoint_with_parameter($editPasswordParameter);
                 }
@@ -457,7 +452,7 @@ class Xpeapp_Backend {
             '/user-infos',
             array(
                 'methods' => WP_REST_Server::READABLE,
-				'callback' => [GetUserInfos::class, 'apiGetUserInfos'],
+				'callback' => [UserController::class, 'apiGetUserInfos'],
                 'permission_callback' => function () {
                     return $this->secure_endpoint_with_parameter(null);
                 }
@@ -677,7 +672,7 @@ class Xpeapp_Backend {
 			'/image-storage',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
-				'callback' => [PostImage::class, 'apiPostImage'],
+				'callback' => [ImageController::class, 'apiPostImage'],
 				'permission_callback' => function () use ($adminImageParameter) {
 					return $this->secure_endpoint_with_parameter($adminImageParameter);
 				}
@@ -689,7 +684,7 @@ class Xpeapp_Backend {
 			'/image-storage/(?P<folder>[^/]+)/(?P<filename>[^/]+)',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => [GetImage::class, 'apiGetImage'],
+				'callback' => [ImageController::class, 'apiGetImage'],
 				'permission_callback' => function () use ($userImageParameter) {
 					return $this->secure_endpoint_with_parameter($userImageParameter);
 				}
@@ -701,7 +696,7 @@ class Xpeapp_Backend {
 			'/image-storage',
 			array(
 				'methods' => WP_REST_Server::READABLE,
-				'callback' => [GetAllFoldersOrImagesByFolder::class, 'apiGetAllFoldersOrImagesByFolder'],
+				'callback' => [ImageController::class, 'apiGetAllFoldersOrImagesByFolder'],
 				'permission_callback' => function () use ($userImageParameter) {
 					return $this->secure_endpoint_with_parameter($userImageParameter);
 				}
@@ -714,7 +709,7 @@ class Xpeapp_Backend {
 			'/image-storage/(?P<id>[\d]+)',
 			array(
 				'methods' => WP_REST_Server::DELETABLE,
-				'callback' => [DeleteImage::class, 'apiDeleteImage'],
+				'callback' => [ImageController::class, 'apiDeleteImage'],
 				'permission_callback' => function () use ($adminImageParameter) {
 					return $this->secure_endpoint_with_parameter($adminImageParameter);
 				}

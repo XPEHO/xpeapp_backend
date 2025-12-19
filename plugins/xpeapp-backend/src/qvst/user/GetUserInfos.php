@@ -4,7 +4,7 @@ namespace XpeApp\qvst\user;
 
 class GetUserInfos {
     public static function apiGetUserInfos(\WP_REST_Request $request)
-{
+    {
     xpeapp_log_request($request);
 
     $user = wp_get_current_user();
@@ -22,5 +22,5 @@ class GetUserInfos {
     // Return 200 OK status code if success with datas
     return new \WP_REST_Response($data, 200);
 
-}
+    }
 }
