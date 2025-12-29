@@ -2,5 +2,10 @@
     "require": {
         "php": "^8.2.0",
         "kreait/firebase-php": "^5.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "XpeApp\\": "src/"
+        }
     }
 }

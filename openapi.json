@@ -452,7 +452,7 @@
                 ],
                 "summary": "Get all the questions",
                 "description": "Get the questions from the database",
-                "operationId": "api_get_qvst",
+                "operationId": "ApiGetQvst",
                 "responses": {
                     "200": {
                         "description": "OK",
