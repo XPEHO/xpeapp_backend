@@ -96,7 +96,7 @@ class UserController {
             return new \WP_Error('no_user', 'Utilisateur non authentifié', ['status' => 401]);
         }
         $now = current_time('mysql');
-        update_user_meta($user_id, 'last_connexion', $now);
+        update_user_meta($user_id, 'last_connection', $now);
         return new \WP_REST_Response(null, 201);
     }
 
@@ -105,7 +105,7 @@ class UserController {
         $args = [
             'orderby' => 'meta_value',
             'order' => 'DESC',
-            'meta_key' => 'last_connexion',
+            'meta_key' => 'last_connection',
             'fields' => ['ID', 'user_nicename'],
         ];
         $users = get_users($args);
@@ -113,7 +113,7 @@ class UserController {
         foreach ($users as $user) {
             $result[] = [
                 'user_nicename' => $user->user_nicename,
-                'last_connexion' => get_user_meta($user->ID, 'last_connexion', true)
+                'last_connection' => get_user_meta($user->ID, 'last_connection', true)
             ];
         }
         return $result;

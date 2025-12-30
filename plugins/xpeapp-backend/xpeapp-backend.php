@@ -167,26 +167,26 @@ class Xpeapp_Backend {
 				}
 			)
 		);
-		// Ajout de la route pour mettre à jour la date de dernière connexion
+		// Route pour mettre à jour la date de dernière connexion
 		register_rest_route(
 			$endpoint_namespace,
-			'/user:last-connexion',
+			'/user:last-connection',
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => [UserController::class, 'apiUpdateLastConnexion'],
-				'permission_callback' => function () {
-					return $this->secure_endpoint_with_parameter($adminQvstParameter);
+				'permission_callback' => function () use ($userQvstParameter) {
+					return $this->secure_endpoint_with_parameter($userQvstParameter);
 				}
 			)
 		);
-		// Ajout de la route pour récupérer la date de dernière connexion
+		// Route pour récupérer la date de dernière connexion
 		register_rest_route(
 			$endpoint_namespace,
-			'/user:last-connexion',
+			'/user:last-connection',
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => [UserController::class, 'apiGetAllLastConnexions'],
-				'permission_callback' => function () {
+				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
