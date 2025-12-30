@@ -88,4 +88,34 @@ class UserController {
     return new \WP_REST_Response(null, 204);
     }
 
+
+    public static function apiUpdateLastConnexion(\WP_REST_Request $request) {
+        xpeapp_log_request($request);
+        $user_id = get_current_user_id();
+        if (!$user_id) {
+            return new \WP_Error('no_user', 'Utilisateur non authentifié', ['status' => 401]);
+        }
+        $now = current_time('mysql');
+        update_user_meta($user_id, 'last_connexion', $now);
+        return new \WP_REST_Response(null, 201);
+    }
+
+    public static function apiGetAllLastConnexions(\WP_REST_Request $request) {
+        xpeapp_log_request($request);
+        $args = [
+            'orderby' => 'meta_value',
+            'order' => 'DESC',
+            'meta_key' => 'last_connexion',
+            'fields' => ['ID', 'user_nicename'],
+        ];
+        $users = get_users($args);
+        $result = [];
+        foreach ($users as $user) {
+            $result[] = [
+                'user_nicename' => $user->user_nicename,
+                'last_connexion' => get_user_meta($user->ID, 'last_connexion', true)
+            ];
+        }
+        return $result;
+    }
 }

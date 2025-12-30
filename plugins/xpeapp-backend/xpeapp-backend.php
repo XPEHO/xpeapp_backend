@@ -167,6 +167,30 @@ class Xpeapp_Backend {
 				}
 			)
 		);
+		// Ajout de la route pour mettre à jour la date de dernière connexion
+		register_rest_route(
+			$endpoint_namespace,
+			'/user:last-connexion',
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => [UserController::class, 'apiUpdateLastConnexion'],
+				'permission_callback' => function () {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
+				}
+			)
+		);
+		// Ajout de la route pour récupérer la date de dernière connexion
+		register_rest_route(
+			$endpoint_namespace,
+			'/user:last-connexion',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => [UserController::class, 'apiGetAllLastConnexions'],
+				'permission_callback' => function () {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
+				}
+			)
+		);
 		// POST NOTIFICATION
 		// In: title, message, redirection
 		// Out: Success or error message
