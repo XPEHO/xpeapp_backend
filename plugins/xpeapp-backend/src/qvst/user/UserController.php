@@ -106,13 +106,14 @@ class UserController {
             'orderby' => 'meta_value',
             'order' => 'DESC',
             'meta_key' => 'last_connection',
-            'fields' => ['ID', 'user_nicename'],
+            'fields' => ['ID'],
         ];
         $users = get_users($args);
         $result = [];
         foreach ($users as $user) {
             $result[] = [
-                'user_nicename' => $user->user_nicename,
+                'first_name' => get_user_meta($user->ID, 'first_name', true),
+                'last_name' => get_user_meta($user->ID, 'last_name', true),
                 'last_connection' => get_user_meta($user->ID, 'last_connection', true)
             ];
         }
