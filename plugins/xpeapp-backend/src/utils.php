@@ -48,7 +48,7 @@ function prepareData($params, $fields)
     }, ARRAY_FILTER_USE_KEY);
 }
 
-function buildQueryWithPaginationAndFilters($table, $page, $date_field, $items_per_page = 10, $custom_query = null)
+function buildQueryWithPaginationAndFilters($table, $page, $date_field, $items_per_page = 10, $custom_query = null, $end_date_field = null)
 {
     global $wpdb;
 
@@ -67,11 +67,23 @@ function buildQueryWithPaginationAndFilters($table, $page, $date_field, $items_p
     $offset = 0;
 
     if ($page === 'week') {
-        // Filter records in the next 7 days
-        $condition = " WHERE $date_field BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)";
+        if ($end_date_field) {
+            // Filter events that are still active (end_date >= today, or date >= today if no end_date)
+            // AND start date is within the next 7 days
+            $condition = " WHERE COALESCE($end_date_field, $date_field) >= CURDATE() AND $date_field <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)";
+        } else {
+            // Filter records in the next 7 days
+            $condition = " WHERE $date_field BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)";
+        }
     } elseif ($page === 'month') {
-        // Filter records in the next 30 days
-        $condition = " WHERE $date_field BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)";
+        if ($end_date_field) {
+            // Filter events that are still active (end_date >= today, or date >= today if no end_date)
+            // AND start date is within the next 30 days
+            $condition = " WHERE COALESCE($end_date_field, $date_field) >= CURDATE() AND $date_field <= DATE_ADD(CURDATE(), INTERVAL 30 DAY)";
+        } else {
+            // Filter records in the next 30 days
+            $condition = " WHERE $date_field BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)";
+        }
     } else {
         // Apply pagination
         $page = is_numeric($page) ? intval($page) : 1;
