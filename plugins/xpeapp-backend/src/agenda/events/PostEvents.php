@@ -23,7 +23,7 @@ class PostEvents {
             $response = createErrorResponse('invalid_type_id', 'Invalid type does not exist', 400);
         } else {
             // Insert the event into the database
-            $result = $wpdb->insert($table_events, prepareData($params, ['title', 'date', 'start_time', 'end_time', 'location', 'topic', 'type_id']));
+            $result = $wpdb->insert($table_events, prepareData($params, ['title', 'date', 'end_date', 'start_time', 'end_time', 'location', 'topic', 'type_id']));
 
             if ($result === false) {
                 $response = createErrorResponse('db_insert_error', 'Could not insert event', 500);

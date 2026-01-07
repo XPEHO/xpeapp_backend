@@ -29,6 +29,9 @@ class GetEventsById {
             $event = $wpdb->get_row($query);
 
             if ($event) {
+                if (!property_exists($event, 'end_date')) {
+                    $event->end_date = null;
+                }
                 $response = createSuccessResponse($event);
             } else {
                 $response = createErrorResponse('db_get_error', 'Could not get event', 400);
