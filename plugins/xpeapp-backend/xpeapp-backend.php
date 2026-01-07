@@ -2,12 +2,12 @@
 
 /**
  * @package           XpeApp Backend
- * @since             1.1.0
+ * @since             1.1.1
  *
  * @wordpress-plugin
  * Plugin Name:       XpeApp Backend
  * Description:       Defines the REST API endpoints and the backend logic for XpeApp. The endpoints are authenticated using jwt.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Author:            XPEHO
  * Text Domain:       xpeapp-backend
  * Requires Plugins: jwt-authentication-for-wp-rest-api, advanced-custom-fields
@@ -164,6 +164,30 @@ class Xpeapp_Backend {
 				'callback' => [UserController::class, 'apiGetUser'],
 				'permission_callback' => function () {
 					return $this->secure_endpoint_with_parameter(null);
+				}
+			)
+		);
+		// Route pour mettre à jour la date de dernière connexion
+		register_rest_route(
+			$endpoint_namespace,
+			'/user:last-connection',
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => [UserController::class, 'apiUpdateLastConnexion'],
+				'permission_callback' => function () use ($userQvstParameter) {
+					return $this->secure_endpoint_with_parameter($userQvstParameter);
+				}
+			)
+		);
+		// Route pour récupérer la date de dernière connexion
+		register_rest_route(
+			$endpoint_namespace,
+			'/user:last-connection',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => [UserController::class, 'apiGetAllLastConnexions'],
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}
 			)
 		);
