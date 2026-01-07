@@ -48,48 +48,40 @@ function prepareData($params, $fields)
     }, ARRAY_FILTER_USE_KEY);
 }
 
-function buildQueryWithPaginationAndFilters($table, $page, $date_field, $items_per_page = 10, $custom_query = null, $end_date_field = null)
-{
+function buildQueryWithPaginationAndFilters(
+    string $table,
+    $page,
+    string $dateField,
+    int $itemsPerPage = 10,
+    ?string $customQuery = null,
+    ?string $endDateField = null
+) {
     global $wpdb;
 
-    
-    if ($custom_query) {
-        $query = $custom_query;
-    } else {
-        $query = "SELECT * FROM $table";
-    }
+    $query = $customQuery ?? "SELECT * FROM {$table}";
+    $conditions = [];
+    $limit = '';
+    $orderBy = " ORDER BY {$dateField} DESC";
 
-    // Initialize query parts
-    $condition = "";
-    $sort = " ORDER BY $date_field DESC";
-    $limits = "";
+    // Week / Month filters
+    if ($page === 'week' || $page === 'month') {
+        $days = $page === 'week' ? 7 : 30;
 
-    $offset = 0;
-
-    if ($page === 'week') {
-        if ($end_date_field) {
-            // Filter events that are still active (end_date >= today, or date >= today if no end_date)
-            // AND start date is within the next 7 days
-            $condition = " WHERE COALESCE($end_date_field, $date_field) >= CURDATE() AND $date_field <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)";
+        if ($endDateField) {
+            $conditions[] = "COALESCE({$endDateField}, {$dateField}) >= CURDATE()";
+            $conditions[] = "{$dateField} <= DATE_ADD(CURDATE(), INTERVAL {$days} DAY)";
         } else {
-            // Filter records in the next 7 days
-            $condition = " WHERE $date_field BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)";
-        }
-    } elseif ($page === 'month') {
-        if ($end_date_field) {
-            // Filter events that are still active (end_date >= today, or date >= today if no end_date)
-            // AND start date is within the next 30 days
-            $condition = " WHERE COALESCE($end_date_field, $date_field) >= CURDATE() AND $date_field <= DATE_ADD(CURDATE(), INTERVAL 30 DAY)";
-        } else {
-            // Filter records in the next 30 days
-            $condition = " WHERE $date_field BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)";
+            $conditions[] = "{$dateField} BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL {$days} DAY)";
         }
     } else {
-        // Apply pagination
-        $page = is_numeric($page) ? intval($page) : 1;
-        $offset = ($page - 1) * $items_per_page;
-        $limits = " LIMIT $items_per_page OFFSET $offset";
+        // Pagination
+        $page = max(1, (int) $page);
+        $offset = ($page - 1) * $itemsPerPage;
+        $limit = " LIMIT {$itemsPerPage} OFFSET {$offset}";
     }
 
-    return $wpdb->prepare($query . $condition . $sort . $limits);
+    $where = $conditions ? ' WHERE ' . implode(' AND ', $conditions) : '';
+
+    return $query . $where . $orderBy . $limit;
 }
+
