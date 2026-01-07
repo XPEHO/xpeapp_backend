@@ -26,7 +26,7 @@ class PutEvents {
             $response = createErrorResponse('invalid_type_id', 'Invalid type_id does not exist', 400);
         } else {
             // Update the event in the database
-            $result = $wpdb->update($table_events, prepareData($params, ['date', 'start_time', 'end_time', 'title', 'location', 'topic', 'type_id']), ['id' => intval($params['id'])]);
+            $result = $wpdb->update($table_events, prepareData($params, ['date', 'end_date', 'start_time', 'end_time', 'title', 'location', 'topic', 'type_id']), ['id' => intval($params['id'])]);
 
             if ($result === false) {
                 $response = createErrorResponse('db_update_error', 'Could not update event', 500);
