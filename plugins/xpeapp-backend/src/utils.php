@@ -48,36 +48,40 @@ function prepareData($params, $fields)
     }, ARRAY_FILTER_USE_KEY);
 }
 
-function buildQueryWithPaginationAndFilters($table, $page, $date_field, $items_per_page = 10, $custom_query = null)
-{
+function buildQueryWithPaginationAndFilters(
+    string $table,
+    $page,
+    string $dateField,
+    int $itemsPerPage = 10,
+    ?string $customQuery = null,
+    ?string $endDateField = null
+) {
     global $wpdb;
 
-    
-    if ($custom_query) {
-        $query = $custom_query;
+    $query = $customQuery ?? "SELECT * FROM {$table}";
+    $conditions = [];
+    $limit = '';
+    $orderBy = " ORDER BY {$dateField} DESC";
+
+    // Week / Month filters
+    if ($page === 'week' || $page === 'month') {
+        $days = $page === 'week' ? 7 : 30;
+
+        if ($endDateField) {
+            $conditions[] = "COALESCE({$endDateField}, {$dateField}) >= CURDATE()";
+            $conditions[] = "{$dateField} <= DATE_ADD(CURDATE(), INTERVAL {$days} DAY)";
+        } else {
+            $conditions[] = "{$dateField} BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL {$days} DAY)";
+        }
     } else {
-        $query = "SELECT * FROM $table";
+        // Pagination
+        $page = max(1, (int) $page);
+        $offset = ($page - 1) * $itemsPerPage;
+        $limit = " LIMIT {$itemsPerPage} OFFSET {$offset}";
     }
 
-    // Initialize query parts
-    $condition = "";
-    $sort = " ORDER BY $date_field DESC";
-    $limits = "";
+    $where = $conditions ? ' WHERE ' . implode(' AND ', $conditions) : '';
 
-    $offset = 0;
-
-    if ($page === 'week') {
-        // Filter records in the next 7 days
-        $condition = " WHERE $date_field BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)";
-    } elseif ($page === 'month') {
-        // Filter records in the next 30 days
-        $condition = " WHERE $date_field BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)";
-    } else {
-        // Apply pagination
-        $page = is_numeric($page) ? intval($page) : 1;
-        $offset = ($page - 1) * $items_per_page;
-        $limits = " LIMIT $items_per_page OFFSET $offset";
-    }
-
-    return $wpdb->prepare($query . $condition . $sort . $limits);
+    return $query . $where . $orderBy . $limit;
 }
+
