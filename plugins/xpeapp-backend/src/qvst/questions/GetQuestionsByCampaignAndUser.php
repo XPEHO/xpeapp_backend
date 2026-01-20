@@ -33,10 +33,12 @@ class GetQuestionsByCampaignAndUser {
 			} else {
 
 				// Get the questions of the campaign
+				// Use COALESCE to prefer the snapshot text stored in campaign_questions,
+				// falling back to current question text for backwards compatibility
 				$questionsSql = "
 				SELECT
 					question.id AS question_id,
-					question.text AS question,
+					COALESCE(campaigns.question_text, question.text) AS question,
 					answers.id AS answer_id,
 					answers.name,
 					answers.value,

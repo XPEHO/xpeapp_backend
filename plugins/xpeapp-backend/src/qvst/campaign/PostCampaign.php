@@ -15,6 +15,7 @@ class PostCampaign {
 	$table_name_campaigns = $wpdb->prefix . 'qvst_campaign';
 	$table_name_theme = $wpdb->prefix . 'qvst_theme';
 	$table_name_campaign_questions = $wpdb->prefix . 'qvst_campaign_questions';
+	$table_name_questions = $wpdb->prefix . 'qvst_questions';
 
 	$params = $request->get_params();
 
@@ -69,13 +70,30 @@ class PostCampaign {
 		// Associer les thèmes à la campagne
 		setThemesForCampaign($campaign_id, $params['themes']);
 
-		// save questions
+		// save questions with text snapshot for historical records
+		$skippedQuestions = array();
 		foreach ($params['questions'] as $question) {
+			// Get current question data
+			$question_data = $wpdb->get_row($wpdb->prepare(
+				"SELECT text, no_longer_used FROM $table_name_questions WHERE id = %d",
+				$question['id']
+			));
+
+			// Skip questions marked as no_longer_used
+			if ($question_data && $question_data->no_longer_used == 1) {
+				$skippedQuestions[] = $question['id'];
+				xpeapp_log(\Xpeapp_Log_Level::Warn, "POST campaign - Skipping question ID {$question['id']} (no_longer_used)");
+				continue;
+			}
+
+			$question_text = $question_data ? $question_data->text : null;
+
 			$wpdb->insert(
 				$table_name_campaign_questions,
 				array(
 					'campaign_id' => $campaign_id,
-					'question_id' => $question['id']
+					'question_id' => $question['id'],
+					'question_text' => $question_text
 				)
 			);
 		}

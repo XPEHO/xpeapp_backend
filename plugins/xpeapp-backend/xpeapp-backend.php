@@ -2,12 +2,12 @@
 
 /**
  * @package           XpeApp Backend
- * @since             1.1.1
+ * @since             1.2.0
  *
  * @wordpress-plugin
  * Plugin Name:       XpeApp Backend
  * Description:       Defines the REST API endpoints and the backend logic for XpeApp. The endpoints are authenticated using jwt.
- * Version:           1.1.1
+ * Version:           1.2.0
  * Author:            XPEHO
  * Text Domain:       xpeapp-backend
  * Requires Plugins: jwt-authentication-for-wp-rest-api, advanced-custom-fields
@@ -37,6 +37,7 @@ use XpeApp\qvst\questions\GetQuestionsByCampaign;
 use XpeApp\qvst\questions\PutQvstQuestion;
 use XpeApp\qvst\questions\PostQuestionsAnswers;
 use XpeApp\qvst\questions\PostOpenAnswers;
+use XpeApp\qvst\questions\GetCsvFileQuestions;
 
 /// Campaign
 use XpeApp\qvst\campaign\GetListOfCampaigns;
@@ -57,6 +58,7 @@ use XpeApp\qvst\themes\GetListOfThemes;
 /// Answer repository
 include 'src/qvst/answer_repository/get_answers_repo_list.php';
 include 'src/qvst/answer_repository/put_answer_repo.php';
+use XpeApp\qvst\answer_repository\PostAnswersRepo;
 
 /// User
 use XpeApp\qvst\user\UserController;
@@ -246,6 +248,18 @@ class Xpeapp_Backend {
 				}
 			)
 		);
+		// GET - Export questions to CSV
+		register_rest_route(
+			$endpoint_namespace,
+			'/qvst:export',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => [GetCsvFileQuestions::class, 'apiGetCsvFileQuestions'],
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
+				}
+			)
+		);
 
 		// === QVST Question ===
 		register_rest_route(
@@ -338,6 +352,18 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => 'api_update_answers_repo',
+				'permission_callback' => function () use ($adminQvstParameter) {
+					return $this->secure_endpoint_with_parameter($adminQvstParameter);
+				}
+			)
+		);
+		// POST - Add new answers repository
+		register_rest_route(
+			$endpoint_namespace,
+			'/qvst/answers_repo:add',
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => [PostAnswersRepo::class, 'apiPostAnswersRepo'],
 				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
 				}

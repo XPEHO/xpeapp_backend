@@ -38,6 +38,8 @@ class GetStatsOfCampaign {
 				questions.id as 'question_id',
 				questions.text as 'question',
 				questions.answer_repo_id,
+				COALESCE(questions.reversed_question, 0) as 'reversed_question',
+				COALESCE(questions.no_longer_used, 0) as 'no_longer_used',
 				campaign.status as 'status',
 				campaign.action as 'action' 
 			FROM $table_name_questions questions

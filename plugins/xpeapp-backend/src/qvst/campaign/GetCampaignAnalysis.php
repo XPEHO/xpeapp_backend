@@ -14,9 +14,27 @@ function calculateQuestionSatisfaction($stats_data)
         $total_responses = 0;
         $satisfied_count = 0;
         
+        // Check if this is a reversed question
+        $is_reversed = isset($question->reversed_question) && (bool)$question->reversed_question;
+        
+        // Find min and max values in the answer repository for value inversion
+        $min_value = PHP_INT_MAX;
+        $max_value = PHP_INT_MIN;
+        foreach ($question->answers as $answer) {
+            $value = (int)$answer->value;
+            if ($value < $min_value) $min_value = $value;
+            if ($value > $max_value) $max_value = $value;
+        }
+        
         foreach ($question->answers as $answer) {
             $count = (int)$answer->numberAnswered;
             $value = (int)$answer->value;
+            
+            // If reversed question, invert the value
+            // Example: if scale is 1-5, value 5 becomes 1, value 1 becomes 5
+            if ($is_reversed) {
+                $value = $max_value + $min_value - $value;
+            }
             
             $total_responses += $count;
             
@@ -35,6 +53,7 @@ function calculateQuestionSatisfaction($stats_data)
             'satisfaction_percentage' => $satisfaction_percentage,
             'total_responses' => $total_responses,
             'requires_action' => $satisfaction_percentage < 75,
+            'reversed_question' => $is_reversed,
             'answers' => $question->answers
         ];
         
@@ -58,13 +77,26 @@ function analyzeEmployeesAtRisk($wpdb, $campaign_id)
     $table_campaign_answers = $wpdb->prefix . 'qvst_campaign_answers';
     $table_answers = $wpdb->prefix . 'qvst_answers';
     $table_open_answers = $wpdb->prefix . 'qvst_open_answers';
+    $table_questions = $wpdb->prefix . 'qvst_questions';
+    $table_answers_repository = $wpdb->prefix . 'qvst_answers_repository';
 
+    // Get answers with reversed_question info and min/max values per answer repo
     $employee_answers = $wpdb->get_results($wpdb->prepare("
         SELECT
             ca.answer_group_id,
-            a.value as answer_value
+            ca.question_id,
+            a.value as answer_value,
+            COALESCE(q.reversed_question, 0) as reversed_question,
+            repo_stats.min_value,
+            repo_stats.max_value
         FROM $table_campaign_answers ca
         INNER JOIN $table_answers a ON a.id = ca.answer_id
+        INNER JOIN $table_questions q ON q.id = ca.question_id
+        INNER JOIN (
+            SELECT answer_repo_id, MIN(value) as min_value, MAX(value) as max_value
+            FROM $table_answers
+            GROUP BY answer_repo_id
+        ) repo_stats ON repo_stats.answer_repo_id = q.answer_repo_id
         WHERE ca.campaign_id = %d
     ", $campaign_id));
 
@@ -82,6 +114,11 @@ function analyzeEmployeesAtRisk($wpdb, $campaign_id)
     foreach ($employee_answers as $row) {
         $group_id = $row->answer_group_id;
         $value = (int)$row->answer_value;
+        
+        // Invert value for reversed questions
+        if ((bool)$row->reversed_question) {
+            $value = (int)$row->max_value + (int)$row->min_value - $value;
+        }
         
         if (!isset($employees_data[$group_id])) {
             $employees_data[$group_id] = [
