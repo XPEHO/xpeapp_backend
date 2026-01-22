@@ -70,12 +70,12 @@ class PostCampaign {
 		// Associer les thèmes à la campagne
 		setThemesForCampaign($campaign_id, $params['themes']);
 
-		// save questions with text snapshot for historical records
+		// save questions (skip no_longer_used)
 		$skippedQuestions = array();
 		foreach ($params['questions'] as $question) {
-			// Get current question data
+			// Get current question data to check no_longer_used
 			$question_data = $wpdb->get_row($wpdb->prepare(
-				"SELECT text, no_longer_used FROM $table_name_questions WHERE id = %d",
+				"SELECT no_longer_used FROM $table_name_questions WHERE id = %d",
 				$question['id']
 			));
 
@@ -86,14 +86,11 @@ class PostCampaign {
 				continue;
 			}
 
-			$question_text = $question_data ? $question_data->text : null;
-
 			$wpdb->insert(
 				$table_name_campaign_questions,
 				array(
 					'campaign_id' => $campaign_id,
-					'question_id' => $question['id'],
-					'question_text' => $question_text
+					'question_id' => $question['id']
 				)
 			);
 		}

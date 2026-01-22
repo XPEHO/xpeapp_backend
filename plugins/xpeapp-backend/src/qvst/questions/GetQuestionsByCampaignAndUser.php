@@ -38,7 +38,7 @@ class GetQuestionsByCampaignAndUser {
 				$questionsSql = "
 				SELECT
 					question.id AS question_id,
-					COALESCE(campaigns.question_text, question.text) AS question,
+					question.text AS question,
 					answers.id AS answer_id,
 					answers.name,
 					answers.value,

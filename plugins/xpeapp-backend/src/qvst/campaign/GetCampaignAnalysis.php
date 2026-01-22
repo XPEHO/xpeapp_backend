@@ -81,11 +81,12 @@ function analyzeEmployeesAtRisk($wpdb, $campaign_id)
     $table_answers_repository = $wpdb->prefix . 'qvst_answers_repository';
 
     // Get answers with reversed_question info and min/max values per answer repo
+    // Use snapshot values (answer_value) if available, fallback to current values
     $employee_answers = $wpdb->get_results($wpdb->prepare("
         SELECT
             ca.answer_group_id,
             ca.question_id,
-            a.value as answer_value,
+            COALESCE(ca.answer_value, a.value) as answer_value,
             COALESCE(q.reversed_question, 0) as reversed_question,
             repo_stats.min_value,
             repo_stats.max_value

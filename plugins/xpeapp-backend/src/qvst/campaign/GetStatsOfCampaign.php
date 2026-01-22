@@ -32,11 +32,14 @@ class GetStatsOfCampaign {
 		if (empty($campaign)) {
 			return new \WP_Error('noID', __('No campaign found', 'QVST'));
 		}
-		// Get the questions of the campaign 
+		// Get the questions of the campaign, use snapshot question_text if available (for closed campaigns)
 		$questionsSql = "
 			SELECT 
 				questions.id as 'question_id',
-				questions.text as 'question',
+				COALESCE(
+					(SELECT MAX(ca.question_text) FROM $table_name_campaign_answers ca WHERE ca.campaign_id = campaign.id AND ca.question_id = questions.id AND ca.question_text IS NOT NULL AND ca.question_text != ''),
+					questions.text
+				) as 'question',
 				questions.answer_repo_id,
 				COALESCE(questions.reversed_question, 0) as 'reversed_question',
 				COALESCE(questions.no_longer_used, 0) as 'no_longer_used',
@@ -52,18 +55,24 @@ class GetStatsOfCampaign {
 		// Récupérer les thèmes de la campagne
 		$themes = getThemesForCampaign($campaign_id);
 
-		// Get the answers of each question
+		// Get the answers of each question (use snapshot text from campaign_answers if available)
 		foreach ($questions as &$question) {
 			$answersSql = "
 					SELECT 
-					answers.id,
-					answers.name as 'answer',
-					answers.value,
+					campaigns_answers.answer_id as 'id',
+					COALESCE(
+						MAX(NULLIF(campaigns_answers.answer_text, '')),
+						answers.name
+					) as 'answer',
+					COALESCE(
+						MAX(NULLIF(campaigns_answers.answer_value, '')),
+						answers.value
+					) as 'value',
 					COUNT(campaigns_answers.id) as 'numberAnswered'
-				FROM $table_name_answers answers
-				INNER JOIN $table_name_campaign_answers campaigns_answers ON answers.id=campaigns_answers.answer_id
+				FROM $table_name_campaign_answers campaigns_answers
+				LEFT JOIN $table_name_answers answers ON answers.id=campaigns_answers.answer_id
 				WHERE campaigns_answers.campaign_id=%d AND campaigns_answers.question_id=%d
-				GROUP BY answers.id
+				GROUP BY campaigns_answers.answer_id, answers.name, answers.value
 			";
 
 			$answers = $wpdb->get_results($wpdb->prepare($answersSql, $campaign_id, $question->question_id));
