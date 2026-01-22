@@ -57,6 +57,15 @@ class PutQvstQuestion {
 					'theme_id' => $body->theme_id ?? $question->theme_id,
 					'answer_repo_id' => $body->answer_repo_id ?? $question->answer_repo_id
 				);
+
+				// Handle optional boolean fields
+				if (isset($body->reversed_question)) {
+					$questionToInsert['reversed_question'] = (int) filter_var($body->reversed_question, FILTER_VALIDATE_BOOLEAN);
+				}
+				if (isset($body->no_longer_used)) {
+					$questionToInsert['no_longer_used'] = (int) filter_var($body->no_longer_used, FILTER_VALIDATE_BOOLEAN);
+				}
+
 				// Update question with question in the body
 				$wpdb->update(
 					$table_name_questions,

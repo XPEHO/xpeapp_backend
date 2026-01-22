@@ -34,7 +34,9 @@ class GetQvstQuestionsByTheme {
 				answers.id as answer_id,
 				answers.name,
 				answers.value,
-				COALESCE(cq.num_occurrences, 0) as numberAsked
+				COALESCE(cq.num_occurrences, 0) as numberAsked,
+				COALESCE(question.reversed_question, 0) as reversed_question,
+				COALESCE(question.no_longer_used, 0) as no_longer_used
 			FROM {$table_name_answers} answers
 			INNER JOIN {$table_name_questions} question ON question.answer_repo_id = answers.answer_repo_id
 			INNER JOIN {$table_name_theme} theme ON question.theme_id = theme.id
@@ -45,6 +47,12 @@ class GetQvstQuestionsByTheme {
 			) cq ON question.id = cq.question_id
 			WHERE theme.id = %d
 			";
+
+			// Check if we should include no_longer_used questions (default: false)
+			$includeNoLongerUsed = filter_var($request->get_param('include_no_longer_used'), FILTER_VALIDATE_BOOLEAN);
+			if (!$includeNoLongerUsed) {
+				$queryAnswer .= " AND COALESCE(question.no_longer_used, 0) = 0";
+			}
 
 			$resultsAnswer = $wpdb->get_results($wpdb->prepare($queryAnswer, $theme_id));
 			// Return all rows
@@ -70,6 +78,8 @@ class GetQvstQuestionsByTheme {
 						'theme_id' => $result->theme_id,
 						'answer_repo_id' => $result->answer_repo_id,
 						'numberAsked' => intval($result->numberAsked),
+						'reversed_question' => (bool) $result->reversed_question,
+						'no_longer_used' => (bool) $result->no_longer_used,
 						'answers' => array(
 							array(
 								'id' => $result->answer_id,
