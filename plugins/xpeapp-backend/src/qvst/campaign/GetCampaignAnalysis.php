@@ -85,8 +85,6 @@ function analyzeEmployeesAtRisk($wpdb, $campaign_id)
     $table_open_answers = $wpdb->prefix . 'qvst_open_answers';
     $table_questions = $wpdb->prefix . 'qvst_questions';
 
-    // Get answers with reversed_question info and min/max values per answer repo
-    // Use snapshot values (answer_value) if available, fallback to current values
     $employee_answers = $wpdb->get_results($wpdb->prepare("
         SELECT
             ca.answer_group_id,
@@ -118,26 +116,7 @@ function analyzeEmployeesAtRisk($wpdb, $campaign_id)
 
     $employees_data = [];
     foreach ($employee_answers as $row) {
-        $group_id = $row->answer_group_id;
-        $value = (int)$row->answer_value;
-        
-        // Invert value for reversed questions
-        if ((bool)$row->reversed_question) {
-            $value = (int)$row->max_value + (int)$row->min_value - $value;
-        }
-        
-        if (!isset($employees_data[$group_id])) {
-            $employees_data[$group_id] = [
-                'total_responses' => 0,
-                'satisfied_count' => 0,
-                'open_answer' => null
-            ];
-        }
-        
-        $employees_data[$group_id]['total_responses']++;
-        if ($value >= 4) {
-            $employees_data[$group_id]['satisfied_count']++;
-        }
+        updateEmployeeData($employees_data, $row);
     }
 
     foreach ($open_answers as $open) {
@@ -146,26 +125,57 @@ function analyzeEmployeesAtRisk($wpdb, $campaign_id)
         }
     }
 
-    $at_risk_employees = [];
-    foreach ($employees_data as $group_id => $employee) {
-        if ($employee['total_responses'] > 0) {
-            $satisfaction = round(($employee['satisfied_count'] / $employee['total_responses']) * 100, 2);
-            
-            if ($satisfaction < 75) {
-                $at_risk_employees[] = [
-                    'anonymous_user_id' => $group_id,
-                    'satisfaction_percentage' => $satisfaction,
-                    'total_responses' => $employee['total_responses'],
-                    'open_answer' => $employee['open_answer']
-                ];
-            }
-        }
-    }
+    $at_risk_employees = getAtRiskEmployees($employees_data);
 
     return [
         'employees_data' => $employees_data,
         'at_risk_employees' => $at_risk_employees
     ];
+}
+
+function getEmployeeSatisfaction($employee)
+{
+    if ($employee['total_responses'] > 0) {
+        return round(($employee['satisfied_count'] / $employee['total_responses']) * 100, 2);
+    }
+    return 0;
+}
+
+function getAtRiskEmployees($employees_data)
+{
+    $at_risk_employees = [];
+    foreach ($employees_data as $group_id => $employee) {
+        $satisfaction = getEmployeeSatisfaction($employee);
+        if ($employee['total_responses'] > 0 && $satisfaction < 75) {
+            $at_risk_employees[] = [
+                'anonymous_user_id' => $group_id,
+                'satisfaction_percentage' => $satisfaction,
+                'total_responses' => $employee['total_responses'],
+                'open_answer' => $employee['open_answer']
+            ];
+        }
+    }
+    return $at_risk_employees;
+}
+
+function updateEmployeeData(&$employees_data, $row)
+{
+    $group_id = $row->answer_group_id;
+    $value = (int)$row->answer_value;
+    if ((bool)$row->reversed_question) {
+        $value = (int)$row->max_value + (int)$row->min_value - $value;
+    }
+    if (!isset($employees_data[$group_id])) {
+        $employees_data[$group_id] = [
+            'total_responses' => 0,
+            'satisfied_count' => 0,
+            'open_answer' => null
+        ];
+    }
+    $employees_data[$group_id]['total_responses']++;
+    if ($value >= 4) {
+        $employees_data[$group_id]['satisfied_count']++;
+    }
 }
 
 function calculateGlobalDistribution($questions_analysis)
