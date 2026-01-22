@@ -9,48 +9,16 @@ function calculateQuestionSatisfaction($stats_data)
     $questions_analysis = [];
     $questions_requiring_action = [];
     $total_satisfaction = 0;
-    
+
     foreach ($stats_data['questions'] as $question) {
-        $total_responses = 0;
-        $satisfied_count = 0;
-        
-        // Check if this is a reversed question
         $is_reversed = isset($question->reversed_question) && (bool)$question->reversed_question;
-        
-        // Find min and max values in the answer repository for value inversion
-        $min_value = PHP_INT_MAX;
-        $max_value = PHP_INT_MIN;
-        foreach ($question->answers as $answer) {
-            $value = (int)$answer->value;
-            if ($value < $min_value) {
-                $min_value = $value;
-            }
-            if ($value > $max_value) {
-                $max_value = $value;
-            }
-        }
-        
-        foreach ($question->answers as $answer) {
-            $count = (int)$answer->numberAnswered;
-            $value = (int)$answer->value;
-            
-            // If reversed question, invert the value
-            // Example: if scale is 1-5, value 5 becomes 1, value 1 becomes 5
-            if ($is_reversed) {
-                $value = $max_value + $min_value - $value;
-            }
-            
-            $total_responses += $count;
-            
-            if ($value >= 4) {
-                $satisfied_count += $count;
-            }
-        }
-        
+        list($min_value, $max_value) = getMinMaxAnswerValues($question->answers);
+        list($total_responses, $satisfied_count) = getSatisfactionCounts($question->answers, $is_reversed, $min_value, $max_value);
+
         $satisfaction_percentage = $total_responses > 0
             ? round(($satisfied_count / $total_responses) * 100, 2)
             : 0;
-        
+
         $question_data = [
             'question_id' => $question->question_id,
             'question_text' => $question->question,
@@ -60,20 +28,54 @@ function calculateQuestionSatisfaction($stats_data)
             'reversed_question' => $is_reversed,
             'answers' => $question->answers
         ];
-        
+
         $questions_analysis[] = $question_data;
         $total_satisfaction += $satisfaction_percentage;
-        
+
         if ($question_data['requires_action']) {
             $questions_requiring_action[] = $question_data;
         }
     }
-    
+
     return [
         'questions_analysis' => $questions_analysis,
         'questions_requiring_action' => $questions_requiring_action,
         'total_satisfaction' => $total_satisfaction
     ];
+}
+
+function getMinMaxAnswerValues($answers)
+{
+    $min_value = PHP_INT_MAX;
+    $max_value = PHP_INT_MIN;
+    foreach ($answers as $answer) {
+        $value = (int)$answer->value;
+        if ($value < $min_value) {
+            $min_value = $value;
+        }
+        if ($value > $max_value) {
+            $max_value = $value;
+        }
+    }
+    return [$min_value, $max_value];
+}
+
+function getSatisfactionCounts($answers, $is_reversed, $min_value, $max_value)
+{
+    $total_responses = 0;
+    $satisfied_count = 0;
+    foreach ($answers as $answer) {
+        $count = (int)$answer->numberAnswered;
+        $value = (int)$answer->value;
+        if ($is_reversed) {
+            $value = $max_value + $min_value - $value;
+        }
+        $total_responses += $count;
+        if ($value >= 4) {
+            $satisfied_count += $count;
+        }
+    }
+    return [$total_responses, $satisfied_count];
 }
 
 function analyzeEmployeesAtRisk($wpdb, $campaign_id)
@@ -198,52 +200,52 @@ class GetCampaignAnalysis {
         global $wpdb;
         $params = $request->get_params();
         $campaign_id = $params['id'] ?? null;
+        $response = [];
+
         if (empty($campaign_id)) {
             xpeapp_log(\Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - No parameters");
-            return [];
-        }
+        } else {
+            try {
+                $stats_request = new \WP_REST_Request('GET', '/qvst/campaigns/{id}/stats');
+                $stats_request->set_param('id', $campaign_id);
+                $stats_response = GetStatsOfCampaign::apiGetQvstStatsByCampaignId($stats_request);
+                if (is_wp_error($stats_response)) {
+                    xpeapp_log(\Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Stats error: " . $stats_response->get_error_message());
+                } else {
+                    $stats_data = $stats_response->get_data();
+                    $question_results = calculateQuestionSatisfaction($stats_data);
+                    $employee_results = analyzeEmployeesAtRisk($wpdb, $campaign_id);
+                    $global_distribution_array = calculateGlobalDistribution($question_results['questions_analysis']);
 
-        try {
-            $stats_request = new \WP_REST_Request('GET', '/qvst/campaigns/{id}/stats');
-            $stats_request->set_param('id', $campaign_id);
-            $stats_response = GetStatsOfCampaign::apiGetQvstStatsByCampaignId($stats_request);
-            if (is_wp_error($stats_response)) {
-                xpeapp_log(\Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Stats error: " . $stats_response->get_error_message());
-                return [];
+                    $total_questions = count($question_results['questions_analysis']);
+                    $average_satisfaction = $total_questions > 0
+                        ? round($question_results['total_satisfaction'] / $total_questions, 2)
+                        : 0;
+
+                    $response = [
+                        'campaign_id' => (int)$campaign_id,
+                        'campaign_name' => $stats_data['campaignName'],
+                        'campaign_status' => $stats_data['campaignStatus'],
+                        'start_date' => $stats_data['startDate'],
+                        'end_date' => $stats_data['endDate'],
+                        'themes' => $stats_data['themes'],
+                        'global_stats' => [
+                            'total_respondents' => count($employee_results['employees_data']),
+                            'total_questions' => $total_questions,
+                            'average_satisfaction' => $average_satisfaction,
+                            'requires_action' => $average_satisfaction < 75.0,
+                            'at_risk_count' => count($employee_results['at_risk_employees'])
+                        ],
+                        'global_distribution' => $global_distribution_array,
+                        'questions_analysis' => $question_results['questions_analysis'],
+                        'questions_requiring_action' => array_values($question_results['questions_requiring_action']),
+                        'at_risk_employees' => $employee_results['at_risk_employees']
+                    ];
+                }
+            } catch (\Throwable $th) {
+                xpeapp_log(\Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Error: " . $th->getMessage());
             }
-
-            $stats_data = $stats_response->get_data();
-            $question_results = calculateQuestionSatisfaction($stats_data);
-            $employee_results = analyzeEmployeesAtRisk($wpdb, $campaign_id);
-            $global_distribution_array = calculateGlobalDistribution($question_results['questions_analysis']);
-
-            $total_questions = count($question_results['questions_analysis']);
-            $average_satisfaction = $total_questions > 0
-                ? round($question_results['total_satisfaction'] / $total_questions, 2)
-                : 0;
-
-            return [
-                'campaign_id' => (int)$campaign_id,
-                'campaign_name' => $stats_data['campaignName'],
-                'campaign_status' => $stats_data['campaignStatus'],
-                'start_date' => $stats_data['startDate'],
-                'end_date' => $stats_data['endDate'],
-                'themes' => $stats_data['themes'],
-                'global_stats' => [
-                    'total_respondents' => count($employee_results['employees_data']),
-                    'total_questions' => $total_questions,
-                    'average_satisfaction' => $average_satisfaction,
-                    'requires_action' => $average_satisfaction < 75.0,
-                    'at_risk_count' => count($employee_results['at_risk_employees'])
-                ],
-                'global_distribution' => $global_distribution_array,
-                'questions_analysis' => $question_results['questions_analysis'],
-                'questions_requiring_action' => array_values($question_results['questions_requiring_action']),
-                'at_risk_employees' => $employee_results['at_risk_employees']
-            ];
-        } catch (\Throwable $th) {
-            xpeapp_log(\Xpeapp_Log_Level::Error, "GET xpeho/v1/qvst/campaigns/{id}:analysis - Error: " . $th->getMessage());
-            return [];
         }
+        return $response;
     }
 }

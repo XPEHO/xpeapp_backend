@@ -35,32 +35,19 @@ class PostAnswersRepo {
 
     private static function validateAnswersRepoBody($body, $table_name_answers_repository)
     {
+        $response = null;
         if (empty($body)) {
-            return createErrorResponse('missing_body', 'No body provided', 400);
+            $response = createErrorResponse('missing_body', 'No body provided', 400);
+        } elseif (!isset($body->repoName) || empty($body->repoName)) {
+            $response = createErrorResponse('missing_param', 'Missing repoName', 400);
+        } elseif (!isset($body->answers) || empty($body->answers) || !is_array($body->answers)) {
+            $response = createErrorResponse('missing_param', 'Missing or invalid answers array', 400);
+        } elseif (entityExists($body->repoName, $table_name_answers_repository, 'name')) {
+            $response = createErrorResponse('already_exists', 'Repository already exists', 409);
         }
-        if (!isset($body->repoName) || empty($body->repoName)) {
-            return createErrorResponse('missing_param', 'Missing repoName', 400);
-        }
-        if (!isset($body->answers) || empty($body->answers) || !is_array($body->answers)) {
-            return createErrorResponse('missing_param', 'Missing or invalid answers array', 400);
-        }
-        if (entityExists($body->repoName, $table_name_answers_repository, 'name')) {
-            return createErrorResponse('already_exists', 'Repository already exists', 409);
-        }
-        return null;
+        return $response;
     }
 
-    private static function insertAnswersRepository($repoName, $table_name_answers_repository, $wpdb)
-    {
-        $result = $wpdb->insert(
-            $table_name_answers_repository,
-            array('name' => sanitize_text_field($repoName))
-        );
-        if ($result === false) {
-            return null;
-        }
-        return $wpdb->insert_id;
-    }
 
     private static function insertAnswersList($answers, $repo_id, $table_answers, $wpdb)
     {

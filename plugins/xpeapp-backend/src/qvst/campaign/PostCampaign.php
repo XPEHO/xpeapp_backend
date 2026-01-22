@@ -14,57 +14,56 @@ class PostCampaign {
 		$table_name_questions = $wpdb->prefix . 'qvst_questions';
 		$params = $request->get_params();
 
+		$response = null;
+
 		$validation_error = self::validateCampaignParams($params);
 		if ($validation_error) {
-			return $validation_error;
+			$response = $validation_error;
+		} else {
+			$theme_error = self::validateThemesExist($params['themes'], $table_name_theme, $wpdb);
+			if ($theme_error) {
+				$response = $theme_error;
+			} else {
+				try {
+					$campaignToInsert = array(
+						'name' => $params['name'],
+						'status' => 'DRAFT',
+						'start_date' => $params['start_date'],
+						'end_date' => $params['end_date']
+					);
+
+					$wpdb->insert($table_name_campaigns, $campaignToInsert);
+					$campaign_id = $wpdb->insert_id;
+					setThemesForCampaign($campaign_id, $params['themes']);
+
+					self::insertCampaignQuestions($params['questions'], $campaign_id, $table_name_questions, $table_name_campaign_questions, $wpdb);
+
+					$response = new \WP_REST_Response(null, 201);
+				} catch (\Throwable $th) {
+					$response = new \WP_Error('error', __('Error', 'QVST'));
+				}
+			}
 		}
-
-		$theme_error = self::validateThemesExist($params['themes'], $table_name_theme, $wpdb);
-		if ($theme_error) {
-			return $theme_error;
-		}
-
-		try {
-			$campaignToInsert = array(
-				'name' => $params['name'],
-				'status' => 'DRAFT',
-				'start_date' => $params['start_date'],
-				'end_date' => $params['end_date']
-			);
-
-			$wpdb->insert($table_name_campaigns, $campaignToInsert);
-			$campaign_id = $wpdb->insert_id;
-			setThemesForCampaign($campaign_id, $params['themes']);
-
-			self::insertCampaignQuestions($params['questions'], $campaign_id, $table_name_questions, $table_name_campaign_questions, $wpdb);
-
-			return new \WP_REST_Response(null, 201);
-		} catch (\Throwable $th) {
-			return new \WP_Error('error', __('Error', 'QVST'));
-		}
+		return $response;
 	}
 
 	private static function validateCampaignParams($params)
 	{
+		$error = null;
 		if (empty($params)) {
-			return new \WP_Error('noParams', __('No parameters', 'QVST'));
+			$error = new \WP_Error('noParams', __('No parameters', 'QVST'));
+		} elseif (!isset($params['name'])) {
+			$error = new \WP_Error('noName', __('No name', 'QVST'));
+		} elseif (!isset($params['themes']) || !is_array($params['themes']) || count($params['themes']) === 0) {
+			$error = new \WP_Error('noThemes', __('No themes array provided', 'QVST'));
+		} elseif (!isset($params['start_date'])) {
+			$error = new \WP_Error('noStartDate', __('No start date', 'QVST'));
+		} elseif (!isset($params['end_date'])) {
+			$error = new \WP_Error('noEndDate', __('No end date', 'QVST'));
+		} elseif (!isset($params['questions'])) {
+			$error = new \WP_Error('noQuestions', __('No questions', 'QVST'));
 		}
-		if (!isset($params['name'])) {
-			return new \WP_Error('noName', __('No name', 'QVST'));
-		}
-		if (!isset($params['themes']) || !is_array($params['themes']) || count($params['themes']) === 0) {
-			return new \WP_Error('noThemes', __('No themes array provided', 'QVST'));
-		}
-		if (!isset($params['start_date'])) {
-			return new \WP_Error('noStartDate', __('No start date', 'QVST'));
-		}
-		if (!isset($params['end_date'])) {
-			return new \WP_Error('noEndDate', __('No end date', 'QVST'));
-		}
-		if (!isset($params['questions'])) {
-			return new \WP_Error('noQuestions', __('No questions', 'QVST'));
-		}
-		return null;
+		return $error;
 	}
 
 	private static function validateThemesExist($themes, $table_name_theme, $wpdb)
