@@ -5,87 +5,90 @@ require_once __DIR__ . '/campaign_themes_utils.php';
 
 class PostCampaign {
 	public static function apiPostCampaign(\WP_REST_Request $request)
-{
-	xpeapp_log_request($request);
-	
-	// Utiliser la classe $wpdb pour effectuer une requête SQL
-	global $wpdb;
+	{
+		xpeapp_log_request($request);
+		global $wpdb;
+		$table_name_campaigns = $wpdb->prefix . 'qvst_campaign';
+		$table_name_theme = $wpdb->prefix . 'qvst_theme';
+		$table_name_campaign_questions = $wpdb->prefix . 'qvst_campaign_questions';
+		$table_name_questions = $wpdb->prefix . 'qvst_questions';
+		$params = $request->get_params();
 
-	// Nom de la table personnalisée
-	$table_name_campaigns = $wpdb->prefix . 'qvst_campaign';
-	$table_name_theme = $wpdb->prefix . 'qvst_theme';
-	$table_name_campaign_questions = $wpdb->prefix . 'qvst_campaign_questions';
-	$table_name_questions = $wpdb->prefix . 'qvst_questions';
-
-	$params = $request->get_params();
-
-	// Validation des paramètres
-	$validation_error = null;
-	if (empty($params)) {
-		$validation_error = new \WP_Error('noParams', __('No parameters', 'QVST'));
-	} elseif (!isset($params['name'])) {
-		$validation_error = new \WP_Error('noName', __('No name', 'QVST'));
-	} elseif (!isset($params['themes']) || !is_array($params['themes']) || count($params['themes']) === 0) {
-		$validation_error = new \WP_Error('noThemes', __('No themes array provided', 'QVST'));
-	} elseif (!isset($params['start_date'])) {
-		$validation_error = new \WP_Error('noStartDate', __('No start date', 'QVST'));
-	} elseif (!isset($params['end_date'])) {
-		$validation_error = new \WP_Error('noEndDate', __('No end date', 'QVST'));
-	} elseif (!isset($params['questions'])) {
-		$validation_error = new \WP_Error('noQuestions', __('No questions', 'QVST'));
-	}
-
-	try {
-		// Vérifier que tous les thèmes existent si pas d'erreur de validation
-		if (!$validation_error) {
-			foreach ($params['themes'] as $theme_id) {
-				$theme = $wpdb->get_row("SELECT * FROM $table_name_theme WHERE id=" . intval($theme_id));
-				if (empty($theme)) {
-					$validation_error = new \WP_Error('noID', __('No theme found for id ' . $theme_id, 'QVST'));
-					break;
-				}
-			}
-		}
-
+		$validation_error = self::validateCampaignParams($params);
 		if ($validation_error) {
 			return $validation_error;
 		}
 
-		$campaignToInsert = array(
-			'name' => $params['name'],
-			'status' => 'DRAFT',
-			'start_date' => $params['start_date'],
-			'end_date' => $params['end_date']
-		);
+		$theme_error = self::validateThemesExist($params['themes'], $table_name_theme, $wpdb);
+		if ($theme_error) {
+			return $theme_error;
+		}
 
-		// save campaign
-		$wpdb->insert(
-			$table_name_campaigns,
-			$campaignToInsert,
-		);
+		try {
+			$campaignToInsert = array(
+				'name' => $params['name'],
+				'status' => 'DRAFT',
+				'start_date' => $params['start_date'],
+				'end_date' => $params['end_date']
+			);
 
-		// get campaign id
-		$campaign_id = $wpdb->insert_id;
+			$wpdb->insert($table_name_campaigns, $campaignToInsert);
+			$campaign_id = $wpdb->insert_id;
+			setThemesForCampaign($campaign_id, $params['themes']);
 
-		// Associer les thèmes à la campagne
-		setThemesForCampaign($campaign_id, $params['themes']);
+			self::insertCampaignQuestions($params['questions'], $campaign_id, $table_name_questions, $table_name_campaign_questions, $wpdb);
 
-		// save questions (skip no_longer_used)
-		$skippedQuestions = array();
-		foreach ($params['questions'] as $question) {
-			// Get current question data to check no_longer_used
+			return new \WP_REST_Response(null, 201);
+		} catch (\Throwable $th) {
+			return new \WP_Error('error', __('Error', 'QVST'));
+		}
+	}
+
+	private static function validateCampaignParams($params)
+	{
+		if (empty($params)) {
+			return new \WP_Error('noParams', __('No parameters', 'QVST'));
+		}
+		if (!isset($params['name'])) {
+			return new \WP_Error('noName', __('No name', 'QVST'));
+		}
+		if (!isset($params['themes']) || !is_array($params['themes']) || count($params['themes']) === 0) {
+			return new \WP_Error('noThemes', __('No themes array provided', 'QVST'));
+		}
+		if (!isset($params['start_date'])) {
+			return new \WP_Error('noStartDate', __('No start date', 'QVST'));
+		}
+		if (!isset($params['end_date'])) {
+			return new \WP_Error('noEndDate', __('No end date', 'QVST'));
+		}
+		if (!isset($params['questions'])) {
+			return new \WP_Error('noQuestions', __('No questions', 'QVST'));
+		}
+		return null;
+	}
+
+	private static function validateThemesExist($themes, $table_name_theme, $wpdb)
+	{
+		foreach ($themes as $theme_id) {
+			$theme = $wpdb->get_row("SELECT * FROM $table_name_theme WHERE id=" . intval($theme_id));
+			if (empty($theme)) {
+				return new \WP_Error('noID', __('No theme found for id ' . $theme_id, 'QVST'));
+			}
+		}
+		return null;
+	}
+
+	private static function insertCampaignQuestions($questions, $campaign_id, $table_name_questions, $table_name_campaign_questions, $wpdb)
+	{
+		foreach ($questions as $question) {
 			$question_data = $wpdb->get_row($wpdb->prepare(
 				"SELECT no_longer_used FROM $table_name_questions WHERE id = %d",
 				$question['id']
 			));
-
-			// Skip questions marked as no_longer_used
 			if ($question_data && $question_data->no_longer_used == 1) {
-				$skippedQuestions[] = $question['id'];
 				xpeapp_log(\Xpeapp_Log_Level::Warn, "POST campaign - Skipping question ID {$question['id']} (no_longer_used)");
 				continue;
 			}
-
 			$wpdb->insert(
 				$table_name_campaign_questions,
 				array(
@@ -94,11 +97,5 @@ class PostCampaign {
 				)
 			);
 		}
-
-		// return 201 created status code if success
-		return new \WP_REST_Response(null, 201);
-	} catch (\Throwable $th) {
-		return new \WP_Error('error', __('Error', 'QVST'));
 	}
-}
 }
