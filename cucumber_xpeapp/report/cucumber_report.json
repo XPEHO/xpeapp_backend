@@ -14,7 +14,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 86251250
+              "duration": 102926000
             }
           },
           {
@@ -23,11 +23,11 @@
             "line": 4,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 119875
+              "duration": 117208
             }
           },
           {
@@ -40,7 +40,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 14675708
+              "duration": 14949124
             }
           },
           {
@@ -53,7 +53,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 87083
+              "duration": 125041
             }
           }
         ],
@@ -72,7 +72,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 53813249
+              "duration": 55294040
             }
           },
           {
@@ -81,11 +81,11 @@
             "line": 9,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 71500
+              "duration": 66333
             }
           },
           {
@@ -98,7 +98,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 12899000
+              "duration": 13496166
             }
           },
           {
@@ -111,7 +111,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 89084
+              "duration": 103707
             }
           }
         ],
@@ -124,7 +124,7 @@
     "keyword": "Feature",
     "name": "Agenda Birthdays API",
     "tags": [],
-    "uri": "features/agenda/agenda_birthdays.feature"
+    "uri": "features/Agenda/agenda_birthdays.feature"
   },
   {
     "description": "",
@@ -141,7 +141,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 53742750
+              "duration": 56487542
             }
           },
           {
@@ -150,11 +150,11 @@
             "line": 4,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 146041
+              "duration": 138125
             }
           },
           {
@@ -167,7 +167,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 13247292
+              "duration": 19132458
             }
           },
           {
@@ -180,7 +180,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 135125
+              "duration": 212541
             }
           }
         ],
@@ -199,7 +199,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 54948916
+              "duration": 59447541
             }
           },
           {
@@ -208,11 +208,11 @@
             "line": 9,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 56375
+              "duration": 58458
             }
           },
           {
@@ -225,7 +225,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 13923875
+              "duration": 16704749
             }
           },
           {
@@ -238,7 +238,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 98124
+              "duration": 88874
             }
           }
         ],
@@ -251,7 +251,422 @@
     "keyword": "Feature",
     "name": "Agenda Events Types API",
     "tags": [],
-    "uri": "features/agenda/agenda_events_types.feature"
+    "uri": "features/Agenda/agenda_events_types.feature"
+  },
+  {
+    "description": "",
+    "elements": [
+      {
+        "description": "",
+        "id": "storage-api;fetch-a-specific-image-from-a-folder",
+        "keyword": "Scenario",
+        "line": 8,
+        "name": "Fetch a specific image from a folder",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 58574583
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 9,
+            "name": "the WordPress JWT API is available",
+            "match": {
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 48332
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 10,
+            "name": "I fetch the image \"image.jpg\" from folder \"tests\"",
+            "match": {
+              "location": "features/step_definitions/Storage/storage.steps.js:34"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 38016041
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 11,
+            "name": "I receive the image from storage",
+            "match": {
+              "location": "features/step_definitions/Storage/storage.steps.js:46"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 45665
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "storage-api;fetch-all-folders",
+        "keyword": "Scenario",
+        "line": 13,
+        "name": "Fetch all folders",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 61386457
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 14,
+            "name": "the WordPress JWT API is available",
+            "match": {
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 60749
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 15,
+            "name": "I fetch all folders",
+            "match": {
+              "location": "features/step_definitions/Storage/storage.steps.js:53"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 13780415
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 16,
+            "name": "I receive a list of folders",
+            "match": {
+              "location": "features/step_definitions/Storage/storage.steps.js:64"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 83541
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "storage-api;fetch-all-images-from-a-folder",
+        "keyword": "Scenario",
+        "line": 18,
+        "name": "Fetch all images from a folder",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 53572542
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 19,
+            "name": "the WordPress JWT API is available",
+            "match": {
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 56500
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 20,
+            "name": "I fetch all images from folder \"tests\"",
+            "match": {
+              "location": "features/step_definitions/Storage/storage.steps.js:71"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 13615209
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 21,
+            "name": "I receive a list of images from the folder",
+            "match": {
+              "location": "features/step_definitions/Storage/storage.steps.js:82"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 65625
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      }
+    ],
+    "id": "storage-api",
+    "line": 1,
+    "keyword": "Feature",
+    "name": "Storage API",
+    "tags": [],
+    "uri": "features/Storage/storage.feature"
+  },
+  {
+    "description": "",
+    "elements": [
+      {
+        "description": "",
+        "id": "user-api;get-my-user-infos",
+        "keyword": "Scenario",
+        "line": 3,
+        "name": "Get my user infos",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 55009500
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 4,
+            "name": "the WordPress JWT API is available",
+            "match": {
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 73624
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 5,
+            "name": "I fetch my user infos",
+            "match": {
+              "location": "features/step_definitions/User/user.steps.js:10"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 14265750
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 6,
+            "name": "I receive my user infos",
+            "match": {
+              "location": "features/step_definitions/User/user.steps.js:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 82125
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-api;get-user-id-by-email",
+        "keyword": "Scenario",
+        "line": 8,
+        "name": "Get user id by email",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 54883499
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 9,
+            "name": "I fetch the user by email \"wordpress_dev@example.site\"",
+            "match": {
+              "location": "features/step_definitions/User/user.steps.js:26"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 12598958
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 10,
+            "name": "I receive a user id",
+            "match": {
+              "location": "features/step_definitions/User/user.steps.js:36"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 93583
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-api;get-user-last-connections",
+        "keyword": "Scenario",
+        "line": 12,
+        "name": "Get user last connections",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 53727499
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 13,
+            "name": "the WordPress JWT API is available",
+            "match": {
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 62999
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 14,
+            "name": "I fetch the users last connections",
+            "match": {
+              "location": "features/step_definitions/User/user.steps.js:43"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 12775750
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 15,
+            "name": "I receive a list of user last connections",
+            "match": {
+              "location": "features/step_definitions/User/user.steps.js:51"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 89749
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-api;post-my-last-connection",
+        "keyword": "Scenario",
+        "line": 17,
+        "name": "Post my last connection",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 55240708
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 18,
+            "name": "the WordPress JWT API is available",
+            "match": {
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 83916
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 19,
+            "name": "I post my last connection",
+            "match": {
+              "location": "features/step_definitions/User/user.steps.js:64"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 13753707
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 20,
+            "name": "I receive a confirmation of last connection post",
+            "match": {
+              "location": "features/step_definitions/User/user.steps.js:73"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 107416
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      }
+    ],
+    "id": "user-api",
+    "line": 1,
+    "keyword": "Feature",
+    "name": "User API",
+    "tags": [],
+    "uri": "features/User/user.feature"
   },
   {
     "description": "    Permite to users contribute at XPEHO via their ideas",
@@ -268,7 +683,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 55583374
+              "duration": 53474999
             }
           },
           {
@@ -277,11 +692,11 @@
             "line": 5,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 88750
+              "duration": 57832
             }
           },
           {
@@ -294,7 +709,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 35169291
+              "duration": 12969374
             }
           },
           {
@@ -307,7 +722,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 101249
+              "duration": 128083
             }
           }
         ],
@@ -326,7 +741,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 53786125
+              "duration": 53160707
             }
           },
           {
@@ -335,11 +750,11 @@
             "line": 10,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 50374
+              "duration": 185540
             }
           },
           {
@@ -352,7 +767,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 13971750
+              "duration": 13917083
             }
           },
           {
@@ -365,7 +780,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 78499
+              "duration": 150709
             }
           }
         ],
@@ -384,7 +799,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 53027917
+              "duration": 53091208
             }
           },
           {
@@ -393,11 +808,11 @@
             "line": 15,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 57167
+              "duration": 445457
             }
           },
           {
@@ -410,7 +825,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 16483917
+              "duration": 21268417
             }
           },
           {
@@ -423,7 +838,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 88875
+              "duration": 44917
             }
           }
         ],
@@ -442,7 +857,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 54440624
+              "duration": 53878208
             }
           },
           {
@@ -451,11 +866,11 @@
             "line": 20,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 245625
+              "duration": 265750
             }
           },
           {
@@ -468,7 +883,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 14167374
+              "duration": 13500667
             }
           },
           {
@@ -481,7 +896,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 74583
+              "duration": 76207
             }
           }
         ],
@@ -511,7 +926,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 54945124
+              "duration": 52659625
             }
           },
           {
@@ -520,11 +935,11 @@
             "line": 4,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 154750
+              "duration": 80916
             }
           },
           {
@@ -533,11 +948,11 @@
             "line": 5,
             "name": "I login with username \"wordpress_dev\" and password \"wordpress_dev\"",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:12"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:12"
             },
             "result": {
               "status": "passed",
-              "duration": 55164292
+              "duration": 53622624
             }
           },
           {
@@ -546,11 +961,11 @@
             "line": 6,
             "name": "I receive a valid JWT token",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:22"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:22"
             },
             "result": {
               "status": "passed",
-              "duration": 280375
+              "duration": 325042
             }
           }
         ],
@@ -569,7 +984,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 53613749
+              "duration": 52164250
             }
           },
           {
@@ -578,11 +993,11 @@
             "line": 9,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 57708
+              "duration": 173500
             }
           },
           {
@@ -591,11 +1006,11 @@
             "line": 10,
             "name": "I login with username \"demo\" and password \"demo\"",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:12"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:12"
             },
             "result": {
               "status": "passed",
-              "duration": 11278000
+              "duration": 10674166
             }
           },
           {
@@ -604,11 +1019,11 @@
             "line": 11,
             "name": "I receive a invalid JWT token",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:27"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:27"
             },
             "result": {
               "status": "passed",
-              "duration": 81999
+              "duration": 281999
             }
           }
         ],
@@ -638,7 +1053,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 727540
+              "duration": 4711958
             }
           },
           {
@@ -646,7 +1061,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 20082
+              "duration": 57333
             }
           },
           {
@@ -654,7 +1069,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 52556999
+              "duration": 56802875
             }
           },
           {
@@ -663,11 +1078,11 @@
             "line": 6,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 62833
+              "duration": 178167
             }
           },
           {
@@ -680,7 +1095,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 322499
+              "duration": 1154833
             }
           },
           {
@@ -693,7 +1108,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 35374
+              "duration": 110415
             }
           },
           {
@@ -701,7 +1116,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 11708
+              "duration": 46125
             }
           },
           {
@@ -709,7 +1124,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 56707
+              "duration": 160958
             }
           }
         ],
@@ -744,7 +1159,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 53240792
+              "duration": 52499957
             }
           },
           {
@@ -753,11 +1168,11 @@
             "line": 4,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 179334
+              "duration": 337125
             }
           },
           {
@@ -770,7 +1185,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 32945708
+              "duration": 34731708
             }
           },
           {
@@ -783,7 +1198,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 1111292
+              "duration": 1626250
             }
           }
         ],
@@ -802,7 +1217,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 52913665
+              "duration": 55490291
             }
           },
           {
@@ -811,11 +1226,11 @@
             "line": 9,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 204457
+              "duration": 167041
             }
           },
           {
@@ -828,7 +1243,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 29154708
+              "duration": 29852582
             }
           },
           {
@@ -841,7 +1256,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 952999
+              "duration": 937124
             }
           }
         ],
@@ -860,7 +1275,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 53407917
+              "duration": 54726582
             }
           },
           {
@@ -869,11 +1284,11 @@
             "line": 14,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 219082
+              "duration": 176541
             }
           },
           {
@@ -886,7 +1301,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 14463084
+              "duration": 13984500
             }
           },
           {
@@ -899,7 +1314,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 176874
+              "duration": 100333
             }
           }
         ],
@@ -918,7 +1333,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 284333
+              "duration": 165084
             }
           },
           {
@@ -926,7 +1341,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 12124
+              "duration": 2917
             }
           },
           {
@@ -934,7 +1349,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 56286042
+              "duration": 53017291
             }
           },
           {
@@ -943,11 +1358,11 @@
             "line": 20,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 80958
+              "duration": 172666
             }
           },
           {
@@ -960,7 +1375,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 15673833
+              "duration": 13730916
             }
           },
           {
@@ -973,7 +1388,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 442416
+              "duration": 1703958
             }
           },
           {
@@ -981,7 +1396,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 11209
+              "duration": 14042
             }
           },
           {
@@ -989,7 +1404,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 20125
+              "duration": 67792
             }
           }
         ],
@@ -1013,7 +1428,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 124374
+              "duration": 195332
             }
           },
           {
@@ -1021,7 +1436,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 3458
+              "duration": 5625
             }
           },
           {
@@ -1029,7 +1444,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 56252250
+              "duration": 54954666
             }
           },
           {
@@ -1038,11 +1453,11 @@
             "line": 26,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 52834
+              "duration": 176375
             }
           },
           {
@@ -1055,7 +1470,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 14807708
+              "duration": 14267957
             }
           },
           {
@@ -1068,7 +1483,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 41333
+              "duration": 175500
             }
           },
           {
@@ -1076,7 +1491,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 4374
+              "duration": 22459
             }
           },
           {
@@ -1084,7 +1499,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 26083
+              "duration": 37082
             }
           }
         ],
@@ -1108,7 +1523,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 108582
+              "duration": 438834
             }
           },
           {
@@ -1116,7 +1531,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 3124
+              "duration": 14082
             }
           },
           {
@@ -1124,7 +1539,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 55334415
+              "duration": 53400082
             }
           },
           {
@@ -1133,11 +1548,11 @@
             "line": 32,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 183207
+              "duration": 107625
             }
           },
           {
@@ -1150,7 +1565,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 15428916
+              "duration": 13626624
             }
           },
           {
@@ -1163,7 +1578,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 51666
+              "duration": 45458
             }
           },
           {
@@ -1171,7 +1586,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 18792
+              "duration": 4792
             }
           },
           {
@@ -1179,7 +1594,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 17125
+              "duration": 12833
             }
           }
         ],
@@ -1203,7 +1618,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 102333
+              "duration": 107084
             }
           },
           {
@@ -1211,7 +1626,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 2999
+              "duration": 3375
             }
           },
           {
@@ -1219,7 +1634,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 55272541
+              "duration": 53986375
             }
           },
           {
@@ -1228,11 +1643,11 @@
             "line": 38,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 216666
+              "duration": 234333
             }
           },
           {
@@ -1245,7 +1660,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 14448167
+              "duration": 14409333
             }
           },
           {
@@ -1258,7 +1673,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 44458
+              "duration": 42957
             }
           },
           {
@@ -1266,7 +1681,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 4417
+              "duration": 4917
             }
           },
           {
@@ -1274,7 +1689,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 13541
+              "duration": 12749
             }
           }
         ],
@@ -1298,7 +1713,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 54600750
+              "duration": 54665499
             }
           },
           {
@@ -1307,11 +1722,11 @@
             "line": 43,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 195083
+              "duration": 759791
             }
           },
           {
@@ -1324,7 +1739,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 15737624
+              "duration": 18510166
             }
           },
           {
@@ -1337,7 +1752,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 159415
+              "duration": 362540
             }
           }
         ],
@@ -1356,7 +1771,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 53991874
+              "duration": 53847416
             }
           },
           {
@@ -1365,11 +1780,11 @@
             "line": 48,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 241083
+              "duration": 327957
             }
           },
           {
@@ -1382,7 +1797,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 12784542
+              "duration": 12595458
             }
           },
           {
@@ -1395,7 +1810,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 309291
+              "duration": 142624
             }
           }
         ],
@@ -1414,7 +1829,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 53618874
+              "duration": 54076624
             }
           },
           {
@@ -1423,11 +1838,11 @@
             "line": 53,
             "name": "the WordPress JWT API is available",
             "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 217833
+              "duration": 323084
             }
           },
           {
@@ -1440,7 +1855,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 12693959
+              "duration": 16028999
             }
           },
           {
@@ -1453,7 +1868,303 @@
             },
             "result": {
               "status": "passed",
-              "duration": 291750
+              "duration": 268583
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "qvst-api;get-all-themes",
+        "keyword": "Scenario",
+        "line": 62,
+        "name": "Get all themes",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 54205290
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 63,
+            "name": "the WordPress JWT API is available",
+            "match": {
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 197874
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 64,
+            "name": "I fetch all QVST themes",
+            "match": {
+              "location": "features/step_definitions/qvst/qvst.steps.js:289"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 12928124
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 65,
+            "name": "I receive a list of all QVST themes with expected fields",
+            "match": {
+              "location": "features/step_definitions/qvst/qvst.steps.js:300"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 229917
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "qvst-api;get-all-questions-by-theme",
+        "keyword": "Scenario",
+        "line": 67,
+        "name": "Get all questions by theme",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 55298500
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 68,
+            "name": "the WordPress JWT API is available",
+            "match": {
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 238708
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 69,
+            "name": "I fetch all QVST questions for theme 1",
+            "match": {
+              "location": "features/step_definitions/qvst/qvst.steps.js:264"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 14126166
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 70,
+            "name": "I receive a list of all QVST questions for the theme with expected fields",
+            "match": {
+              "location": "features/step_definitions/qvst/qvst.steps.js:276"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 154207
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "qvst-api;post-qvst-campaign",
+        "keyword": "Scenario",
+        "line": 72,
+        "name": "Post QVST Campaign",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 53968333
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 73,
+            "name": "the WordPress JWT API is available",
+            "match": {
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 108083
+            }
+          },
+          {
+            "arguments": [
+              {
+                "content": "{\n  \"name\": \"Campagne #4\",\n  \"themes\": [\"6\", \"8\"],\n  \"start_date\": \"2027-10-27\",\n  \"end_date\": \"2027-11-02\",\n  \"questions\": [\n    {\"id\": \"31\"}, {\"id\": \"69\"}, {\"id\": \"148\"}, {\"id\": \"152\"}, {\"id\": \"154\"},\n    {\"id\": \"475\"}, {\"id\": \"455\"}, {\"id\": \"59\"}, {\"id\": \"67\"}, {\"id\": \"129\"}, {\"id\": \"138\"}\n  ]\n}",
+                "line": 75
+              }
+            ],
+            "keyword": "When ",
+            "line": 74,
+            "name": "I add a new QVST campaign with body:",
+            "match": {
+              "location": "features/step_definitions/qvst/qvst.steps.js:312"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 25409209
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 87,
+            "name": "the QVST campaign is successfully created",
+            "match": {
+              "location": "features/step_definitions/qvst/qvst.steps.js:326"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 161375
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "qvst-api;get-campaign-analysis-for-campaign-119",
+        "keyword": "Scenario",
+        "line": 89,
+        "name": "Get campaign analysis for campaign 119",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 53624209
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 90,
+            "name": "the WordPress JWT API is available",
+            "match": {
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 161082
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 91,
+            "name": "I fetch the QVST campaign analysis for id 119",
+            "match": {
+              "location": "features/step_definitions/qvst/qvst.steps.js:331"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 18048125
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 92,
+            "name": "the QVST campaign analysis contains all main stats",
+            "match": {
+              "location": "features/step_definitions/qvst/qvst.steps.js:342"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 193958
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "qvst-api;delete-qvst-question-by-id",
+        "keyword": "Scenario",
+        "line": 94,
+        "name": "Delete QVST Question by ID",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 53902333
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 95,
+            "name": "the WordPress JWT API is available",
+            "match": {
+              "location": "features/step_definitions/JWT/jwt_authentication.steps.js:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 46792
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 96,
+            "name": "I delete the QVST question with id 1466",
+            "match": {
+              "location": "features/step_definitions/qvst/qvst.steps.js:370"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 12911291
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 97,
+            "name": "the QVST question is successfully deleted",
+            "match": {
+              "location": "features/step_definitions/qvst/qvst.steps.js:381"
+            },
+            "result": {
+              "status": "failed",
+              "duration": 406749,
+              "error_message": "AssertionError [ERR_ASSERTION]: Status should be 204\n\n500 !== 204\n\n    + expected - actual\n\n    -500\n    +204\n\n    at World.<anonymous> (/Users/theolbg/Dev/xpeapp_backend/cucumber_xpeapp/features/step_definitions/qvst/qvst.steps.js:382:10)"
             }
           }
         ],
@@ -1467,420 +2178,5 @@
     "name": "QVST API",
     "tags": [],
     "uri": "features/qvst/qvst.feature"
-  },
-  {
-    "description": "",
-    "elements": [
-      {
-        "description": "",
-        "id": "storage-api;fetch-a-specific-image-from-a-folder",
-        "keyword": "Scenario",
-        "line": 8,
-        "name": "Fetch a specific image from a folder",
-        "steps": [
-          {
-            "keyword": "Before",
-            "hidden": true,
-            "result": {
-              "status": "passed",
-              "duration": 54263833
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Given ",
-            "line": 9,
-            "name": "the WordPress JWT API is available",
-            "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 156042
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "When ",
-            "line": 10,
-            "name": "I fetch the image \"image.jpg\" from folder \"tests\"",
-            "match": {
-              "location": "features/step_definitions/storage/storage.steps.js:34"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 13619083
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 11,
-            "name": "I receive the image from storage",
-            "match": {
-              "location": "features/step_definitions/storage/storage.steps.js:46"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 137500
-            }
-          }
-        ],
-        "tags": [],
-        "type": "scenario"
-      },
-      {
-        "description": "",
-        "id": "storage-api;fetch-all-folders",
-        "keyword": "Scenario",
-        "line": 13,
-        "name": "Fetch all folders",
-        "steps": [
-          {
-            "keyword": "Before",
-            "hidden": true,
-            "result": {
-              "status": "passed",
-              "duration": 55088124
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Given ",
-            "line": 14,
-            "name": "the WordPress JWT API is available",
-            "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 48000
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "When ",
-            "line": 15,
-            "name": "I fetch all folders",
-            "match": {
-              "location": "features/step_definitions/storage/storage.steps.js:53"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 12924958
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 16,
-            "name": "I receive a list of folders",
-            "match": {
-              "location": "features/step_definitions/storage/storage.steps.js:64"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 70500
-            }
-          }
-        ],
-        "tags": [],
-        "type": "scenario"
-      },
-      {
-        "description": "",
-        "id": "storage-api;fetch-all-images-from-a-folder",
-        "keyword": "Scenario",
-        "line": 18,
-        "name": "Fetch all images from a folder",
-        "steps": [
-          {
-            "keyword": "Before",
-            "hidden": true,
-            "result": {
-              "status": "passed",
-              "duration": 54393291
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Given ",
-            "line": 19,
-            "name": "the WordPress JWT API is available",
-            "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 230041
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "When ",
-            "line": 20,
-            "name": "I fetch all images from folder \"tests\"",
-            "match": {
-              "location": "features/step_definitions/storage/storage.steps.js:71"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 13389374
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 21,
-            "name": "I receive a list of images from the folder",
-            "match": {
-              "location": "features/step_definitions/storage/storage.steps.js:82"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 60292
-            }
-          }
-        ],
-        "tags": [],
-        "type": "scenario"
-      }
-    ],
-    "id": "storage-api",
-    "line": 1,
-    "keyword": "Feature",
-    "name": "Storage API",
-    "tags": [],
-    "uri": "features/storage/storage.feature"
-  },
-  {
-    "description": "",
-    "elements": [
-      {
-        "description": "",
-        "id": "user-api;get-my-user-infos",
-        "keyword": "Scenario",
-        "line": 3,
-        "name": "Get my user infos",
-        "steps": [
-          {
-            "keyword": "Before",
-            "hidden": true,
-            "result": {
-              "status": "passed",
-              "duration": 53775417
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Given ",
-            "line": 4,
-            "name": "the WordPress JWT API is available",
-            "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 140041
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "When ",
-            "line": 5,
-            "name": "I fetch my user infos",
-            "match": {
-              "location": "features/step_definitions/user/user.steps.js:10"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 12327583
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 6,
-            "name": "I receive my user infos",
-            "match": {
-              "location": "features/step_definitions/user/user.steps.js:18"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 132500
-            }
-          }
-        ],
-        "tags": [],
-        "type": "scenario"
-      },
-      {
-        "description": "",
-        "id": "user-api;get-user-id-by-email",
-        "keyword": "Scenario",
-        "line": 8,
-        "name": "Get user id by email",
-        "steps": [
-          {
-            "keyword": "Before",
-            "hidden": true,
-            "result": {
-              "status": "passed",
-              "duration": 53730625
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "When ",
-            "line": 9,
-            "name": "I fetch the user by email \"wordpress_dev@example.site\"",
-            "match": {
-              "location": "features/step_definitions/user/user.steps.js:26"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 11818166
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 10,
-            "name": "I receive a user id",
-            "match": {
-              "location": "features/step_definitions/user/user.steps.js:36"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 143708
-            }
-          }
-        ],
-        "tags": [],
-        "type": "scenario"
-      },
-      {
-        "description": "",
-        "id": "user-api;get-user-last-connections",
-        "keyword": "Scenario",
-        "line": 12,
-        "name": "Get user last connections",
-        "steps": [
-          {
-            "keyword": "Before",
-            "hidden": true,
-            "result": {
-              "status": "passed",
-              "duration": 53684749
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Given ",
-            "line": 13,
-            "name": "the WordPress JWT API is available",
-            "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 153291
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "When ",
-            "line": 14,
-            "name": "I fetch the users last connections",
-            "match": {
-              "location": "features/step_definitions/user/user.steps.js:43"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 12878833
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 15,
-            "name": "I receive a list of user last connections",
-            "match": {
-              "location": "features/step_definitions/user/user.steps.js:51"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 385374
-            }
-          }
-        ],
-        "tags": [],
-        "type": "scenario"
-      },
-      {
-        "description": "",
-        "id": "user-api;post-my-last-connection",
-        "keyword": "Scenario",
-        "line": 17,
-        "name": "Post my last connection",
-        "steps": [
-          {
-            "keyword": "Before",
-            "hidden": true,
-            "result": {
-              "status": "passed",
-              "duration": 54005916
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Given ",
-            "line": 18,
-            "name": "the WordPress JWT API is available",
-            "match": {
-              "location": "features/step_definitions/jwt/jwt_authentication.steps.js:7"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 64417
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "When ",
-            "line": 19,
-            "name": "I post my last connection",
-            "match": {
-              "location": "features/step_definitions/user/user.steps.js:64"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 13804166
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 20,
-            "name": "I receive a confirmation of last connection post",
-            "match": {
-              "location": "features/step_definitions/user/user.steps.js:73"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 72375
-            }
-          }
-        ],
-        "tags": [],
-        "type": "scenario"
-      }
-    ],
-    "id": "user-api",
-    "line": 1,
-    "keyword": "Feature",
-    "name": "User API",
-    "tags": [],
-    "uri": "features/user/user.feature"
   }
 ]

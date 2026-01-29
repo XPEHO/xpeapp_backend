@@ -260,4 +260,124 @@ Then('I receive a list of all QVST answer repositories with expected fields', fu
   assert.ok(this.token, 'JWT token should be present in context');
 });
 
-// 
+// ----------- GET ALL QUESTIONS BY THEME -----------
+When('I fetch all QVST questions for theme {int}', async function (themeId) {
+  this.themeId = themeId;
+  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/qvst/themes/${themeId}/questions`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${this.token}`
+    }
+  });
+  this.response = res;
+  this.body = await safeJson(res);
+});
+
+Then('I receive a list of all QVST questions for the theme with expected fields', function () {
+  assert.strictEqual(this.response.status, 200, 'Status should be 200');
+  assert.ok(Array.isArray(this.body), 'Response should be an array');
+  const expectedThemeId = Number(this.themeId);
+  this.body.forEach(q => {
+    assertQvstQuestionFields(q);
+    assert.strictEqual(Number(q.theme_id), expectedThemeId, 'All questions should belong to the requested theme');
+  });
+  assert.ok(this.token, 'JWT token should be present in context');
+});
+
+// ----------- GET ALL THEMES -----------
+
+When('I fetch all QVST themes', async function () {
+  const res = await fetch('http://localhost:7830/wp-json/xpeho/v1/qvst/themes', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${this.token}`
+    }
+  });
+  this.response = res;
+  this.body = await safeJson(res);
+});
+
+Then('I receive a list of all QVST themes with expected fields', function () {
+  assert.strictEqual(this.response.status, 200, 'Status should be 200');
+  assert.ok(Array.isArray(this.body), 'Response should be an array');
+  this.body.forEach(t => {
+    assert.ok(t.hasOwnProperty('id'), 'id should be present');
+    assert.ok(t.hasOwnProperty('name'), 'name should be present');
+  });
+  assert.ok(this.token, 'JWT token should be present in context');
+});
+
+// ----------- POST QVST Campaign -----------
+
+When('I add a new QVST campaign with body:', async function (docString) {
+  const body = JSON.parse(docString);
+  const res = await fetch('http://localhost:7830/wp-json/xpeho/v1/qvst/campaigns:add', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${this.token}`
+    },
+    body: JSON.stringify(body)
+  });
+  this.response = res;
+  this.body = await safeJson(res);
+});
+
+Then('the QVST campaign is successfully created', function () {
+  assert.strictEqual(this.response.status, 201, 'Status should be 201');
+});
+
+// ----------- GET QVST CAMPAIGN ANALYSIS -----------
+When('I fetch the QVST campaign analysis for id {int}', async function (id) {
+  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/qvst/campaigns/${id}:analysis`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${this.token}`
+    }
+  });
+  this.response = res;
+  this.body = await safeJson(res);
+});
+
+Then('the QVST campaign analysis contains all main stats', function () {
+  assert.strictEqual(this.response.status, 200, 'Status should be 200');
+  const body = this.body;
+  const mainKeys = [
+    'campaign_id',
+    'campaign_name',
+    'campaign_status',
+    'start_date',
+    'end_date',
+    'themes',
+    'global_stats',
+    'global_distribution',
+    'questions_analysis',
+    'questions_requiring_action',
+    'at_risk_employees'
+  ];
+  mainKeys.forEach(key => {
+    assert.ok(body.hasOwnProperty(key), `La propriété '${key}' doit être présente dans la réponse`);
+  });
+  assert.ok(Array.isArray(body.themes), 'themes doit être un tableau');
+  assert.ok(typeof body.global_stats === 'object', 'global_stats doit être un objet');
+  assert.ok(Array.isArray(body.global_distribution), 'global_distribution doit être un tableau');
+  assert.ok(Array.isArray(body.questions_analysis), 'questions_analysis doit être un tableau');
+  assert.ok(Array.isArray(body.questions_requiring_action), 'questions_requiring_action doit être un tableau');
+  assert.ok(Array.isArray(body.at_risk_employees), 'at_risk_employees doit être un tableau');
+});
+
+// ----------- DELETE QVST QUESTION -----------
+When('I delete the QVST question with id {int}', async function (id) {
+  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/qvst/${id}:delete`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${this.token}`
+    }
+  });
+  this.response = res;
+  this.body = await safeJson(res);
+});
+
+Then('the QVST question is successfully deleted', function () {
+  assert.strictEqual(this.response.status, 204, 'Status should be 204');
+}); 

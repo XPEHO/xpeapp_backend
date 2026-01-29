@@ -54,4 +54,44 @@ Scenario: Get all repositories
   When I fetch all QVST answer repositories
   Then I receive a list of all QVST answer repositories with expected fields
 
+# Scenario: Put QVST Answer Repository
+#   Given the WordPress JWT API is available
+#   When I update the QVST answer repo 1 with name "tata" and answers
+#   Then I receive a confirmation of QVST answer repo update
 
+Scenario: Get all themes
+  Given the WordPress JWT API is available
+  When I fetch all QVST themes
+  Then I receive a list of all QVST themes with expected fields
+
+Scenario: Get all questions by theme
+  Given the WordPress JWT API is available
+  When I fetch all QVST questions for theme 1
+  Then I receive a list of all QVST questions for the theme with expected fields
+
+Scenario: Post QVST Campaign
+  Given the WordPress JWT API is available
+  When I add a new QVST campaign with body:
+  """
+  {
+    "name": "Campagne #4",
+    "themes": ["6", "8"],
+    "start_date": "2027-10-27",
+    "end_date": "2027-11-02",
+    "questions": [
+      {"id": "31"}, {"id": "69"}, {"id": "148"}, {"id": "152"}, {"id": "154"},
+      {"id": "475"}, {"id": "455"}, {"id": "59"}, {"id": "67"}, {"id": "129"}, {"id": "138"}
+    ]
+  }
+  """
+  Then the QVST campaign is successfully created
+
+Scenario: Get campaign analysis for campaign 119
+  Given the WordPress JWT API is available
+  When I fetch the QVST campaign analysis for id 119
+  Then the QVST campaign analysis contains all main stats
+
+Scenario: Delete QVST Question by ID
+  Given the WordPress JWT API is available
+  When I delete the QVST question with id 1466
+  Then the QVST question is successfully deleted
