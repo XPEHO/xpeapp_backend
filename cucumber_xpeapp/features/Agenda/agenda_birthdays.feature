@@ -1,14 +1,14 @@
-# Feature: Agenda Birthdays API
+Feature: Agenda Birthdays API
 
-#   Scenario: Get birthdays for page 2
-#     Given the WordPress JWT API is available
-#     When I fetch the birthdays page 2
-#     Then I receive a list of birthdays
+  Scenario: Get birthdays for page 2
+    Given the WordPress JWT API is available
+    When I fetch the birthdays page 2
+    Then I receive a list of birthdays
   
-#   Scenario: Get a birthday by id
-#     Given the WordPress JWT API is available
-#     When I fetch the birthday with id 13
-#     Then I receive a birthday detail
+  Scenario: Get a birthday by id
+    Given the WordPress JWT API is available
+    When I fetch the birthday with id 13
+    Then I receive a birthday detail
 
 #   Scenario: Create a new birthday
 #     Given the WordPress JWT API is available

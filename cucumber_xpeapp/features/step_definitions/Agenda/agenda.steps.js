@@ -2,15 +2,7 @@
 const { When, Then } = require('@cucumber/cucumber');
 const assert = require('node:assert');
 const fetch = require('node-fetch');
-
-async function safeJson(res) {
-  const text = await res.text();
-  try {
-    return text ? JSON.parse(text) : {};
-  } catch {
-    return {};
-  }
-}
+const { safeJson } = require('../../support/safeJson');
 
 // =============================
 // EVENTS TYPES API STEPS

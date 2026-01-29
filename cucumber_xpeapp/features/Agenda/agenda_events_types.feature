@@ -1,14 +1,14 @@
-# Feature: Agenda Events Types API
+Feature: Agenda Events Types API
 
-# Scenario: Get event type
-#   Given the WordPress JWT API is available
-#   When I fetch the event types
-#   Then I receive a list of event types
+Scenario: Get event type
+  Given the WordPress JWT API is available
+  When I fetch the event types
+  Then I receive a list of event types
 
-# Scenario: Get event type by ID
-#   Given the WordPress JWT API is available
-#   When I fetch the event type by the 1
-#   Then I receive an event type detail
+Scenario: Get event type by ID
+  Given the WordPress JWT API is available
+  When I fetch the event type by the 1
+  Then I receive an event type detail
 
 # Scenario: Create event type
 #   Given the WordPress JWT API is available

@@ -4,14 +4,7 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
 
-async function safeJson(res) {
-  const text = await res.text();
-  try {
-    return text ? JSON.parse(text) : {};
-  } catch {
-    return {};
-  }
-}
+const { safeJson } = require('../../support/safeJson');
 
 // ----------- GET USER INFOS -----------
 When('I fetch my user infos', async function () {

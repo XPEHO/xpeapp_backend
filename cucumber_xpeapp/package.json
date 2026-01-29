@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "form-data": "^4.0.5",
-    "node-fetch": "^2.7.0"
+    "node-fetch": "^2.7.0",
+    "sinon": "^21.0.1"
   }
 }
