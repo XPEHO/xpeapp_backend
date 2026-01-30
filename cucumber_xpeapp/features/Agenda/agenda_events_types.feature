@@ -12,15 +12,15 @@ Scenario: Get event type by ID
 
 # Scenario: Create event type
 #   Given the WordPress JWT API is available
-#   When I create an event type with label "Reunion" and color_code "5DFCFF"
+#   When I create an event type with label "XpeUp" and color_code "D0D0D0"
 #   Then I receive a confirmation of event type creation
 
 # Scenario: Update event type
 #   Given the WordPress JWT API is available
-#   When I update event type with id 1 to label "Réunion modifiée" and color_code "FFCF56"
+#   When I update event type with id 2 to label "XpeLab" and color_code "FFCF56"
 #   Then I receive a confirmation of event type update
 
 # Scenario: Delete event type
 #   Given the WordPress JWT API is available
-#   When I delete event type with id 1
+#   When I delete event type with id 2
 #   Then I receive a confirmation of event type deletion

@@ -8,7 +8,7 @@ Scenario: Fetch all ideas
 
 Scenario: Fetch an idea by id
   Given the WordPress JWT API is available
-  When I fetch the idea with id 4
+  When I fetch the idea with id 1
   Then I receive the idea details
 
 Scenario: Post a new idea
@@ -18,10 +18,10 @@ Scenario: Post a new idea
 
 Scenario: Update the status of an existing idea
   Given the WordPress JWT API is available
-  When I update the idea with id 20 to status "approved"
+  When I update the idea with id 2 to status "approved"
   Then I receive the updated idea confirmation
 
-# Scenario: Delete an idea
-#   Given the WordPress JWT API is available
-#   When I delete the idea with id 24
-#   Then I receive the deleted idea confirmation
+Scenario: Delete an idea
+  Given the WordPress JWT API is available
+  When I delete the idea with id 2
+  Then I receive the deleted idea confirmation

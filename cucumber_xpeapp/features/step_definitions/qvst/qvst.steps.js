@@ -381,3 +381,22 @@ When('I delete the QVST question with id {int}', async function (id) {
 Then('the QVST question is successfully deleted', function () {
   assert.strictEqual(this.response.status, 204, 'Status should be 204');
 }); 
+
+// ----------- POST QVST QUESTION -----------
+When('I add a QVST question with body:', async function (docString) {
+  const body = JSON.parse(docString);
+  const res = await fetch('http://localhost:7830/wp-json/xpeho/v1/qvst:add', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${this.token}`
+    },
+    body: JSON.stringify(body)
+  });
+  this.response = res;
+  this.body = await safeJson(res);
+});
+
+Then('the QVST question is successfully created', function () {
+  assert.strictEqual(this.response.status, 201, 'Status should be 201');
+});

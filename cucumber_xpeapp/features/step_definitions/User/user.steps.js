@@ -76,7 +76,7 @@ Then('I receive a confirmation of last connection post', function () {
 });
 
 // ----------- UPDATE USER PASSWORD -----------
-When('I update my password from {string} to {string}', async function (initial_password, new_password) {
+When('I update password from {string} to {string}', async function (initial_password, new_password) {
   const res = await fetch('http://localhost:7830/wp-json/xpeho/v1/update-password', {
     method: 'PUT',
     headers: {

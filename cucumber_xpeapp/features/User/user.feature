@@ -19,7 +19,12 @@ Scenario: Post my last connection
   When I post my last connection
   Then I receive a confirmation of last connection post
 
-# Scenario: Update my password
-#   Given the WordPress JWT API is available
-#   When I update my password from "wordpress_dev" to "wordpress_dev@example"
-#   Then I receive a confirmation of password update
+Scenario: Update password
+  Given the WordPress JWT API is available
+  When I update password from "wordpress_dev" to "wordpress_dev@example"
+  Then I receive a confirmation of password update
+
+Scenario: Update password
+  Given the WordPress JWT API is available
+  When I update password from "wordpress_dev@example" to "wordpress_dev"
+  Then I receive a confirmation of password update
