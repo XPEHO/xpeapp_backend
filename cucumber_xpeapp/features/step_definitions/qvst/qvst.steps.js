@@ -8,8 +8,8 @@ let fetchStub;
 
 
 Before({ tags: '@mockNotification' }, function () {
-  if (!global.fetch || !global.fetch.isSinonProxy) {
-    fetchStub = sinon.stub(global, 'fetch').resolves({
+  if (!globalThis.fetch || !globalThis.fetch.isSinonProxy) {
+    fetchStub = sinon.stub(globalThis, 'fetch').resolves({
       status: 201,
       json: async () => ({ success: true })
     });
@@ -31,21 +31,21 @@ function assertQvstQuestionFields(q) {
   assert.ok(q.hasOwnProperty('reversed_question'), 'reversed_question should be present');
   assert.ok(q.hasOwnProperty('no_longer_used'), 'no_longer_used should be present');
   assert.ok(Array.isArray(q.answers), 'answers should be an array');
-  q.answers.forEach(a => {
+  for (const a of q.answers) {
     assert.ok(a.hasOwnProperty('id'), 'answer.id should be present');
     assert.ok(a.hasOwnProperty('answer'), 'answer.answer should be present');
     assert.ok(a.hasOwnProperty('value'), 'answer.value should be present');
-  });
+  }
 }
 
 function assertQvstCampaignFields(c) {
   assert.ok(c.hasOwnProperty('id'), 'id should be present');
   assert.ok(c.hasOwnProperty('name'), 'name should be present');
   assert.ok(Array.isArray(c.themes), 'themes should be an array');
-  c.themes.forEach(t => {
+  for (const t of c.themes) {
     assert.ok(t.hasOwnProperty('id'), 'theme.id should be present');
     assert.ok(t.hasOwnProperty('name'), 'theme.name should be present');
-  });
+  }
   assert.ok(['OPEN', 'DRAFT', 'CLOSED', 'ARCHIVED'].includes(c.status), 'status should be valid');
   assert.ok(c.hasOwnProperty('start_date'), 'start_date should be present');
   assert.ok(c.hasOwnProperty('end_date'), 'end_date should be present');
@@ -68,10 +68,10 @@ When('I fetch the QVST questions', async function () {
 Then('I receive a list of only active QVST questions', function () {
   assert.strictEqual(this.response.status, 200, 'Status should be 200');
   assert.ok(Array.isArray(this.body), 'Response should be an array');
-  this.body.forEach(q => {
+  for (const q of this.body) {
     assertQvstQuestionFields(q);
     assert.strictEqual(q.no_longer_used, false, 'All questions should be active');
-  });
+  }
   assert.ok(this.token, 'JWT token should be present in context');
 });
 
@@ -91,9 +91,9 @@ Then('I receive a list of all QVST questions including no longer used', function
   assert.strictEqual(this.response.status, 200, 'Status should be 200');
   assert.ok(Array.isArray(this.body), 'Response should be an array');
   assert.ok(this.body.some(q => q.no_longer_used === true), 'At least one question should be no longer used');
-  this.body.forEach(q => {
+  for (const q of this.body) {
     assertQvstQuestionFields(q);
-  });
+  }
   assert.ok(this.token, 'JWT token should be present in context');
 });
 
@@ -112,10 +112,10 @@ When('I fetch the active QVST campaigns', async function () {
 Then('I receive a list of active QVST campaigns', function () {
   assert.strictEqual(this.response.status, 200, 'Status should be 200');
   assert.ok(Array.isArray(this.body), 'Response should be an array');
-  this.body.forEach(c => {
+  for (const c of this.body) {
     assertQvstCampaignFields(c);
     assert.strictEqual(c.status, 'OPEN', 'Only active campaigns (OPEN) should be present');
-  });
+  }
   assert.ok(this.token, 'JWT token should be present in context');
 });
 
@@ -134,9 +134,9 @@ When('I fetch all QVST campaigns', async function () {
 Then('I receive a list of all QVST campaigns', function () {
   assert.strictEqual(this.response.status, 200, 'Status should be 200');
   assert.ok(Array.isArray(this.body), 'Response should be an array');
-  this.body.forEach(c => {
+  for (const c of this.body) {
     assertQvstCampaignFields(c);
-  });
+  }
   assert.ok(this.token, 'JWT token should be present in context');
 });
 
@@ -181,12 +181,12 @@ Then('I receive the QVST campaign stats with all expected fields', function () {
   assert.ok(c.hasOwnProperty('endDate'), 'endDate should be present');
   assert.ok(c.hasOwnProperty('action'), 'action should be present');
   assert.ok(Array.isArray(c.themes), 'themes should be an array');
-  c.themes.forEach(t => {
+  for (const t of c.themes) {
     assert.ok(t.hasOwnProperty('id'), 'theme.id should be present');
     assert.ok(t.hasOwnProperty('name'), 'theme.name should be present');
-  });
+  }
   assert.ok(Array.isArray(c.questions), 'questions should be an array');
-  c.questions.forEach(q => {
+  for (const q of c.questions) {
     assert.ok(q.hasOwnProperty('question_id'), 'question_id should be present');
     assert.ok(q.hasOwnProperty('question'), 'question should be present');
     assert.ok(q.hasOwnProperty('answer_repo_id'), 'answer_repo_id should be present');
@@ -195,13 +195,13 @@ Then('I receive the QVST campaign stats with all expected fields', function () {
     assert.ok(q.hasOwnProperty('status'), 'status should be present');
     assert.ok(q.hasOwnProperty('action'), 'action should be present');
     assert.ok(Array.isArray(q.answers), 'answers should be an array');
-    q.answers.forEach(a => {
+    for (const a of q.answers) {
       assert.ok(a.hasOwnProperty('id'), 'answer.id should be present');
       assert.ok(a.hasOwnProperty('answer'), 'answer.answer should be present');
       assert.ok(a.hasOwnProperty('value'), 'answer.value should be present');
       assert.ok(a.hasOwnProperty('numberAnswered'), 'numberAnswered should be present');
-    });
-  });
+    }
+  }
   assert.ok(this.token, 'JWT token should be present in context');
 });
 
@@ -219,16 +219,16 @@ When('I fetch the questions for QVST campaign {int}', async function (id) {
 
 Then('I receive the QVST campaign questions with all expected fields', function () {
   assert.ok(Array.isArray(this.body), 'Response should be an array');
-  this.body.forEach(q => {
+  for (const q of this.body) {
     assert.ok(q.hasOwnProperty('question_id'), 'question_id should be present');
     assert.ok(q.hasOwnProperty('question'), 'question should be present');
     assert.ok(Array.isArray(q.answers), 'answers should be an array');
-    q.answers.forEach(a => {
+    for (const a of q.answers) {
       assert.ok(a.hasOwnProperty('id'), 'answer.id should be present');
       assert.ok(a.hasOwnProperty('answer'), 'answer.answer should be present');
       assert.ok(a.hasOwnProperty('value'), 'answer.value should be present');
-    });
-  });
+    }
+  }
   assert.ok(this.token, 'JWT token should be present in context');
 });
 
@@ -247,16 +247,16 @@ When('I fetch all QVST answer repositories', async function () {
 Then('I receive a list of all QVST answer repositories with expected fields', function () {
   assert.strictEqual(this.response.status, 200, 'Status should be 200');
   assert.ok(Array.isArray(this.body), 'Response should be an array');
-  this.body.forEach(ar => {
+  for (const ar of this.body) {
     assert.ok(ar.hasOwnProperty('id'), 'id should be present');
     assert.ok(ar.hasOwnProperty('repoName'), 'name should be present');
     assert.ok(Array.isArray(ar.answers), 'answers should be an array');
-    ar.answers.forEach(a => {
+    for (const a of ar.answers) {
       assert.ok(a.hasOwnProperty('id'), 'answer.id should be present');
       assert.ok(a.hasOwnProperty('answer'), 'answer.answer should be present');
       assert.ok(a.hasOwnProperty('value'), 'answer.value should be present');
-    });
-  });
+    }
+  }
   assert.ok(this.token, 'JWT token should be present in context');
 });
 
@@ -277,10 +277,10 @@ Then('I receive a list of all QVST questions for the theme with expected fields'
   assert.strictEqual(this.response.status, 200, 'Status should be 200');
   assert.ok(Array.isArray(this.body), 'Response should be an array');
   const expectedThemeId = Number(this.themeId);
-  this.body.forEach(q => {
+  for (const q of this.body) {
     assertQvstQuestionFields(q);
     assert.strictEqual(Number(q.theme_id), expectedThemeId, 'All questions should belong to the requested theme');
-  });
+  }
   assert.ok(this.token, 'JWT token should be present in context');
 });
 
@@ -300,10 +300,10 @@ When('I fetch all QVST themes', async function () {
 Then('I receive a list of all QVST themes with expected fields', function () {
   assert.strictEqual(this.response.status, 200, 'Status should be 200');
   assert.ok(Array.isArray(this.body), 'Response should be an array');
-  this.body.forEach(t => {
+  for (const t of this.body) {
     assert.ok(t.hasOwnProperty('id'), 'id should be present');
     assert.ok(t.hasOwnProperty('name'), 'name should be present');
-  });
+  }
   assert.ok(this.token, 'JWT token should be present in context');
 });
 

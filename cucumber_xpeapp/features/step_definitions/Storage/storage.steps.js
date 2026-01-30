@@ -1,7 +1,7 @@
 const { When, Then } = require('@cucumber/cucumber');
 const assert = require('node:assert');
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 // ----------- POST UPLOAD IMAGE -----------
 // When('I upload an image to storage', { timeout: 15000 }, async function () {

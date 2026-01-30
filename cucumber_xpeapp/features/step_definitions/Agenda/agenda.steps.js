@@ -211,7 +211,7 @@ Then('I receive a confirmation of deletion', function () {
 // ----------- ERROR -----------
 Then('I receive a not found error for event', function () {
   assert.strictEqual(this.response.status, 404);
-  assert.ok(this.body.errors && this.body.errors.not_found, 'Error not_found should be present');
+  assert.ok(this.body.errors?.not_found, 'Error not_found should be present');
   assert.ok(Array.isArray(this.body.errors.not_found), 'not_found should be an array');
   assert.ok(this.body.errors.not_found[0].includes('not found'), 'Error message should mention not found');
   assert.strictEqual(this.body.error_data.not_found.status, 404, 'Error status should be 404');
