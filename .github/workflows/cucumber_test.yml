@@ -61,10 +61,10 @@ jobs:
           done
       - name: "Import structure SQL"
         run: |
-          docker exec -i $(docker ps -qf "name=db") mysql -uroot -proot wordpress < backup_structure.sql
+          docker exec -i $(docker ps -qf "name=db") mysql -uroot -proot wordpress < $(pwd)/backup_structure.sql
       - name: "Import data SQL"
         run: |
-          docker exec -i $(docker ps -qf "name=db") mysql -uroot -proot wordpress < backup_data.sql
+          docker exec -i $(docker ps -qf "name=db") mysql -uroot -proot wordpress < $(pwd)/backup_data.sql
       - name: "Run Cucumber tests"
         run: |
           cd cucumber_xpeapp
