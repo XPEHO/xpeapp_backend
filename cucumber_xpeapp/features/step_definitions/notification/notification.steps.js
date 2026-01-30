@@ -5,7 +5,7 @@ const sinon = require('sinon');
 let fetchStub;
 
 Before({ tags: '@mockNotification' }, function () {
-  fetchStub = sinon.stub(global, 'fetch').resolves({
+  fetchStub = sinon.stub(globalThis, 'fetch').resolves({
     status: 201,
     json: async () => ({ success: true })
   });

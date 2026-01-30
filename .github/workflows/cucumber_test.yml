@@ -56,7 +56,7 @@ jobs:
       - name: "Wait for MySQL to be ready"
         run: |
           for i in {1..30}; do
-            docker exec $(docker ps -qf "name=db") mysqladmin ping -uroot -proot && break
+            mysqladmin ping -h db -uroot -proot && break
             sleep 2
           done
       - name: "Import structure SQL"

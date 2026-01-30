@@ -8,7 +8,7 @@ let fetchStub;
 
 
 Before({ tags: '@mockNotification' }, function () {
-  if (!globalThis.fetch || !globalThis.fetch.isSinonProxy) {
+  if (!globalThis.fetch?.isSinonProxy) {
     fetchStub = sinon.stub(globalThis, 'fetch').resolves({
       status: 201,
       json: async () => ({ success: true })
@@ -355,9 +355,9 @@ Then('the QVST campaign analysis contains all main stats', function () {
     'questions_requiring_action',
     'at_risk_employees'
   ];
-  mainKeys.forEach(key => {
+  for (const key of mainKeys) {
     assert.ok(body.hasOwnProperty(key), `La propriété '${key}' doit être présente dans la réponse`);
-  });
+  }
   assert.ok(Array.isArray(body.themes), 'themes doit être un tableau');
   assert.ok(typeof body.global_stats === 'object', 'global_stats doit être un objet');
   assert.ok(Array.isArray(body.global_distribution), 'global_distribution doit être un tableau');
