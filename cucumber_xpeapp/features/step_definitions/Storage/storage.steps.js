@@ -2,6 +2,7 @@ const { When, Then } = require('@cucumber/cucumber');
 const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
+const { assertStatus, assertArray, assertToken } = require('../support/assertHelpers');
 
 // ----------- POST UPLOAD IMAGE -----------
 // When('I upload an image to storage', { timeout: 15000 }, async function () {
@@ -44,9 +45,9 @@ When('I fetch the image {string} from folder {string}', async function (filename
 });
 
 Then('I receive the image from storage', function () {
-  assert.strictEqual(this.response.status, 200, 'Status should be 200');
+  assertStatus(this.response, 200);
   assert.ok(this.body.byteLength > 0, 'Image data should be present');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- GET ALL FOLDERS -----------
@@ -62,9 +63,9 @@ When('I fetch all folders', async function () {
 });
 
 Then('I receive a list of folders', function () {
-  assert.strictEqual(this.response.status, 200, 'Status should be 200');
-  assert.ok(Array.isArray(this.body), 'Response should be an array');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertStatus(this.response, 200);
+  assertArray(this.body);
+  assertToken(this);
 });
 
 // ----------- GET ALL IMAGES BY FOLDER -----------
@@ -80,9 +81,9 @@ When('I fetch all images from folder {string}', async function (folder) {
 });
 
 Then('I receive a list of images from the folder', function () {
-  assert.strictEqual(this.response.status, 200, 'Status should be 200');
-  assert.ok(Array.isArray(this.body), 'Response should be an array');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertStatus(this.response, 200);
+  assertArray(this.body);
+  assertToken(this);
 });
 
 // ----------- DELETE IMAGE FROM STORAGE -----------
@@ -100,6 +101,6 @@ When('I delete an image with id {int} from storage', async function (id) {
 });
 
 Then('I receive a confirmation of image deletion', function () {
-  assert.strictEqual(this.response.status, 204, 'Status should be 204');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertStatus(this.response, 204);
+  assertToken(this);
 });

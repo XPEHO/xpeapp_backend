@@ -3,6 +3,7 @@ const { When, Then, Before, After } = require('@cucumber/cucumber');
 const assert = require('node:assert');
 const fetch = require('node-fetch');
 const { safeJson } = require('../../support/safeJson');
+const { assertStatus, assertArray, assertToken } = require('../support/assertHelpers');
 
 let fetchStub;
 
@@ -66,13 +67,13 @@ When('I fetch the QVST questions', async function () {
 });
 
 Then('I receive a list of only active QVST questions', function () {
-  assert.strictEqual(this.response.status, 200, 'Status should be 200');
-  assert.ok(Array.isArray(this.body), 'Response should be an array');
+  assertStatus(this.response, 200);
+  assertArray(this.body);
   for (const q of this.body) {
     assertQvstQuestionFields(q);
     assert.strictEqual(q.no_longer_used, false, 'All questions should be active');
   }
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- GET QVST QUESTIONS (include no longer used) -----------
@@ -88,13 +89,13 @@ When('I fetch the QVST questions with no longer used included', async function (
 });
 
 Then('I receive a list of all QVST questions including no longer used', function () {
-  assert.strictEqual(this.response.status, 200, 'Status should be 200');
-  assert.ok(Array.isArray(this.body), 'Response should be an array');
+  assertStatus(this.response, 200);
+  assertArray(this.body);
   assert.ok(this.body.some(q => q.no_longer_used === true), 'At least one question should be no longer used');
   for (const q of this.body) {
     assertQvstQuestionFields(q);
   }
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- GET QVST ACTIVE CAMPAIGNS -----------
@@ -110,13 +111,13 @@ When('I fetch the active QVST campaigns', async function () {
 });
 
 Then('I receive a list of active QVST campaigns', function () {
-  assert.strictEqual(this.response.status, 200, 'Status should be 200');
-  assert.ok(Array.isArray(this.body), 'Response should be an array');
+  assertStatus(this.response, 200);
+  assertArray(this.body);
   for (const c of this.body) {
     assertQvstCampaignFields(c);
     assert.strictEqual(c.status, 'OPEN', 'Only active campaigns (OPEN) should be present');
   }
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- GET QVST ALL CAMPAIGNS -----------
@@ -132,12 +133,12 @@ When('I fetch all QVST campaigns', async function () {
 });
 
 Then('I receive a list of all QVST campaigns', function () {
-  assert.strictEqual(this.response.status, 200, 'Status should be 200');
-  assert.ok(Array.isArray(this.body), 'Response should be an array');
+  assertStatus(this.response, 200);
+  assertArray(this.body);
   for (const c of this.body) {
     assertQvstCampaignFields(c);
   }
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- POST QVST CAMPAIGN STATUS (with notification stub) -----------
@@ -155,9 +156,9 @@ When('I update the status of QVST campaign {int} to {string}', { tags: '@mockNot
 });
 
 Then('I receive a confirmation of QVST campaign status update', function () {
-  assert.strictEqual(this.response.status, 201, 'Status should be 201');
+  assertStatus(this.response, 201);
   assert.deepStrictEqual(this.body, {}, 'Response body should be empty');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- GET QVST CAMPAIGN STATS -----------
@@ -202,7 +203,7 @@ Then('I receive the QVST campaign stats with all expected fields', function () {
       assert.ok(a.hasOwnProperty('numberAnswered'), 'numberAnswered should be present');
     }
   }
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- GET QVST CAMPAIGN QUESTIONS -----------
@@ -218,7 +219,7 @@ When('I fetch the questions for QVST campaign {int}', async function (id) {
 });
 
 Then('I receive the QVST campaign questions with all expected fields', function () {
-  assert.ok(Array.isArray(this.body), 'Response should be an array');
+  assertArray(this.body);
   for (const q of this.body) {
     assert.ok(q.hasOwnProperty('question_id'), 'question_id should be present');
     assert.ok(q.hasOwnProperty('question'), 'question should be present');
@@ -229,7 +230,7 @@ Then('I receive the QVST campaign questions with all expected fields', function 
       assert.ok(a.hasOwnProperty('value'), 'answer.value should be present');
     }
   }
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- GET ALL ANSWER REPOSITORIES -----------
@@ -245,8 +246,8 @@ When('I fetch all QVST answer repositories', async function () {
 });
 
 Then('I receive a list of all QVST answer repositories with expected fields', function () {
-  assert.strictEqual(this.response.status, 200, 'Status should be 200');
-  assert.ok(Array.isArray(this.body), 'Response should be an array');
+  assertStatus(this.response, 200);
+  assertArray(this.body);
   for (const ar of this.body) {
     assert.ok(ar.hasOwnProperty('id'), 'id should be present');
     assert.ok(ar.hasOwnProperty('repoName'), 'name should be present');
@@ -257,7 +258,7 @@ Then('I receive a list of all QVST answer repositories with expected fields', fu
       assert.ok(a.hasOwnProperty('value'), 'answer.value should be present');
     }
   }
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- GET ALL QUESTIONS BY THEME -----------
@@ -274,14 +275,14 @@ When('I fetch all QVST questions for theme {int}', async function (themeId) {
 });
 
 Then('I receive a list of all QVST questions for the theme with expected fields', function () {
-  assert.strictEqual(this.response.status, 200, 'Status should be 200');
-  assert.ok(Array.isArray(this.body), 'Response should be an array');
+  assertStatus(this.response, 200);
+  assertArray(this.body);
   const expectedThemeId = Number(this.themeId);
   for (const q of this.body) {
     assertQvstQuestionFields(q);
     assert.strictEqual(Number(q.theme_id), expectedThemeId, 'All questions should belong to the requested theme');
   }
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- GET ALL THEMES -----------
@@ -298,13 +299,13 @@ When('I fetch all QVST themes', async function () {
 });
 
 Then('I receive a list of all QVST themes with expected fields', function () {
-  assert.strictEqual(this.response.status, 200, 'Status should be 200');
-  assert.ok(Array.isArray(this.body), 'Response should be an array');
+  assertStatus(this.response, 200);
+  assertArray(this.body);
   for (const t of this.body) {
     assert.ok(t.hasOwnProperty('id'), 'id should be present');
     assert.ok(t.hasOwnProperty('name'), 'name should be present');
   }
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- POST QVST Campaign -----------
@@ -324,7 +325,7 @@ When('I add a new QVST campaign with body:', async function (docString) {
 });
 
 Then('the QVST campaign is successfully created', function () {
-  assert.strictEqual(this.response.status, 201, 'Status should be 201');
+  assertStatus(this.response, 201);
 });
 
 // ----------- GET QVST CAMPAIGN ANALYSIS -----------
@@ -340,7 +341,7 @@ When('I fetch the QVST campaign analysis for id {int}', async function (id) {
 });
 
 Then('the QVST campaign analysis contains all main stats', function () {
-  assert.strictEqual(this.response.status, 200, 'Status should be 200');
+  assertStatus(this.response, 200);
   const body = this.body;
   const mainKeys = [
     'campaign_id',
@@ -379,7 +380,7 @@ When('I delete the QVST question with id {int}', async function (id) {
 });
 
 Then('the QVST question is successfully deleted', function () {
-  assert.strictEqual(this.response.status, 204, 'Status should be 204');
+  assertStatus(this.response, 204);
 }); 
 
 // ----------- POST QVST QUESTION -----------
@@ -398,5 +399,5 @@ When('I add a QVST question with body:', async function (docString) {
 });
 
 Then('the QVST question is successfully created', function () {
-  assert.strictEqual(this.response.status, 201, 'Status should be 201');
+  assertStatus(this.response, 201);
 });

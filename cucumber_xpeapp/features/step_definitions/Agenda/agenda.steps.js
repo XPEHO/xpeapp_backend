@@ -3,6 +3,7 @@ const { When, Then } = require('@cucumber/cucumber');
 const assert = require('node:assert');
 const fetch = require('node-fetch');
 const { safeJson } = require('../../support/safeJson');
+const { assertStatus, assertArray, assertToken } = require('../support/assertHelpers');
 
 // =============================
 // EVENTS TYPES API STEPS
@@ -27,21 +28,21 @@ When('I fetch the event type by the {int}', async function (id) {
 });
 
 Then('I receive a list of event types', function () {
-  assert.strictEqual(this.response.status, 200);
-  assert.ok(Array.isArray(this.body), 'Response should be an array');
+  assertStatus(this.response, 200);
+  assertArray(this.body, 'Response should be an array');
   if (this.body.length > 0) {
     const item = this.body[0];
     assert.ok(item.id, 'Event type id should be present');
     assert.ok(item.label, 'Event type label should be present');
   }
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 Then('I receive an event type detail', function () {
-  assert.strictEqual(this.response.status, 200);
+  assertStatus(this.response, 200);
   assert.ok(this.body.id, 'Event type id should be present');
   assert.ok(this.body.label, 'Event type label should be present');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- POST -----------
@@ -59,9 +60,9 @@ When('I create an event type with label {string} and color_code {string}', async
 });
 
 Then('I receive a confirmation of event type creation', function () {
-  assert.strictEqual(this.response.status, 201, 'Status should be 201');
+  assertStatus(this.response, 201);
   if (this.body.id) assert.ok(this.body.id, 'Created event type should have an id');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- PUT -----------
@@ -79,8 +80,8 @@ When('I update event type with id {int} to label {string} and color_code {string
 });
 
 Then('I receive a confirmation of event type update', function () {
-  assert.strictEqual(this.response.status, 204, 'Status should be 204');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertStatus(this.response, 204);
+  assertToken(this);
 });
 
 // ----------- DELETE -----------
@@ -96,8 +97,8 @@ When('I delete event type with id {int}', async function (id) {
 });
 
 Then('I receive a confirmation of event type deletion', function () {
-  assert.strictEqual(this.response.status, 204, 'Status should be 204');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertStatus(this.response, 204);
+  assertToken(this);
 });
 
 // =============================
@@ -115,23 +116,23 @@ When('I fetch the events page {int}', async function (page) {
 
 
 Then('I receive a list of events', function () {
-  assert.strictEqual(this.response.status, 200);
-  assert.ok(Array.isArray(this.body));
+  assertStatus(this.response, 200);
+  assertArray(this.body);
   if (this.body.length > 0) {
     const item = this.body[0];
     assert.ok(item.title, 'title should be present');
     assert.ok(item.date, 'date should be present');
     assert.ok(item.type_id, 'type_id should be present');
   }
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 Then('I receive a birthday detail', function () {
-  assert.strictEqual(this.response.status, 200);
+  assertStatus(this.response, 200);
   assert.ok(this.body.id, 'Birthday id should be present');
   assert.ok(this.body.first_name, 'first_name should be present');
   assert.ok(this.body.birthdate, 'birthdate should be present');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 When('I fetch the event with id {int}', async function (id) {
@@ -143,12 +144,12 @@ When('I fetch the event with id {int}', async function (id) {
 });
 
 Then('I receive an event detail', function () {
-  assert.strictEqual(this.response.status, 200);
+  assertStatus(this.response, 200);
   assert.ok(this.body.id, 'Event id should be present');
   assert.ok(this.body.title, 'title should be present');
   assert.ok(this.body.date, 'date should be present');
   assert.ok(this.body.type_id, 'type_id should be present');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 // ----------- POST -----------
 When('I create an event with title {string}, date {string}, type_id {string}', async function (title, date, type_id) {
@@ -165,9 +166,9 @@ When('I create an event with title {string}, date {string}, type_id {string}', a
 });
 
 Then('I receive a confirmation of event creation', function () {
-  assert.strictEqual(this.response.status, 201, 'Status should be 201');
+  assertStatus(this.response, 201);
   if (this.body.id) assert.ok(this.body.id, 'Created event should have an id');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- PUT -----------
@@ -185,8 +186,8 @@ When('I update event with id {int} to title {string}, date {string}, type_id {st
 });
 
 Then('I receive a confirmation of event update', function () {
-  assert.strictEqual(this.response.status, 204, 'Status should be 204');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertStatus(this.response, 204);
+  assertToken(this);
 });
 
 // ----------- DELETE -----------
@@ -204,18 +205,18 @@ When('I delete event with id {int}', async function (id) {
 
 // ----------- DELETE -----------
 Then('I receive a confirmation of deletion', function () {
-  assert.strictEqual(this.response.status, 204, 'Status should be 204');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertStatus(this.response, 204);
+  assertToken(this);
 });
 
 // ----------- ERROR -----------
 Then('I receive a not found error for event', function () {
-  assert.strictEqual(this.response.status, 404);
+  assertStatus(this.response, 404);
   assert.ok(this.body.errors?.not_found, 'Error not_found should be present');
   assert.ok(Array.isArray(this.body.errors.not_found), 'not_found should be an array');
   assert.ok(this.body.errors.not_found[0].includes('not found'), 'Error message should mention not found');
   assert.strictEqual(this.body.error_data.not_found.status, 404, 'Error status should be 404');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // =============================
@@ -259,9 +260,9 @@ When('I create a birthday with first name {string}, birthdate {string}, email {s
 
 
 Then('I receive a confirmation of creation', function () {
-  assert.strictEqual(this.response.status, 201, 'Status should be 201');
+  assertStatus(this.response, 201);
   if (this.body.id) assert.ok(this.body.id, 'Created birthday should have an id');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- PUT -----------
@@ -280,8 +281,8 @@ When('I update birthday with id {int} to first name {string}, birthdate {string}
 });
 
 Then('I receive a confirmation of update', function () {
-  assert.strictEqual(this.response.status, 204, 'Status should be 204');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertStatus(this.response, 204);
+  assertToken(this);
 });
 
 
@@ -298,14 +299,14 @@ When('I delete birthday with id {int}', async function (id) {
 });
 
 Then('I receive a list of birthdays', function () {
-  assert.strictEqual(this.response.status, 200);
-  assert.ok(Array.isArray(this.body));
+  assertStatus(this.response, 200);
+  assertArray(this.body);
   if (this.body.length > 0) {
     const item = this.body[0];
     assert.ok(item.first_name, 'first_name should be present');
     assert.ok(item.birthdate, 'birthdate should be present');
   }
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 
@@ -314,7 +315,7 @@ Then('I receive a list of birthdays', function () {
 Then('I receive an error response', function () {
   assert.notStrictEqual(this.response.status, 400);
   assert.ok(this.body.message, 'Error message should be present');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 Then('I receive a not found error', function () {
@@ -323,5 +324,5 @@ Then('I receive a not found error', function () {
   assert.ok(Array.isArray(this.body.errors.not_found), 'not_found should be an array');
   assert.ok(this.body.errors.not_found[0].includes('not found'), 'Error message should mention not found');
   assert.strictEqual(this.body.error_data.not_found.status, 404, 'Error status should be 404');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });

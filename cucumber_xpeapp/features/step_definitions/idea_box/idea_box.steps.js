@@ -3,6 +3,7 @@ const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
 const { safeJson } = require('../../support/safeJson');
+const { assertStatus, assertArray, assertToken } = require('../support/assertHelpers');
 
 // ----------- GET All IDEAS -----------
 When('I fetch all ideas', async function () {
@@ -18,9 +19,9 @@ When('I fetch all ideas', async function () {
 });
 
 Then('I receive a list of ideas', function () {
-  assert.strictEqual(this.response.status, 200, 'Status should be 200');
-  assert.ok(Array.isArray(this.body), 'Response should be an array of ideas');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertStatus(this.response, 200);
+  assertArray(this.body, 'Response should be an array of ideas');
+  assertToken(this);
 });
 
 // ----------- GET IDEA BY ID -----------
@@ -37,11 +38,11 @@ When('I fetch the idea with id {int}', async function (id) {
 });
 
 Then('I receive the idea details', function () {
-  assert.strictEqual(this.response.status, 200, 'Status should be 200');
+  assertStatus(this.response, 200);
   assert.ok(this.body.id, 'Idea id should be present');
   assert.ok(this.body.context, 'Idea context should be present');
   assert.ok(this.body.description, 'Idea description should be present');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- POST NEW IDEA -----------
@@ -61,10 +62,10 @@ When('I submit a new idea with context {string} and description {string}', async
 });
 
 Then('I receive the created idea confirmation', function () {
-  assert.strictEqual(this.response.status, 201, 'Status should be 201');
+  assertStatus(this.response, 201);
   assert.strictEqual(this.body.context, this.body.context, 'Idea context should match');
   assert.strictEqual(this.body.description, this.body.description, 'Idea description should match');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- PUT IDEA BY ID -----------
@@ -83,9 +84,9 @@ When('I update the idea with id {int} to status {string}', async function (id, s
 });
 
 Then('I receive the updated idea confirmation', function () {
-  assert.strictEqual(this.response.status, 204, 'Status should be 204');
+  assertStatus(this.response, 204);
   assert.strictEqual(this.body.status, this.body.status, 'Idea status should match');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertToken(this);
 });
 
 // ----------- DELETE IDEA BY ID -----------
@@ -103,6 +104,6 @@ When('I delete the idea with id {int}', async function (id) {
 });
 
 Then('I receive the deleted idea confirmation', function () {
-  assert.strictEqual(this.response.status, 204, 'Status should be 204');
-  assert.ok(this.token, 'JWT token should be present in context');
+  assertStatus(this.response, 204);
+  assertToken(this);
 });
