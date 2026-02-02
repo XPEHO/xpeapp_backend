@@ -69,8 +69,7 @@ jobs:
         run: |
           docker build -t xpeapp-wordpress .
           docker run -d --name wordpress \
-            --network host \
-            -e WORDPRESS_DB_HOST=127.0.0.1:52000 \
+            -e WORDPRESS_DB_HOST=host.docker.internal:52000 \
             -e WORDPRESS_DB_USER=wordpress \
             -e WORDPRESS_DB_PASSWORD=wordpress \
             -e WORDPRESS_DB_NAME=wordpress \
@@ -83,15 +82,22 @@ jobs:
             -e SECURE_AUTH_SALT=ci_key \
             -e LOGGED_IN_SALT=ci_key \
             -e NONCE_SALT=ci_key \
+            --add-host=host.docker.internal:host-gateway \
             -p 7830:80 \
             xpeapp-wordpress
       - name: "Wait for WordPress to be ready"
         run: |
-          for i in {1..30}; do
-            curl -s http://localhost:7830/wp-json/ && break
-            echo "Waiting for WordPress..."
+          echo "Checking WordPress container logs..."
+          docker logs wordpress || true
+          for i in {1..60}; do
+            if curl -s http://localhost:7830/wp-json/ > /dev/null 2>&1; then
+              echo "WordPress is ready!"
+              break
+            fi
+            echo "Waiting for WordPress... ($i/60)"
             sleep 2
           done
+          docker logs wordpress
       - name: "Run Cucumber tests"
         run: |
           cd cucumber_xpeapp
