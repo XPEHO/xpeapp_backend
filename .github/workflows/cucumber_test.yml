@@ -56,15 +56,15 @@ jobs:
       - name: "Wait for MySQL to be ready"
         run: |
           for i in {1..30}; do
-            mysql -h 127.0.0.1 -P 52000 -uroot -proot -e "SELECT 1" && break
+            mysqladmin ping -h db -uroot -proot && break
             sleep 2
           done
       - name: "Import structure SQL"
         run: |
-          mysql -h 127.0.0.1 -P 52000 -uroot -proot wordpress < backup_structure.sql
+          docker exec -i $(docker ps -qf "name=db") mysql -uroot -proot wordpress < $GITHUB_WORKSPACE/backup_structure.sql
       - name: "Import data SQL"
         run: |
-          mysql -h 127.0.0.1 -P 52000 -uroot -proot wordpress < backup_data.sql
+          docker exec -i $(docker ps -qf "name=db") mysql -uroot -proot wordpress < $GITHUB_WORKSPACE/backup_data.sql
       - name: "Run Cucumber tests"
         run: |
           cd cucumber_xpeapp

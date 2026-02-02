@@ -1,5 +1,8 @@
 # All SQL files
 *.sql
+# Just exclude specific backup files in cucumber folder
+!cucumber_xpeapp/backup_structure.sql
+!cucumber_xpeapp/backup_data.sql
 
 .env
 .DS_Store
