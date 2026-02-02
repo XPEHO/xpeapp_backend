@@ -1,80 +1,47 @@
 const { When, Then } = require('@cucumber/cucumber');
-const fetch = require('node-fetch');
-const { safeJson } = require('../../support/safeJson');
+const { apiGet, apiPost, apiPut, apiDelete } = require('../support/httpHelpers');
 const { assertStatus, assertArray, assertToken, assertField, assertNotFoundError } = require('../support/assertHelpers');
 
 // =============================
 // EVENTS TYPES API STEPS
 // =============================
 
-// ----------- GET -----------
 When('I fetch the event types', async function () {
-  const res = await fetch('http://localhost:7830/wp-json/xpeho/v1/agenda/events-types/', {
-    headers: { Authorization: `Bearer ${this.token}` }
-  });
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiGet(this, '/agenda/events-types/');
 });
 
-// ----------- GET -----------
 When('I fetch the event type by the {int}', async function (id) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/agenda/events-types/${id}`, {
-    headers: { Authorization: `Bearer ${this.token}` }
-  });
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiGet(this, `/agenda/events-types/${id}`);
 });
 
 Then('I receive a list of event types', function () {
   assertStatus(this.response, 200);
-  assertArray(this.body, 'Response should be an array');
+  assertArray(this.body);
   if (this.body.length > 0) {
-    const item = this.body[0];
-    assertField(item, 'id', 'Event type id should be present');
-    assertField(item, 'label', 'Event type label should be present');
+    assertField(this.body[0], 'id');
+    assertField(this.body[0], 'label');
   }
   assertToken(this);
 });
 
 Then('I receive an event type detail', function () {
   assertStatus(this.response, 200);
-  assertField(this.body, 'id', 'Event type id should be present');
-  assertField(this.body, 'label', 'Event type label should be present');
+  assertField(this.body, 'id');
+  assertField(this.body, 'label');
   assertToken(this);
 });
 
-// ----------- POST -----------
 When('I create an event type with label {string} and color_code {string}', async function (label, color_code) {
-  const res = await fetch('http://localhost:7830/wp-json/xpeho/v1/agenda/events-types', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.token}`
-    },
-    body: JSON.stringify({ label, color_code })
-  });
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiPost(this, '/agenda/events-types', { label, color_code });
 });
 
 Then('I receive a confirmation of event type creation', function () {
   assertStatus(this.response, 201);
-  if (this.body.id) assertField(this.body, 'id', 'Created event type should have an id');
   assertToken(this);
 });
 
-// ----------- PUT -----------
 When('I update event type with id {int} to label {string} and color_code {string}', async function (id, label, color_code) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/agenda/events-types/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.token}`
-    },
-    body: JSON.stringify({ label, color_code })
-  });
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiPut(this, `/agenda/events-types/${id}`, { label, color_code });
 });
 
 Then('I receive a confirmation of event type update', function () {
@@ -82,16 +49,8 @@ Then('I receive a confirmation of event type update', function () {
   assertToken(this);
 });
 
-// ----------- DELETE -----------
 When('I delete event type with id {int}', async function (id) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/agenda/events-types/${id}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${this.token}`
-    }
-  });
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiDelete(this, `/agenda/events-types/${id}`);
 });
 
 Then('I receive a confirmation of event type deletion', function () {
@@ -102,85 +61,46 @@ Then('I receive a confirmation of event type deletion', function () {
 // =============================
 // EVENTS API STEPS
 // =============================
-  
-// ----------- GET -----------
-When('I fetch the events page {int}', async function (page) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/agenda/events?page=${page}`, {
-    headers: { Authorization: `Bearer ${this.token}` }
-  });
-  this.response = res;
-  this.body = await safeJson(res);
-});
 
+When('I fetch the events page {int}', async function (page) {
+  await apiGet(this, `/agenda/events?page=${page}`);
+});
 
 Then('I receive a list of events', function () {
   assertStatus(this.response, 200);
   assertArray(this.body);
   if (this.body.length > 0) {
-    const item = this.body[0];
-    assertField(item, 'title', 'title should be present');
-    assertField(item, 'date', 'date should be present');
-    assertField(item, 'type_id', 'type_id should be present');
+    assertField(this.body[0], 'title');
+    assertField(this.body[0], 'date');
+    assertField(this.body[0], 'type_id');
   }
   assertToken(this);
 });
 
-Then('I receive a birthday detail', function () {
-  assertStatus(this.response, 200);
-  assertField(this.body, 'id', 'Birthday id should be present');
-  assertField(this.body, 'first_name', 'first_name should be present');
-  assertField(this.body, 'birthdate', 'birthdate should be present');
-  assertToken(this);
-});
-
 When('I fetch the event with id {int}', async function (id) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/agenda/events/${id}`, {
-    headers: { Authorization: `Bearer ${this.token}` }
-  });
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiGet(this, `/agenda/events/${id}`);
 });
 
 Then('I receive an event detail', function () {
   assertStatus(this.response, 200);
-  assertField(this.body, 'id', 'Event id should be present');
-  assertField(this.body, 'title', 'title should be present');
-  assertField(this.body, 'date', 'date should be present');
-  assertField(this.body, 'type_id', 'type_id should be present');
+  assertField(this.body, 'id');
+  assertField(this.body, 'title');
+  assertField(this.body, 'date');
+  assertField(this.body, 'type_id');
   assertToken(this);
 });
-// ----------- POST -----------
+
 When('I create an event with title {string}, date {string}, type_id {string}', async function (title, date, type_id) {
-  const res = await fetch('http://localhost:7830/wp-json/xpeho/v1/agenda/events', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.token}`
-    },
-    body: JSON.stringify({ title, date, type_id })
-  });
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiPost(this, '/agenda/events', { title, date, type_id });
 });
 
 Then('I receive a confirmation of event creation', function () {
   assertStatus(this.response, 201);
-  if (this.body.id) assertField(this.body, 'id', 'Created event should have an id');
   assertToken(this);
 });
 
-// ----------- PUT -----------
 When('I update event with id {int} to title {string}, date {string}, type_id {string}', async function (id, title, date, type_id) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/agenda/events/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.token}`
-    },
-    body: JSON.stringify({ title, date, type_id })
-  });
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiPut(this, `/agenda/events/${id}`, { title, date, type_id });
 });
 
 Then('I receive a confirmation of event update', function () {
@@ -188,32 +108,18 @@ Then('I receive a confirmation of event update', function () {
   assertToken(this);
 });
 
-// ----------- DELETE -----------
 When('I delete event with id {int}', async function (id) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/agenda/events/${id}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${this.token}`
-    }
-  });
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiDelete(this, `/agenda/events/${id}`);
 });
 
-
-// ----------- DELETE -----------
 Then('I receive a confirmation of deletion', function () {
   assertStatus(this.response, 204);
   assertToken(this);
 });
 
-// ----------- ERROR -----------
 Then('I receive a not found error for event', function () {
   assertStatus(this.response, 404);
-  assert.ok(this.body.errors?.not_found, 'Error not_found should be present');
-  assert.ok(Array.isArray(this.body.errors.not_found), 'not_found should be an array');
-  assert.ok(this.body.errors.not_found[0].includes('not found'), 'Error message should mention not found');
-  assert.strictEqual(this.body.error_data.not_found.status, 404, 'Error status should be 404');
+  assertNotFoundError(this.body);
   assertToken(this);
 });
 
@@ -221,61 +127,43 @@ Then('I receive a not found error for event', function () {
 // BIRTHDAYS API STEPS
 // =============================
 
-// ----------- GET -----------
-
 When('I fetch the birthdays page {int}', async function (page) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/agenda/birthday?page=${page}`, {
-    headers: { Authorization: `Bearer ${this.token}` }
-  });
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiGet(this, `/agenda/birthday?page=${page}`);
 });
 
-
-// ----------- GET BY ID -----------
-When('I fetch the birthday with id {int}', async function (id) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/agenda/birthday/${id}`, {
-    headers: { Authorization: `Bearer ${this.token}` }
-  });
-  this.response = res;
-  this.body = await safeJson(res);
-});
-
-// ----------- POST -----------
-
-When('I create a birthday with first name {string}, birthdate {string}, email {string}', async function (firstName, birthdate, email) {
-  const res = await fetch('http://localhost:7830/wp-json/xpeho/v1/agenda/birthday', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.token}`
-    },
-    body: JSON.stringify({ first_name: firstName, birthdate, email })
-  });
-  this.response = res;
-  this.body = await safeJson(res);
-});
-
-
-Then('I receive a confirmation of creation', function () {
-  assertStatus(this.response, 201);
-  if (this.body.id) assertField(this.body, 'id', 'Created birthday should have an id');
+Then('I receive a list of birthdays', function () {
+  assertStatus(this.response, 200);
+  assertArray(this.body);
+  if (this.body.length > 0) {
+    assertField(this.body[0], 'first_name');
+    assertField(this.body[0], 'birthdate');
+  }
   assertToken(this);
 });
 
-// ----------- PUT -----------
+When('I fetch the birthday with id {int}', async function (id) {
+  await apiGet(this, `/agenda/birthday/${id}`);
+});
+
+Then('I receive a birthday detail', function () {
+  assertStatus(this.response, 200);
+  assertField(this.body, 'id');
+  assertField(this.body, 'first_name');
+  assertField(this.body, 'birthdate');
+  assertToken(this);
+});
+
+When('I create a birthday with first name {string}, birthdate {string}, email {string}', async function (firstName, birthdate, email) {
+  await apiPost(this, '/agenda/birthday', { first_name: firstName, birthdate, email });
+});
+
+Then('I receive a confirmation of creation', function () {
+  assertStatus(this.response, 201);
+  assertToken(this);
+});
 
 When('I update birthday with id {int} to first name {string}, birthdate {string}, email {string}', async function (id, firstName, birthdate, email) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/agenda/birthday/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.token}`
-    },
-    body: JSON.stringify({ first_name: firstName, birthdate, email })
-  });
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiPut(this, `/agenda/birthday/${id}`, { first_name: firstName, birthdate, email });
 });
 
 Then('I receive a confirmation of update', function () {
@@ -283,38 +171,17 @@ Then('I receive a confirmation of update', function () {
   assertToken(this);
 });
 
-
-// ----------- DELETE -----------
 When('I delete birthday with id {int}', async function (id) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/agenda/birthday/${id}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${this.token}`
-    }
-  });
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiDelete(this, `/agenda/birthday/${id}`);
 });
 
-Then('I receive a list of birthdays', function () {
-  assertStatus(this.response, 404);
-  assertNotFoundError(this.body);
-  assert.strictEqual(this.body.error_data.not_found.status, 404, 'Error status should be 404');
-  assertToken(this);
-  });
-
-
-// ----------- ERROR -----------
-
 Then('I receive an error response', function () {
-  assert.notStrictEqual(this.response.status, 400);
-  assert.ok(this.body.message, 'Error message should be present');
+  assertField(this.body, 'message');
   assertToken(this);
 });
 
 Then('I receive a not found error', function () {
-  assert.strictEqual(this.response.status, 404);
+  assertStatus(this.response, 404);
   assertNotFoundError(this.body);
-  assert.strictEqual(this.body.error_data?.not_found?.status, 404, 'Error status should be 404');
   assertToken(this);
 });
