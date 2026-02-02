@@ -28,6 +28,22 @@ function assertDetailResponse(context, fields) {
   assertToken(context);
 }
 
+function assertCreated(context) {
+  assertStatus(context.response, 201);
+  assertToken(context);
+}
+
+function assertNoContent(context) {
+  assertStatus(context.response, 204);
+  assertToken(context);
+}
+
+function assertNotFound(context) {
+  assertStatus(context.response, 404);
+  assertNotFoundError(context.body);
+  assertToken(context);
+}
+
 // =============================
 // GENERIC THEN STEPS
 // =============================
@@ -40,32 +56,48 @@ Then(/^I receive an? (event type|event|birthday) detail$/, function (entity) {
   assertDetailResponse(this, ENTITY_FIELDS[entity]);
 });
 
-Then(/^I receive a confirmation of (?:event type |event |birthday )?(?:creation|update|deletion)$/, function () {
-  assertToken(this);
-});
-
 Then('I receive a confirmation of event type creation', function () {
-  assertStatus(this.response, 201);
-  assertToken(this);
+  assertCreated(this);
 });
 
-Then(/^I receive a confirmation of (?:event )?creation$/, function () {
-  assertStatus(this.response, 201);
-  assertToken(this);
+Then('I receive a confirmation of event type update', function () {
+  assertNoContent(this);
 });
 
-Then(/^I receive a confirmation of (?:event type |event |birthday )?(?:update|deletion)$/, function () {
-  assertStatus(this.response, 204);
-  assertToken(this);
+Then('I receive a confirmation of event type deletion', function () {
+  assertNoContent(this);
 });
 
-Then(/^I receive a(?:n)? (?:not found )?error(?: response)?(?: for event)?$/, function () {
-  if (this.response.status === 404) {
-    assertStatus(this.response, 404);
-    assertNotFoundError(this.body);
-  } else {
-    assertField(this.body, 'message');
-  }
+Then('I receive a confirmation of event creation', function () {
+  assertCreated(this);
+});
+
+Then('I receive a confirmation of event update', function () {
+  assertNoContent(this);
+});
+
+Then('I receive a confirmation of deletion', function () {
+  assertNoContent(this);
+});
+
+Then('I receive a confirmation of creation', function () {
+  assertCreated(this);
+});
+
+Then('I receive a confirmation of update', function () {
+  assertNoContent(this);
+});
+
+Then('I receive a not found error for event', function () {
+  assertNotFound(this);
+});
+
+Then('I receive a not found error', function () {
+  assertNotFound(this);
+});
+
+Then('I receive an error response', function () {
+  assertField(this.body, 'message');
   assertToken(this);
 });
 
