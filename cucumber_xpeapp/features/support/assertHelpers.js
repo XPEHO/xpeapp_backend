@@ -23,13 +23,14 @@ function assertFields(obj, fields) {
   }
 }
 
+
 function assertHasOwn(obj, field, msg) {
-  assert.ok(Object.prototype.hasOwnProperty.call(obj, field), msg || `${field} should be present`);
+  assert.ok(Object.hasOwn(obj, field), msg || `${field} should be present`);
 }
 
 function assertHasOwnFields(obj, fields) {
   for (const field of fields) {
-    assert.ok(Object.prototype.hasOwnProperty.call(obj, field), `${field} should be present`);
+    assert.ok(Object.hasOwn(obj, field), `${field} should be present`);
   }
 }
 
