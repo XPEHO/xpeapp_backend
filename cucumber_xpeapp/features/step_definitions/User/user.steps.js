@@ -1,10 +1,37 @@
-const { When, Then } = require('@cucumber/cucumber');
+const { When, Then, After } = require('@cucumber/cucumber');
 const assert = require('node:assert');
 const fetch = require('node-fetch');
 const fs = require('node:fs');
 const path = require('node:path');
 
 const { safeJson } = require('../../support/safeJson');
+
+// Reset to the initial password after the password update test
+After({ tags: '@resetPassword' }, async function () {
+  // initialize - get a token with the updated password
+  const authRes = await fetch('http://localhost:7830/wp-json/jwt-auth/v1/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: 'wordpress_dev', password: 'wordpress_dev@example' })
+  });
+  const authBody = await authRes.json();
+  
+  if (authBody.token) {
+    // reset password back to the original
+    await fetch('http://localhost:7830/wp-json/xpeho/v1/update-password', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authBody.token}`
+      },
+      body: JSON.stringify({
+        initial_password: 'wordpress_dev@example',
+        password: 'wordpress_dev',
+        password_repeat: 'wordpress_dev'
+      })
+    });
+  }
+});
 
 // ----------- GET USER INFOS -----------
 When('I fetch my user infos', async function () {

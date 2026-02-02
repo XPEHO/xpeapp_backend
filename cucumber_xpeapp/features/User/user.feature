@@ -19,6 +19,7 @@ Scenario: Post my last connection
   When I post my last connection
   Then I receive a confirmation of last connection post
 
+@resetPassword
 Scenario: Update password
   Given the WordPress JWT API is available
   When I update password from "wordpress_dev" to "wordpress_dev@example"
