@@ -47,4 +47,5 @@ module.exports = {
   assertFields,
   assertHasOwn,
   assertHasOwnFields,
+  assertNotFoundError,
 };
