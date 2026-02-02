@@ -2,7 +2,7 @@ const { When, Then } = require('@cucumber/cucumber');
 const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
-const { assertStatus, assertArray, assertToken } = require('../support/assertHelpers');
+const { assertStatus, assertArray, assertToken } = require('../../support/assertHelpers');
 
 // ----------- POST UPLOAD IMAGE -----------
 // When('I upload an image to storage', { timeout: 15000 }, async function () {

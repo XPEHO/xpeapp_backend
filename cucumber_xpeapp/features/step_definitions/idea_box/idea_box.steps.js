@@ -3,7 +3,7 @@ const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
 const { safeJson } = require('../../support/safeJson');
-const { assertStatus, assertArray, assertToken } = require('../support/assertHelpers');
+const { assertStatus, assertArray, assertToken } = require('../../support/assertHelpers');
 
 // ----------- GET All IDEAS -----------
 When('I fetch all ideas', async function () {
