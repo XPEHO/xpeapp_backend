@@ -11,11 +11,13 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@cucumber/cucumber": "^10.0.0",
     "cucumber-html-reporter": "^6.0.0"
   },
   "dependencies": {
     "form-data": "^4.0.5",
     "node-fetch": "^2.7.0",
+    "reflect-metadata": "^0.2.2",
     "sinon": "^21.0.1"
   }
 }
