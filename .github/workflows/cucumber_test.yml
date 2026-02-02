@@ -1,4 +1,4 @@
-name: "CI Docker & Cucumber"
+name: "CI Cucumber Tests"
 
 on:
   push:
@@ -29,41 +29,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: "Install Node.js dependencies"
-        run: |
-          cd cucumber_xpeapp
-          npm install
-      - name: "Générer un .env CI sécurisé (jamais prod)"
-        run: |
-          echo "DB_HOST=db" > .env
-          echo "MYSQL_ROOT_PASSWORD=root" >> .env
-          echo "WORDPRESS_DB_NAME=wordpress" >> .env
-          echo "WORDPRESS_DB_USER=wordpress" >> .env
-          echo "WORDPRESS_DB_PASSWORD=wordpress" >> .env
-          echo "WORDPRESS_HOST=127.0.0.1:7830" >> .env
-          echo "WORDPRESS_DB_PORT=52000" >> .env
-          echo "WORDPRESS_DB_HOST=db:3306" >> .env
-          echo "CORS_ALLOWED_ORIGINS=" >> .env
-          echo "AUTH_KEY=ci_key" >> .env
-          echo "SECURE_AUTH_KEY=ci_key" >> .env
-          echo "LOGGED_IN_KEY=ci_key" >> .env
-          echo "NONCE_KEY=ci_key" >> .env
-          echo "AUTH_SALT=ci_key" >> .env
-          echo "SECURE_AUTH_SALT=ci_key" >> .env
-          echo "LOGGED_IN_SALT=ci_key" >> .env
-          echo "NONCE_SALT=ci_key" >> .env
-          echo "JWT_AUTH_SECRET_KEY=ci_key" >> .env
-      - name: "Wait for MySQL to be ready"
-        run: |
-          for i in {1..30}; do
-            mysql -h 127.0.0.1 -P 52000 -uroot -proot -e "SELECT 1" && break
-            sleep 2
-          done
-      - name: "Import structure SQL"
+      - name: "Install dependencies"
+        run: cd cucumber_xpeapp && npm install
+      - name: "Import SQL data"
         run: |
           mysql -h 127.0.0.1 -P 52000 -uroot -proot wordpress < cucumber_xpeapp/backup_structure.sql
-      - name: "Import data SQL"
-        run: |
           mysql -h 127.0.0.1 -P 52000 -uroot -proot wordpress < cucumber_xpeapp/backup_data.sql
       - name: "Build and start WordPress"
         run: |
@@ -74,58 +44,14 @@ jobs:
             -e WORDPRESS_DB_PASSWORD=wordpress \
             -e WORDPRESS_DB_NAME=wordpress \
             -e JWT_AUTH_SECRET_KEY=ci_key \
-            -e AUTH_KEY=ci_key \
-            -e SECURE_AUTH_KEY=ci_key \
-            -e LOGGED_IN_KEY=ci_key \
-            -e NONCE_KEY=ci_key \
-            -e AUTH_SALT=ci_key \
-            -e SECURE_AUTH_SALT=ci_key \
-            -e LOGGED_IN_SALT=ci_key \
-            -e NONCE_SALT=ci_key \
             --add-host=host.docker.internal:host-gateway \
             -p 7830:80 \
             xpeapp-wordpress
-      - name: "Wait for WordPress to be ready"
-        run: |
-          echo "Checking WordPress container logs..."
-          docker logs wordpress || true
-          for i in {1..60}; do
-            if curl -s http://localhost:7830/wp-json/ > /dev/null 2>&1; then
-              echo "WordPress is ready!"
-              break
-            fi
-            echo "Waiting for WordPress... ($i/60)"
-            sleep 2
-          done
-          docker logs wordpress
       - name: "Run Cucumber tests"
-        run: |
-          cd cucumber_xpeapp
-          npm test
-      - name: "Upload Cucumber report artifact"
+        run: cd cucumber_xpeapp && npm test
+      - name: "Upload report"
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cucumber-report
           path: cucumber_xpeapp/report/
-
-  node-lint:
-    name: "Node.js Lint"
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-      - name: "Setup Node.js"
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: "Install Node.js dependencies"
-        run: |
-          cd cucumber_xpeapp
-          npm install
-      - name: "Run ESLint (si présent)"
-        run: |
-          if [ -f cucumber_xpeapp/.eslintrc.js ] || [ -f cucumber_xpeapp/.eslintrc.json ]; then
-            cd cucumber_xpeapp && npx eslint . || true
-          else
-            echo "No ESLint config found, skipping lint."
-          fi

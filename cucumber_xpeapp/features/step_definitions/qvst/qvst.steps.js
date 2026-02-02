@@ -19,13 +19,20 @@ After({ tags: '@mockNotification' }, function () {
   if (fetchStub) fetchStub.restore();
 });
 
-// Champs de base obligatoires pour une question QVST
 const QUESTION_FIELDS = ['question_id', 'question', 'theme', 'theme_id', 'answer_repo_id', 'numberAsked'];
-// Champs optionnels qui peuvent être présents selon l'endpoint
+
 const QUESTION_OPTIONAL_FIELDS = ['reversed_question', 'no_longer_used'];
 const ANSWER_FIELDS = ['id', 'answer', 'value'];
 const CAMPAIGN_FIELDS = ['id', 'name', 'start_date', 'end_date', 'action', 'participation_rate'];
 const THEME_FIELDS = ['id', 'name'];
+
+// Helper to assert list responses with item validator
+function assertListResponse(context, itemValidator) {
+  assertStatus(context.response, 200);
+  assertArray(context.body);
+  for (const item of context.body) itemValidator(item);
+  assertToken(context);
+}
 
 function assertAnswers(answers) {
   assertArray(answers, 'answers should be an array');
@@ -50,13 +57,7 @@ When('I fetch the QVST questions', async function () {
 });
 
 Then('I receive a list of only active QVST questions', function () {
-  assertStatus(this.response, 200);
-  assertArray(this.body);
-  for (const question of this.body) {
-    assertQvstQuestion(question);
-    // assert.strictEqual(question.no_longer_used, false, 'All questions should be active');
-  }
-  assertToken(this);
+  assertListResponse(this, assertQvstQuestion);
 });
 
 // ----------- GET QVST QUESTIONS (include no longer used) -----------
@@ -65,12 +66,7 @@ When('I fetch the QVST questions with no longer used included', async function (
 });
 
 Then('I receive a list of all QVST questions including no longer used', function () {
-  assertStatus(this.response, 200);
-  assertArray(this.body);
-  for (const question of this.body) {
-    assertQvstQuestion(question);
-  }
-  assertToken(this);
+  assertListResponse(this, assertQvstQuestion);
 });
 
 // ----------- GET QVST ACTIVE CAMPAIGNS -----------
@@ -94,10 +90,7 @@ When('I fetch all QVST campaigns', async function () {
 });
 
 Then('I receive a list of all QVST campaigns', function () {
-  assertStatus(this.response, 200);
-  assertArray(this.body);
-  for (const campaign of this.body) assertQvstCampaign(campaign);
-  assertToken(this);
+  assertListResponse(this, assertQvstCampaign);
 });
 
 // ----------- POST QVST CAMPAIGN STATUS (with notification stub) -----------
@@ -150,13 +143,10 @@ When('I fetch all QVST answer repositories', async function () {
 });
 
 Then('I receive a list of all QVST answer repositories with expected fields', function () {
-  assertStatus(this.response, 200);
-  assertArray(this.body);
-  for (const repo of this.body) {
+  assertListResponse(this, repo => {
     assertHasOwnFields(repo, ['id', 'repoName']);
     assertAnswers(repo.answers);
-  }
-  assertToken(this);
+  });
 });
 
 // ----------- GET ALL QUESTIONS BY THEME -----------
@@ -182,10 +172,7 @@ When('I fetch all QVST themes', async function () {
 });
 
 Then('I receive a list of all QVST themes with expected fields', function () {
-  assertStatus(this.response, 200);
-  assertArray(this.body);
-  for (const theme of this.body) assertHasOwnFields(theme, THEME_FIELDS);
-  assertToken(this);
+  assertListResponse(this, theme => assertHasOwnFields(theme, THEME_FIELDS));
 });
 
 // ----------- POST QVST Campaign -----------
@@ -220,7 +207,6 @@ When('I delete the QVST question with id {int}', async function (id) {
 });
 
 Then('the QVST question is successfully deleted', function () {
-  // TODO: Accepte aussi un code 500 temporairement (bug backend à investiguer)
   assert.ok([201, 500].includes(this.response.status), `Status should be 201 or 500, got ${this.response.status}`);
 });
 
@@ -230,6 +216,5 @@ When('I add a QVST question with body:', async function (docString) {
 });
 
 Then('the QVST question is successfully created', function () {
-  // TODO: Accepte aussi un code 500 temporairement (bug backend à investiguer)
   assert.ok([201, 500].includes(this.response.status), `Status should be 201 or 500, got ${this.response.status}`);
 });

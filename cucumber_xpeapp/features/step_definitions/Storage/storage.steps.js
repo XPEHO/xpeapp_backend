@@ -5,31 +5,30 @@ const path = require('node:path');
 const { assertStatus, assertArray, assertToken } = require('../../support/assertHelpers');
 
 // ----------- POST UPLOAD IMAGE -----------
-// When('I upload an image to storage', { timeout: 15000 }, async function () {
-//   const imagePath = path.join(__dirname, '../../image_for_test/image.jpg');
-//   const buffer = fs.readFileSync(imagePath);
+When('I upload an image to storage', async function () {
+  const imagePath = path.join(__dirname, '../../../image_for_test/image.jpg');
+  const buffer = fs.readFileSync(imagePath);
 
-//   const form = new FormData();
-//   form.append('file', new Blob([buffer], { type: 'image/jpeg' }), 'image.jpg');
-//   form.append('folder', 'tests');
+  const form = new FormData();
+  form.append('file', new Blob([buffer], { type: 'image/jpeg' }), 'image.jpg');
+  form.append('folder', 'tests');
 
-//   const res = await fetch('http://localhost:7830/wp-json/xpeho/v1/image-storage', {
-//     method: 'POST',
-//     headers: {
-//       Authorization: `Bearer ${this.token}`
-//     },
-//     body: form
-//   });
+  const res = await fetch('http://localhost:7830/wp-json/xpeho/v1/image-storage', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${this.token}`
+    },
+    body: form
+  });
 
-//   this.response = res;
-//   this.body = await res.text();
-//   console.log('Storage upload response:', res.status, this.body);
-// });
+  this.response = res;
+  this.body = await res.text();
+});
 
-// Then('I receive a confirmation of image upload', function () {
-//   assert.strictEqual(this.response.status, 201, 'Status should be 201');
-//   assert.ok(this.token, 'JWT token should be present in context');
-// });
+Then('I receive a confirmation of image upload', function () {
+  assert.strictEqual(this.response.status, 201, 'Status should be 201');
+  assert.ok(this.token, 'JWT token should be present in context');
+});
 
 // ----------- GET IMAGE FROM STORAGE (by folder and filename) -----------
 When('I fetch the image {string} from folder {string}', async function (filename, folder) {
