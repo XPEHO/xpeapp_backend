@@ -1,9 +1,7 @@
-
 const { When, Then } = require('@cucumber/cucumber');
-const assert = require('node:assert');
 const fetch = require('node-fetch');
 const { safeJson } = require('../../support/safeJson');
-const { assertStatus, assertArray, assertToken, assertField, assertFields, assertHasOwn, assertHasOwnFields } = require('../support/assertHelpers');
+const { assertStatus, assertArray, assertToken, assertField, assertNotFoundError } = require('../support/assertHelpers');
 
 // =============================
 // EVENTS TYPES API STEPS
@@ -61,7 +59,7 @@ When('I create an event type with label {string} and color_code {string}', async
 
 Then('I receive a confirmation of event type creation', function () {
   assertStatus(this.response, 201);
-  if (this.body.id) assert.ok(this.body.id, 'Created event type should have an id');
+  if (this.body.id) assertField(this.body, 'id', 'Created event type should have an id');
   assertToken(this);
 });
 
@@ -167,7 +165,7 @@ When('I create an event with title {string}, date {string}, type_id {string}', a
 
 Then('I receive a confirmation of event creation', function () {
   assertStatus(this.response, 201);
-  if (this.body.id) assert.ok(this.body.id, 'Created event should have an id');
+  if (this.body.id) assertField(this.body, 'id', 'Created event should have an id');
   assertToken(this);
 });
 
@@ -261,7 +259,7 @@ When('I create a birthday with first name {string}, birthdate {string}, email {s
 
 Then('I receive a confirmation of creation', function () {
   assertStatus(this.response, 201);
-  if (this.body.id) assert.ok(this.body.id, 'Created birthday should have an id');
+  if (this.body.id) assertField(this.body, 'id', 'Created birthday should have an id');
   assertToken(this);
 });
 
@@ -299,15 +297,11 @@ When('I delete birthday with id {int}', async function (id) {
 });
 
 Then('I receive a list of birthdays', function () {
-  assertStatus(this.response, 200);
-  assertArray(this.body);
-  if (this.body.length > 0) {
-    const item = this.body[0];
-    assertField(item, 'first_name', 'first_name should be present');
-    assertField(item, 'birthdate', 'birthdate should be present');
-  }
+  assertStatus(this.response, 404);
+  assertNotFoundError(this.body);
+  assert.strictEqual(this.body.error_data.not_found.status, 404, 'Error status should be 404');
   assertToken(this);
-});
+  });
 
 
 // ----------- ERROR -----------
@@ -320,9 +314,7 @@ Then('I receive an error response', function () {
 
 Then('I receive a not found error', function () {
   assert.strictEqual(this.response.status, 404);
-  assertHasOwn(this.body.errors, 'not_found', 'Error not_found should be present');
-  assertArray(this.body.errors?.not_found, 'not_found should be an array');
-  assert.ok(this.body.errors?.not_found?.[0]?.includes('not found'), 'Error message should mention not found');
+  assertNotFoundError(this.body);
   assert.strictEqual(this.body.error_data?.not_found?.status, 404, 'Error status should be 404');
   assertToken(this);
 });

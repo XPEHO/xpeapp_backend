@@ -1,4 +1,3 @@
-// Shared assertion helpers for Cucumber step definitions
 const assert = require('node:assert');
 
 function assertStatus(response, expected, msg) {
@@ -32,6 +31,12 @@ function assertHasOwnFields(obj, fields) {
   for (const field of fields) {
     assert.ok(Object.hasOwn(obj, field), `${field} should be present`);
   }
+}
+
+function assertNotFoundError(body) {
+  assertHasOwn(body.errors, 'not_found', 'Error not_found should be present');
+  assertArray(body.errors?.not_found, 'not_found should be an array');
+  assert.ok(body.errors?.not_found?.[0]?.includes('not found'), 'Error message should mention not found');
 }
 
 module.exports = {
