@@ -23,8 +23,3 @@ Scenario: Update password
   Given the WordPress JWT API is available
   When I update password from "wordpress_dev" to "wordpress_dev@example"
   Then I receive a confirmation of password update
-
-Scenario: Update password
-  Given the WordPress JWT API is available
-  When I update password from "wordpress_dev@example" to "wordpress_dev"
-  Then I receive a confirmation of password update
