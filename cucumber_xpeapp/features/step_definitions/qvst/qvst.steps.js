@@ -3,7 +3,7 @@ const { When, Then, Before, After } = require('@cucumber/cucumber');
 const assert = require('node:assert');
 const fetch = require('node-fetch');
 const { safeJson } = require('../../support/safeJson');
-const { assertStatus, assertArray, assertToken } = require('../support/assertHelpers');
+const { assertStatus, assertArray, assertToken, assertField, assertFields, assertHasOwn, assertHasOwnFields } = require('../support/assertHelpers');
 
 let fetchStub;
 
@@ -22,36 +22,23 @@ After({ tags: '@mockNotification' }, function () {
 });
 
 
+
 function assertQvstQuestionFields(q) {
-  assert.ok(q.hasOwnProperty('question_id'), 'question_id should be present');
-  assert.ok(q.hasOwnProperty('question'), 'question should be present');
-  assert.ok(q.hasOwnProperty('theme'), 'theme should be present');
-  assert.ok(q.hasOwnProperty('theme_id'), 'theme_id should be present');
-  assert.ok(q.hasOwnProperty('answer_repo_id'), 'answer_repo_id should be present');
-  assert.ok(q.hasOwnProperty('numberAsked'), 'numberAsked should be present');
-  assert.ok(q.hasOwnProperty('reversed_question'), 'reversed_question should be present');
-  assert.ok(q.hasOwnProperty('no_longer_used'), 'no_longer_used should be present');
-  assert.ok(Array.isArray(q.answers), 'answers should be an array');
+  assertHasOwnFields(q, ['question_id', 'question', 'theme', 'theme_id', 'answer_repo_id', 'numberAsked', 'reversed_question', 'no_longer_used']);
+  assertArray(q.answers, 'answers should be an array');
   for (const a of q.answers) {
-    assert.ok(a.hasOwnProperty('id'), 'answer.id should be present');
-    assert.ok(a.hasOwnProperty('answer'), 'answer.answer should be present');
-    assert.ok(a.hasOwnProperty('value'), 'answer.value should be present');
+    assertHasOwnFields(a, ['id', 'answer', 'value']);
   }
 }
 
+
 function assertQvstCampaignFields(c) {
-  assert.ok(c.hasOwnProperty('id'), 'id should be present');
-  assert.ok(c.hasOwnProperty('name'), 'name should be present');
-  assert.ok(Array.isArray(c.themes), 'themes should be an array');
-  for (const t of c.themes) {
-    assert.ok(t.hasOwnProperty('id'), 'theme.id should be present');
-    assert.ok(t.hasOwnProperty('name'), 'theme.name should be present');
-  }
+  assertHasOwnFields(c, ['id', 'name', 'start_date', 'end_date', 'action', 'participation_rate']);
   assert.ok(['OPEN', 'DRAFT', 'CLOSED', 'ARCHIVED'].includes(c.status), 'status should be valid');
-  assert.ok(c.hasOwnProperty('start_date'), 'start_date should be present');
-  assert.ok(c.hasOwnProperty('end_date'), 'end_date should be present');
-  assert.ok(c.hasOwnProperty('action'), 'action should be present');
-  assert.ok(c.hasOwnProperty('participation_rate'), 'participation_rate should be present');
+  assertArray(c.themes, 'themes should be an array');
+  for (const t of c.themes) {
+    assertHasOwnFields(t, ['id', 'name']);
+  }
 }
 
 // ----------- GET QVST QUESTIONS ONLY ACTIVE -----------
@@ -175,32 +162,17 @@ When('I fetch the stats for QVST campaign {int}', async function (id) {
 
 Then('I receive the QVST campaign stats with all expected fields', function () {
   const c = this.body;
-  assert.ok(c.hasOwnProperty('campaignId'), 'campaignId should be present');
-  assert.ok(c.hasOwnProperty('campaignName'), 'campaignName should be present');
-  assert.ok(c.hasOwnProperty('campaignStatus'), 'campaignStatus should be present');
-  assert.ok(c.hasOwnProperty('startDate'), 'startDate should be present');
-  assert.ok(c.hasOwnProperty('endDate'), 'endDate should be present');
-  assert.ok(c.hasOwnProperty('action'), 'action should be present');
-  assert.ok(Array.isArray(c.themes), 'themes should be an array');
+  assertHasOwnFields(c, ['campaignId', 'campaignName', 'campaignStatus', 'startDate', 'endDate', 'action']);
+  assertArray(c.themes, 'themes should be an array');
   for (const t of c.themes) {
-    assert.ok(t.hasOwnProperty('id'), 'theme.id should be present');
-    assert.ok(t.hasOwnProperty('name'), 'theme.name should be present');
+    assertHasOwnFields(t, ['id', 'name']);
   }
-  assert.ok(Array.isArray(c.questions), 'questions should be an array');
+  assertArray(c.questions, 'questions should be an array');
   for (const q of c.questions) {
-    assert.ok(q.hasOwnProperty('question_id'), 'question_id should be present');
-    assert.ok(q.hasOwnProperty('question'), 'question should be present');
-    assert.ok(q.hasOwnProperty('answer_repo_id'), 'answer_repo_id should be present');
-    assert.ok(q.hasOwnProperty('reversed_question'), 'reversed_question should be present');
-    assert.ok(q.hasOwnProperty('no_longer_used'), 'no_longer_used should be present');
-    assert.ok(q.hasOwnProperty('status'), 'status should be present');
-    assert.ok(q.hasOwnProperty('action'), 'action should be present');
-    assert.ok(Array.isArray(q.answers), 'answers should be an array');
+    assertHasOwnFields(q, ['question_id', 'question', 'answer_repo_id', 'reversed_question', 'no_longer_used', 'status', 'action']);
+    assertArray(q.answers, 'answers should be an array');
     for (const a of q.answers) {
-      assert.ok(a.hasOwnProperty('id'), 'answer.id should be present');
-      assert.ok(a.hasOwnProperty('answer'), 'answer.answer should be present');
-      assert.ok(a.hasOwnProperty('value'), 'answer.value should be present');
-      assert.ok(a.hasOwnProperty('numberAnswered'), 'numberAnswered should be present');
+      assertHasOwnFields(a, ['id', 'answer', 'value', 'numberAnswered']);
     }
   }
   assertToken(this);
@@ -221,13 +193,10 @@ When('I fetch the questions for QVST campaign {int}', async function (id) {
 Then('I receive the QVST campaign questions with all expected fields', function () {
   assertArray(this.body);
   for (const q of this.body) {
-    assert.ok(q.hasOwnProperty('question_id'), 'question_id should be present');
-    assert.ok(q.hasOwnProperty('question'), 'question should be present');
-    assert.ok(Array.isArray(q.answers), 'answers should be an array');
+    assertHasOwnFields(q, ['question_id', 'question']);
+    assertArray(q.answers, 'answers should be an array');
     for (const a of q.answers) {
-      assert.ok(a.hasOwnProperty('id'), 'answer.id should be present');
-      assert.ok(a.hasOwnProperty('answer'), 'answer.answer should be present');
-      assert.ok(a.hasOwnProperty('value'), 'answer.value should be present');
+      assertHasOwnFields(a, ['id', 'answer', 'value']);
     }
   }
   assertToken(this);
@@ -249,13 +218,10 @@ Then('I receive a list of all QVST answer repositories with expected fields', fu
   assertStatus(this.response, 200);
   assertArray(this.body);
   for (const ar of this.body) {
-    assert.ok(ar.hasOwnProperty('id'), 'id should be present');
-    assert.ok(ar.hasOwnProperty('repoName'), 'name should be present');
-    assert.ok(Array.isArray(ar.answers), 'answers should be an array');
+    assertHasOwnFields(ar, ['id', 'repoName']);
+    assertArray(ar.answers, 'answers should be an array');
     for (const a of ar.answers) {
-      assert.ok(a.hasOwnProperty('id'), 'answer.id should be present');
-      assert.ok(a.hasOwnProperty('answer'), 'answer.answer should be present');
-      assert.ok(a.hasOwnProperty('value'), 'answer.value should be present');
+      assertHasOwnFields(a, ['id', 'answer', 'value']);
     }
   }
   assertToken(this);
@@ -302,8 +268,7 @@ Then('I receive a list of all QVST themes with expected fields', function () {
   assertStatus(this.response, 200);
   assertArray(this.body);
   for (const t of this.body) {
-    assert.ok(t.hasOwnProperty('id'), 'id should be present');
-    assert.ok(t.hasOwnProperty('name'), 'name should be present');
+    assertHasOwnFields(t, ['id', 'name']);
   }
   assertToken(this);
 });

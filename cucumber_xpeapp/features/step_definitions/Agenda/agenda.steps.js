@@ -3,7 +3,7 @@ const { When, Then } = require('@cucumber/cucumber');
 const assert = require('node:assert');
 const fetch = require('node-fetch');
 const { safeJson } = require('../../support/safeJson');
-const { assertStatus, assertArray, assertToken } = require('../support/assertHelpers');
+const { assertStatus, assertArray, assertToken, assertField, assertFields, assertHasOwn, assertHasOwnFields } = require('../support/assertHelpers');
 
 // =============================
 // EVENTS TYPES API STEPS
@@ -32,16 +32,16 @@ Then('I receive a list of event types', function () {
   assertArray(this.body, 'Response should be an array');
   if (this.body.length > 0) {
     const item = this.body[0];
-    assert.ok(item.id, 'Event type id should be present');
-    assert.ok(item.label, 'Event type label should be present');
+    assertField(item, 'id', 'Event type id should be present');
+    assertField(item, 'label', 'Event type label should be present');
   }
   assertToken(this);
 });
 
 Then('I receive an event type detail', function () {
   assertStatus(this.response, 200);
-  assert.ok(this.body.id, 'Event type id should be present');
-  assert.ok(this.body.label, 'Event type label should be present');
+  assertField(this.body, 'id', 'Event type id should be present');
+  assertField(this.body, 'label', 'Event type label should be present');
   assertToken(this);
 });
 
@@ -120,18 +120,18 @@ Then('I receive a list of events', function () {
   assertArray(this.body);
   if (this.body.length > 0) {
     const item = this.body[0];
-    assert.ok(item.title, 'title should be present');
-    assert.ok(item.date, 'date should be present');
-    assert.ok(item.type_id, 'type_id should be present');
+    assertField(item, 'title', 'title should be present');
+    assertField(item, 'date', 'date should be present');
+    assertField(item, 'type_id', 'type_id should be present');
   }
   assertToken(this);
 });
 
 Then('I receive a birthday detail', function () {
   assertStatus(this.response, 200);
-  assert.ok(this.body.id, 'Birthday id should be present');
-  assert.ok(this.body.first_name, 'first_name should be present');
-  assert.ok(this.body.birthdate, 'birthdate should be present');
+  assertField(this.body, 'id', 'Birthday id should be present');
+  assertField(this.body, 'first_name', 'first_name should be present');
+  assertField(this.body, 'birthdate', 'birthdate should be present');
   assertToken(this);
 });
 
@@ -145,10 +145,10 @@ When('I fetch the event with id {int}', async function (id) {
 
 Then('I receive an event detail', function () {
   assertStatus(this.response, 200);
-  assert.ok(this.body.id, 'Event id should be present');
-  assert.ok(this.body.title, 'title should be present');
-  assert.ok(this.body.date, 'date should be present');
-  assert.ok(this.body.type_id, 'type_id should be present');
+  assertField(this.body, 'id', 'Event id should be present');
+  assertField(this.body, 'title', 'title should be present');
+  assertField(this.body, 'date', 'date should be present');
+  assertField(this.body, 'type_id', 'type_id should be present');
   assertToken(this);
 });
 // ----------- POST -----------
@@ -303,8 +303,8 @@ Then('I receive a list of birthdays', function () {
   assertArray(this.body);
   if (this.body.length > 0) {
     const item = this.body[0];
-    assert.ok(item.first_name, 'first_name should be present');
-    assert.ok(item.birthdate, 'birthdate should be present');
+    assertField(item, 'first_name', 'first_name should be present');
+    assertField(item, 'birthdate', 'birthdate should be present');
   }
   assertToken(this);
 });
