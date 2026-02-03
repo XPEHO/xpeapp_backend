@@ -7,5 +7,7 @@
 .env
 .DS_Store
 
+.package-lock.json
+
 node_modules
-cucumber_xpeapp/report/
+cucumber_xpeapp/report/cucumber_report.*

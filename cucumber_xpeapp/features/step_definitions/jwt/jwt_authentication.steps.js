@@ -1,6 +1,5 @@
-const { Given, When, Then } = require('@cucumber/cucumber');
-const assert = require('node:assert');
-const fetch = require('node-fetch');
+import { Given, When, Then } from '@cucumber/cucumber';
+import assert from 'node:assert';
 
 let response;
 

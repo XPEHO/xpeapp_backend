@@ -1,7 +1,7 @@
 // safeJson.js
 // Utilitaire pour parser du JSON en toute sécurité
 
-function safeJson(res) {
+export function safeJson(res) {
   return res.text().then(text => {
     try {
       return text ? JSON.parse(text) : {};
@@ -10,5 +10,3 @@ function safeJson(res) {
     }
   });
 }
-
-module.exports = { safeJson };

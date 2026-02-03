@@ -1,10 +1,9 @@
-const { When, Then, After } = require('@cucumber/cucumber');
-const assert = require('node:assert');
-const fetch = require('node-fetch');
-const fs = require('node:fs');
-const path = require('node:path');
+import { When, Then, After } from '@cucumber/cucumber';
+import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
 
-const { safeJson } = require('../../support/safeJson');
+import { safeJson } from '../../support/safeJson.js';
 
 // Reset to the initial password after the password update test
 After({ tags: '@resetPassword' }, async function () {

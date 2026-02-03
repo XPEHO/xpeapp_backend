@@ -1,9 +1,8 @@
-const fetch = require('node-fetch');
-const { safeJson } = require('./safeJson');
+import { safeJson } from './safeJson.js';
 
-const BASE_URL = 'http://localhost:7830/wp-json/xpeho/v1';
+export const BASE_URL = 'http://localhost:7830/wp-json/xpeho/v1';
 
-async function apiGet(context, path) {
+export async function apiGet(context, path) {
   const res = await fetch(`${BASE_URL}${path}`, {
     headers: { Authorization: `Bearer ${context.token}` }
   });
@@ -11,7 +10,7 @@ async function apiGet(context, path) {
   context.body = await safeJson(res);
 }
 
-async function apiPost(context, path, body) {
+export async function apiPost(context, path, body) {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: 'POST',
     headers: {
@@ -24,7 +23,7 @@ async function apiPost(context, path, body) {
   context.body = await safeJson(res);
 }
 
-async function apiPut(context, path, body) {
+export async function apiPut(context, path, body) {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: 'PUT',
     headers: {
@@ -37,7 +36,7 @@ async function apiPut(context, path, body) {
   context.body = await safeJson(res);
 }
 
-async function apiDelete(context, path) {
+export async function apiDelete(context, path) {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${context.token}` }
@@ -45,5 +44,3 @@ async function apiDelete(context, path) {
   context.response = res;
   context.body = await safeJson(res);
 }
-
-module.exports = { apiGet, apiPost, apiPut, apiDelete, BASE_URL };

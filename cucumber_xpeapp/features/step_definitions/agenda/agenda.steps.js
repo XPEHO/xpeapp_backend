@@ -1,6 +1,6 @@
-const { When, Then } = require('@cucumber/cucumber');
-const { apiGet, apiPost, apiPut, apiDelete } = require('../../support/httpHelpers');
-const { assertStatus, assertArray, assertToken, assertField, assertNotFoundError } = require('../../support/assertHelpers');
+import { When, Then } from '@cucumber/cucumber';
+import { apiGet, apiPost, apiPut, apiDelete } from '../../support/httpHelpers.js';
+import { assertStatus, assertArray, assertToken, assertField, assertNotFoundError } from '../../support/assertHelpers.js';
 
 // =============================
 // GENERIC RESPONSE ASSERTIONS

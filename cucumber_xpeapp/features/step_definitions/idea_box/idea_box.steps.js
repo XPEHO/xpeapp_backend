@@ -1,9 +1,9 @@
-const { When, Then } = require('@cucumber/cucumber');
-const assert = require('node:assert');
-const fs = require('node:fs');
-const path = require('node:path');
-const { safeJson } = require('../../support/safeJson');
-const { assertStatus, assertArray, assertToken } = require('../../support/assertHelpers');
+import { When, Then } from '@cucumber/cucumber';
+import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
+import { safeJson } from '../../support/safeJson.js';
+import { assertStatus, assertArray, assertToken } from '../../support/assertHelpers.js';
 
 // ----------- GET All IDEAS -----------
 When('I fetch all ideas', async function () {

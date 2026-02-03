@@ -1,8 +1,8 @@
-const sinon = require('sinon');
-const { When, Then, Before, After } = require('@cucumber/cucumber');
-const assert = require('node:assert');
-const { apiGet, apiPost, apiDelete } = require('../../support/httpHelpers');
-const { assertStatus, assertArray, assertToken, assertHasOwnFields } = require('../../support/assertHelpers');
+import sinon from 'sinon';
+import { When, Then, Before, After } from '@cucumber/cucumber';
+import assert from 'node:assert';
+import { apiGet, apiPost, apiDelete } from '../../support/httpHelpers.js';
+import { assertStatus, assertArray, assertToken, assertHasOwnFields } from '../../support/assertHelpers.js';
 
 let fetchStub;
 

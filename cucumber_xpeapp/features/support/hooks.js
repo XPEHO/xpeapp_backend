@@ -1,5 +1,4 @@
-const { Before } = require('@cucumber/cucumber');
-const fetch = require('node-fetch');
+import { Before } from '@cucumber/cucumber';
 
 Before(async function () {
   // Récupère un token JWT valide avant chaque scénario

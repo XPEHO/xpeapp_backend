@@ -1,8 +1,12 @@
-const { When, Then } = require('@cucumber/cucumber');
-const assert = require('node:assert');
-const fs = require('node:fs');
-const path = require('node:path');
-const { assertStatus, assertArray, assertToken } = require('../../support/assertHelpers');
+import { When, Then } from '@cucumber/cucumber';
+import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { assertStatus, assertArray, assertToken } from '../../support/assertHelpers.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // ----------- POST UPLOAD IMAGE -----------
 When('I upload an image to storage', async function () {

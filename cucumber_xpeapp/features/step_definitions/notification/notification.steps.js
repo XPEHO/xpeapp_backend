@@ -1,6 +1,6 @@
-const { When, Then, Before, After } = require('@cucumber/cucumber');
-const assert = require('node:assert');
-const sinon = require('sinon');
+import { When, Then, Before, After } from '@cucumber/cucumber';
+import assert from 'node:assert';
+import sinon from 'sinon';
 
 let fetchStub;
 
