@@ -1,15 +1,45 @@
-Cucumber Report Generation
+# Cucumber Tests
 
-This directory contains Cucumber feature files and step definitions for testing a WordPress API. The tests are written in Gherkin syntax and implemented in JavaScript using the Cucumber.js framework.
+This directory contains Cucumber feature files and step definitions for testing the XpeApp WordPress API. The tests are written in Gherkin syntax and implemented in JavaScript using the Cucumber.js framework with ES Modules.
 
-To run the tests, ensure you have the necessary dependencies installed, including Cucumber.js and node-fetch. You can execute the tests using the Cucumber command-line interface.
+## Prerequisites
 
-For more information on how to write and run Cucumber tests, refer to the official Cucumber documentation: https://cucumber.io/docs/guides/10-minute-tutorial/
+- Node.js
+- Docker running with the WordPress container
 
+## Installation
 
-To generate an HTML report from the test results, use the `generate_report.js` script located in the `report` directory. This script utilizes the `cucumber-html-reporter` package to create a visually appealing report based on the JSON output of the Cucumber tests.
-
-The command to run the report generation script is as follows:
+```bash
+npm install
 ```
+
+## Run Tests
+
+```bash
 npm test
 ```
+
+This command runs all Cucumber tests and generates an HTML report in `report/cucumber_report.html`.
+
+## Project Structure
+
+```
+cucumber_xpeapp/
+├── features/
+│   ├── agenda/           # Agenda feature files
+│   ├── idea_box/         # Idea box feature files
+│   ├── jwt/              # JWT authentication features
+│   ├── notification/     # Notification features
+│   ├── qvst/             # QVST features
+│   ├── storage/          # Storage features
+│   ├── user/             # User features
+│   ├── step_definitions/ # Step implementations
+│   └── support/          # Helpers and hooks
+├── image_for_test/       # Test images for storage tests
+├── report/               # Generated reports
+└── package.json
+```
+
+## Documentation
+
+For more information on Cucumber: https://cucumber.io/docs/guides/10-minute-tutorial/

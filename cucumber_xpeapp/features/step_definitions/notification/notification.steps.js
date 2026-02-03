@@ -3,11 +3,29 @@ import assert from 'node:assert';
 import sinon from 'sinon';
 
 let fetchStub;
+let originalFetch;
 
 Before({ tags: '@mockNotification' }, function () {
-  fetchStub = sinon.stub(globalThis, 'fetch').resolves({
-    status: 201,
-    json: async () => ({ success: true })
+  originalFetch = globalThis.fetch;
+  fetchStub = sinon.stub(globalThis, 'fetch').callsFake(async (url, options) => {
+    // Mock the /notifications endpoint
+    if (url.includes('/notifications')) {
+      return {
+        status: 201,
+        text: async () => JSON.stringify({ success: true }),
+        json: async () => ({ success: true })
+      };
+    }
+    // Mock the /status:update endpoint
+    if (url.includes('/status:update')) {
+      return {
+        status: 201,
+        text: async () => '{}',
+        json: async () => ({})
+      };
+    }
+    // For other requests, use the original fetch
+    return originalFetch(url, options);
   });
 });
 

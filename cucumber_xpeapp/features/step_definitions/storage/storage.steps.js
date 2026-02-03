@@ -3,6 +3,7 @@ import assert from 'node:assert';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { apiGet, apiGetRaw, apiPostForm, apiDeleteText } from '../../support/httpHelpers.js';
 import { assertStatus, assertArray, assertToken } from '../../support/assertHelpers.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -17,16 +18,7 @@ When('I upload an image to storage', async function () {
   form.append('file', new Blob([buffer], { type: 'image/jpeg' }), 'image.jpg');
   form.append('folder', 'tests');
 
-  const res = await fetch('http://localhost:7830/wp-json/xpeho/v1/image-storage', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${this.token}`
-    },
-    body: form
-  });
-
-  this.response = res;
-  this.body = await res.text();
+  await apiPostForm(this, '/image-storage', form);
 });
 
 Then('I receive a confirmation of image upload', function () {
@@ -36,15 +28,7 @@ Then('I receive a confirmation of image upload', function () {
 
 // ----------- GET IMAGE FROM STORAGE (by folder and filename) -----------
 When('I fetch the image {string} from folder {string}', async function (filename, folder) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/image-storage/${encodeURIComponent(folder)}/${encodeURIComponent(filename)}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${this.token}`
-    }
-  });
-
-  this.response = res;
-  this.body = await res.arrayBuffer();
+  await apiGetRaw(this, `/image-storage/${encodeURIComponent(folder)}/${encodeURIComponent(filename)}`);
 });
 
 Then('I receive the image from storage', function () {
@@ -55,14 +39,7 @@ Then('I receive the image from storage', function () {
 
 // ----------- GET ALL FOLDERS -----------
 When('I fetch all folders', async function () {
-  const res = await fetch('http://localhost:7830/wp-json/xpeho/v1/image-storage', {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${this.token}`
-    }
-  });
-  this.response = res;
-  this.body = await res.json();
+  await apiGet(this, '/image-storage');
 });
 
 Then('I receive a list of folders', function () {
@@ -73,14 +50,7 @@ Then('I receive a list of folders', function () {
 
 // ----------- GET ALL IMAGES BY FOLDER -----------
 When('I fetch all images from folder {string}', async function (folder) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/image-storage?folder=${encodeURIComponent(folder)}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${this.token}`
-    }
-  });
-  this.response = res;
-  this.body = await res.json();
+  await apiGet(this, `/image-storage?folder=${encodeURIComponent(folder)}`);
 });
 
 Then('I receive a list of images from the folder', function () {
@@ -91,16 +61,7 @@ Then('I receive a list of images from the folder', function () {
 
 // ----------- DELETE IMAGE FROM STORAGE -----------
 When('I delete an image with id {int} from storage', async function (id) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/image-storage/${id}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${this.token}`,
-      'Content-Type': 'application/json'
-    },
-  });
-
-  this.response = res;
-  this.body = await res.text();
+  await apiDeleteText(this, `/image-storage/${id}`);
 });
 
 Then('I receive a confirmation of image deletion', function () {

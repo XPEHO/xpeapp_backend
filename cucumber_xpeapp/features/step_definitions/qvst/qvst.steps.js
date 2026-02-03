@@ -1,23 +1,7 @@
-import sinon from 'sinon';
-import { When, Then, Before, After } from '@cucumber/cucumber';
+import { When, Then } from '@cucumber/cucumber';
 import assert from 'node:assert';
 import { apiGet, apiPost, apiDelete } from '../../support/httpHelpers.js';
 import { assertStatus, assertArray, assertToken, assertHasOwnFields } from '../../support/assertHelpers.js';
-
-let fetchStub;
-
-Before({ tags: '@mockNotification' }, function () {
-  if (!globalThis.fetch?.isSinonProxy) {
-    fetchStub = sinon.stub(globalThis, 'fetch').resolves({
-      status: 201,
-      json: async () => ({ success: true })
-    });
-  }
-});
-
-After({ tags: '@mockNotification' }, function () {
-  if (fetchStub) fetchStub.restore();
-});
 
 const QUESTION_FIELDS = ['question_id', 'question', 'theme', 'theme_id', 'answer_repo_id', 'numberAsked'];
 

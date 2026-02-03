@@ -1,10 +1,7 @@
 import { When, Then } from '@cucumber/cucumber';
 import { apiGet, apiPost, apiPut, apiDelete } from '../../support/httpHelpers.js';
-import { assertStatus, assertArray, assertToken, assertField, assertNotFoundError } from '../../support/assertHelpers.js';
-
-// =============================
-// GENERIC RESPONSE ASSERTIONS
-// =============================
+import { assertToken, assertField } from '../../support/assertHelpers.js';
+import { assertListResponse, assertDetailResponse, assertCreated, assertNoContent, assertNotFound } from '../../support/assertService.js';
 
 const ENTITY_FIELDS = {
   'event types': ['id', 'label'],
@@ -14,35 +11,6 @@ const ENTITY_FIELDS = {
   'birthdays': ['first_name', 'birthdate'],
   'birthday': ['id', 'first_name', 'birthdate']
 };
-
-function assertListResponse(context, fields) {
-  assertStatus(context.response, 200);
-  assertArray(context.body);
-  if (context.body.length > 0) for (const f of fields) assertField(context.body[0], f);
-  assertToken(context);
-}
-
-function assertDetailResponse(context, fields) {
-  assertStatus(context.response, 200);
-  for (const f of fields) assertField(context.body, f);
-  assertToken(context);
-}
-
-function assertCreated(context) {
-  assertStatus(context.response, 201);
-  assertToken(context);
-}
-
-function assertNoContent(context) {
-  assertStatus(context.response, 204);
-  assertToken(context);
-}
-
-function assertNotFound(context) {
-  assertStatus(context.response, 404);
-  assertNotFoundError(context.body);
-  assertToken(context);
-}
 
 // =============================
 // GENERIC THEN STEPS

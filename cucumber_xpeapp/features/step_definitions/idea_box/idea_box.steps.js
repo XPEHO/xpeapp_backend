@@ -1,21 +1,11 @@
 import { When, Then } from '@cucumber/cucumber';
 import assert from 'node:assert';
-import fs from 'node:fs';
-import path from 'node:path';
-import { safeJson } from '../../support/safeJson.js';
+import { apiGet, apiPost, apiPut, apiDelete } from '../../support/httpHelpers.js';
 import { assertStatus, assertArray, assertToken } from '../../support/assertHelpers.js';
 
 // ----------- GET All IDEAS -----------
 When('I fetch all ideas', async function () {
-  const res = await fetch('http://localhost:7830/wp-json/xpeho/v1/ideas', {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${this.token}`
-    }
-  });
-
-  this.response = res;
-  this.body = await res.json();
+  await apiGet(this, '/ideas');
 });
 
 Then('I receive a list of ideas', function () {
@@ -26,15 +16,7 @@ Then('I receive a list of ideas', function () {
 
 // ----------- GET IDEA BY ID -----------
 When('I fetch the idea with id {int}', async function (id) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/ideas/${id}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${this.token}`
-    }
-  });
-
-  this.response = res;
-  this.body = await res.json();
+  await apiGet(this, `/ideas/${id}`);
 });
 
 Then('I receive the idea details', function () {
@@ -46,19 +28,8 @@ Then('I receive the idea details', function () {
 });
 
 // ----------- POST NEW IDEA -----------
-
 When('I submit a new idea with context {string} and description {string}', async function (context, description) {
-  const res = await fetch('http://localhost:7830/wp-json/xpeho/v1/ideas', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.token}`
-    },
-    body: JSON.stringify({ context, description })
-  });
-
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiPost(this, '/ideas', { context, description });
 });
 
 Then('I receive the created idea confirmation', function () {
@@ -70,17 +41,7 @@ Then('I receive the created idea confirmation', function () {
 
 // ----------- PUT IDEA BY ID -----------
 When('I update the idea with id {int} to status {string}', async function (id, status) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/ideas/${id}/status`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.token}`
-    },
-    body: JSON.stringify({ status })
-  });
-
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiPut(this, `/ideas/${id}/status`, { status });
 });
 
 Then('I receive the updated idea confirmation', function () {
@@ -90,17 +51,8 @@ Then('I receive the updated idea confirmation', function () {
 });
 
 // ----------- DELETE IDEA BY ID -----------
-
 When('I delete the idea with id {int}', async function (id) {
-  const res = await fetch(`http://localhost:7830/wp-json/xpeho/v1/ideas/${id}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${this.token}`
-    }
-  });
-
-  this.response = res;
-  this.body = await safeJson(res);
+  await apiDelete(this, `/ideas/${id}`);
 });
 
 Then('I receive the deleted idea confirmation', function () {
