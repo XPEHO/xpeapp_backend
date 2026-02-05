@@ -8,4 +8,4 @@ Feature: JWT Authentication
   Scenario: Login to the WordPress JWT API with invalid credentials
     Given the WordPress JWT API is available
     When I login with username "demo" and password "demo"
-    Then I receive a invalid JWT token
+    Then I receive a forbidden error

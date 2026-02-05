@@ -23,7 +23,7 @@ Then('I receive a valid JWT token', function () {
   assert.ok(this.body.token, 'JWT token should be present');
 });
   
-Then('I receive a invalid JWT token', function () {
+Then('I receive a forbidden error', function () {
   assert.strictEqual(response.status, 403, 'Response status should be 403');
   assert.ok(!this.body.token, 'JWT token should not be present');
 });
