@@ -25,7 +25,7 @@ class PostQuestionsAnswers {
 	$token = $request->get_header('Authorization') ?? '';
 
 	if (empty($params) || empty($body)) {
-		return new WP_Error('noParams', __('No parameters or body', 'QVST'));
+		return new \WP_Error('noParams', __('No parameters or body', 'QVST'));
 	} else {
 		try {
 			// Check if the campaign exists (prepared)
@@ -73,16 +73,19 @@ class PostQuestionsAnswers {
 					array(
 						'campaign_id' => $campaign_id,
 						'question_id' => intval($question->id),
+						'question_text' => $question->text, // Snapshot du texte de la question
 						'answer_id' => intval($dbAnswer->id),
+						'answer_text' => $dbAnswer->name, // Snapshot du texte de la réponse
+						'answer_value' => intval($dbAnswer->value), // Snapshot de la valeur
 						'answer_group_id' => (string) $token,
 					)
 				);
 			}
 
-			return new WP_REST_Response(true, 201);
+			return new \WP_REST_Response(true, 201);
 		} catch (\Throwable $th) {
 			echo $th;
-			return new WP_Error('error', __('Error', 'QVST'));
+			return new \WP_Error('error', __('Error', 'QVST'));
 		}
 
 	}
