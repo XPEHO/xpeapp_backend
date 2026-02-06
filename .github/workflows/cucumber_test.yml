@@ -1,0 +1,57 @@
+name: "CI Cucumber Tests"
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  cucumber-tests:
+    name: "Cucumber Tests"
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: mysql:9.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: wordpress
+          MYSQL_USER: wordpress
+          MYSQL_PASSWORD: wordpress
+        ports:
+          - 52000:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+      - name: "Setup Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: "Install dependencies"
+        run: cd cucumber_xpeapp && npm install
+      - name: "Import SQL data"
+        run: |
+          mysql -h 127.0.0.1 -P 52000 -uroot -proot wordpress < cucumber_xpeapp/backup_structure.sql
+          mysql -h 127.0.0.1 -P 52000 -uroot -proot wordpress < cucumber_xpeapp/backup_data.sql
+      - name: "Build and start WordPress"
+        run: |
+          docker build -t xpeapp-wordpress .
+          docker run -d --name wordpress \
+            -e WORDPRESS_DB_HOST=host.docker.internal:52000 \
+            -e WORDPRESS_DB_USER=wordpress \
+            -e WORDPRESS_DB_PASSWORD=wordpress \
+            -e WORDPRESS_DB_NAME=wordpress \
+            -e JWT_AUTH_SECRET_KEY=ci_key \
+            --add-host=host.docker.internal:host-gateway \
+            -p 7830:80 \
+            xpeapp-wordpress
+      - name: "Run Cucumber tests"
+        run: cd cucumber_xpeapp && npm test
+      - name: "Upload report"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-report
+          path: cucumber_xpeapp/report/
