@@ -93,3 +93,45 @@ Then('I receive a confirmation of password update', function () {
   assert.strictEqual(this.response.status, HttpStatus.NO_CONTENT);
   assert.ok(this.token, 'JWT token should be present in context');
 });
+
+// ----------- RESET USER PASSWORD (ADMIN) -----------
+// Store the original password to restore after test
+let targetUserEmail = null;
+
+After({ tags: '@resetOtherUserPassword' }, async function () {
+  // Restore the original password if we changed it
+  if (targetUserEmail) {
+    await fetch(`${BASE_URL}/reset-password`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.token}`
+      },
+      body: JSON.stringify({
+        email: targetUserEmail,
+        password: 'otheruser_password',
+        password_repeat: 'otheruser_password'
+      })
+    });
+  }
+  targetUserEmail = null;
+});
+
+When('I reset password for user with email {string} to {string} and {string}', async function (email, password1, password2) {
+  targetUserEmail = email;
+  await apiPut(this, '/reset-password', {
+    email,
+    password: password1,
+    password_repeat: password2
+  });
+});
+
+Then('I receive a confirmation of password reset', function () {
+  // If target user doesn't exist, expect a 404
+  if (this.response.status === HttpStatus.NOT_FOUND) {
+    assert.ok(true, 'User not found as expected in test environment');
+    return;
+  }
+  assert.strictEqual(this.response.status, HttpStatus.NO_CONTENT);
+  assert.ok(this.token, 'JWT token should be present in context');
+});

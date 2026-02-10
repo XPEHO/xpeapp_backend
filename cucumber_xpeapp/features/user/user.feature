@@ -24,3 +24,9 @@ Scenario: Update password
   Given the WordPress JWT API is available
   When I update password from "wordpress_dev" to "wordpress_dev@example"
   Then I receive a confirmation of password update
+
+@resetOtherUserPassword
+Scenario: Reset password for another user
+  Given the WordPress JWT API is available
+  When I reset password for user with email "theo.lbg18@gmail.com" to "new_temp_password" and "new_temp_password"
+  Then I receive a confirmation of password reset
