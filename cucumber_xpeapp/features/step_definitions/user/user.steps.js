@@ -98,9 +98,13 @@ Then('I receive a confirmation of password update', function () {
 // Store the original password to restore after test
 let targetUserEmail = null;
 
+
+let originalPassword = null;
+let originalPasswordRepeat = null;
+
 After({ tags: '@resetOtherUserPassword' }, async function () {
   // Restore the original password if we changed it
-  if (targetUserEmail) {
+  if (targetUserEmail && originalPassword && originalPasswordRepeat) {
     await fetch(`${BASE_URL}/reset-password`, {
       method: 'PUT',
       headers: {
@@ -109,16 +113,20 @@ After({ tags: '@resetOtherUserPassword' }, async function () {
       },
       body: JSON.stringify({
         email: targetUserEmail,
-        password: 'otheruser_password',
-        password_repeat: 'otheruser_password'
+        password: originalPassword,
+        password_repeat: originalPasswordRepeat
       })
     });
   }
   targetUserEmail = null;
+  originalPassword = null;
+  originalPasswordRepeat = null;
 });
 
 When('I reset password for user with email {string} to {string} and {string}', async function (email, password1, password2) {
   targetUserEmail = email;
+  originalPassword = password1;
+  originalPasswordRepeat = password2;
   await apiPut(this, '/reset-password', {
     email,
     password: password1,
