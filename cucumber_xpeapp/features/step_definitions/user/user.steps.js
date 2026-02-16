@@ -96,15 +96,13 @@ Then('I receive a confirmation of password update', function () {
 
 // ----------- RESET USER PASSWORD (ADMIN) -----------
 // Store the original password to restore after test
-let targetUserEmail = null;
-
-
-let originalPassword = null;
-let originalPasswordRepeat = null;
+let newTargetUserEmail = null;
+let newOriginalPassword = null;
+let newOriginalPasswordRepeat = null;
 
 After({ tags: '@resetOtherUserPassword' }, async function () {
   // Restore the original password if we changed it
-  if (targetUserEmail && originalPassword && originalPasswordRepeat) {
+  if (newTargetUserEmail && newOriginalPassword && newOriginalPasswordRepeat) {
     await fetch(`${BASE_URL}/reset-password`, {
       method: 'PUT',
       headers: {
@@ -112,25 +110,25 @@ After({ tags: '@resetOtherUserPassword' }, async function () {
         Authorization: `Bearer ${this.token}`
       },
       body: JSON.stringify({
-        email: targetUserEmail,
-        password: originalPassword,
-        password_repeat: originalPasswordRepeat
+        email: newTargetUserEmail,
+        password: newOriginalPassword,
+        password_repeat: newOriginalPasswordRepeat
       })
     });
   }
-  targetUserEmail = null;
-  originalPassword = null;
-  originalPasswordRepeat = null;
+  newTargetUserEmail = null;
+  newOriginalPassword = null;
+  newOriginalPasswordRepeat = null;
 });
 
-When('I reset password for user with email {string} to {string} and {string}', async function (email, password1, password2) {
-  targetUserEmail = email;
-  originalPassword = password1;
-  originalPasswordRepeat = password2;
+When('I reset password for user with email {string} to {string} and {string}', async function (targetUserEmail, originalPassword, originalPasswordRepeat) {
+  newTargetUserEmail = targetUserEmail;
+  newOriginalPassword = originalPassword;
+  newOriginalPasswordRepeat = originalPasswordRepeat;
   await apiPut(this, '/reset-password', {
-    email,
-    password: password1,
-    password_repeat: password2
+    email: newTargetUserEmail,
+    password: newOriginalPassword,
+    password_repeat: newOriginalPasswordRepeat
   });
 });
 
