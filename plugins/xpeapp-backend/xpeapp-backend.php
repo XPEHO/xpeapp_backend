@@ -138,6 +138,7 @@ class Xpeapp_Backend {
 		$userOfIdeaBoxParameter = 'userOfIdeaBox';
 		$adminOfIdeaBoxParameter = 'adminOfIdeaBox';
 		$editPasswordParameter = 'editPassword';
+		$adminEditPasswordParameter = 'adminEditPassword';
 		$userImageParameter = 'userImageParameter';
 		$adminImageParameter = 'adminImageParameter';
 		$endpoint_namespace = 'xpeho/v1';
@@ -492,6 +493,19 @@ class Xpeapp_Backend {
 				'callback' => [UserController::class, 'apiUpdateUserPassword'],
                 'permission_callback' => function () use ($editPasswordParameter) {
                     return $this->secure_endpoint_with_parameter($editPasswordParameter);
+                }
+            )
+        );
+
+        // Route pour réinitialiser le mot de passe d'un autre utilisateur (fonctionnalité admin)
+        register_rest_route(
+            $endpoint_namespace,
+            '/reset-password',
+            array(
+                'methods' => WP_REST_Server::EDITABLE,
+                'callback' => [UserController::class, 'apiResetUserPassword'],
+                'permission_callback' => function () use ($adminEditPasswordParameter) {
+                    return $this->secure_endpoint_with_parameter($adminEditPasswordParameter);
                 }
             )
         );

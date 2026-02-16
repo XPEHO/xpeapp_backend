@@ -1,6 +1,7 @@
 <?php
 
 namespace XpeApp\qvst\user;
+use Xpeapp_Log_Level;
 
 class UserController {
    public static function apiGetUser(\WP_REST_Request $request)
@@ -118,5 +119,55 @@ class UserController {
             ];
         }
         return $result;
+    }
+
+    public static function apiResetUserPassword(\WP_REST_Request $request) {
+    xpeapp_log_request($request);
+
+    $email = $request->get_param('email');
+    $new_password = $request->get_param('password');
+    $new_password_repeat = $request->get_param('password_repeat');
+
+    $error = null;
+
+    if (empty($email)) {
+        xpeapp_log(Xpeapp_Log_Level::Warn, "PUT xpeho/v1/reset-password - No email provided");
+        $error = new \WP_Error('no_email_provided', __('The email address is required', 'xpeapp'));
+    } elseif (empty($new_password) || empty($new_password_repeat)) {
+        xpeapp_log(Xpeapp_Log_Level::Warn, "PUT xpeho/v1/reset-password - No password provided");
+        $error = new \WP_Error('no_password_provided', __('Both password and password confirmation are required', 'xpeapp'));
+    } elseif (strlen($new_password) < 8) {
+        xpeapp_log(Xpeapp_Log_Level::Warn, "PUT xpeho/v1/reset-password - Password too short");
+        $error = new \WP_Error('password_too_short', __('Password must be at least 8 characters long', 'xpeapp'));
+    } elseif ($new_password !== $new_password_repeat) {
+        xpeapp_log(Xpeapp_Log_Level::Warn, "PUT xpeho/v1/reset-password - Passwords do not match");
+        $error = new \WP_Error('password_mismatch', __('Passwords do not match', 'xpeapp'));
+    } else {
+        // Check if target user exists by email
+        $target_user = get_user_by('email', $email);
+        if (!$target_user) {
+            xpeapp_log(Xpeapp_Log_Level::Warn, "PUT xpeho/v1/reset-password - User not found: $email");
+            $error = new \WP_Error('user_not_found', __('The specified user was not found', 'xpeapp'));
+        }
+    }
+
+    if ($error) {
+        return $error;
+    }
+
+    $target_user = get_user_by('email', $email);
+
+    $user_data = array(
+        'ID' => $target_user->ID,
+        'user_pass' => $new_password
+    );
+
+    $result = wp_update_user($user_data);
+
+    if (is_wp_error($result)) {
+        return $result;
+    }
+
+    return new \WP_REST_Response(null, 204);
     }
 }
