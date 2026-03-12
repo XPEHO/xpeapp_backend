@@ -27,8 +27,14 @@ class PutIdeaStatus {
     } elseif (!entityExists($id, $table_idea_box)) {
         $response = createErrorResponse('not_found', 'Idea not found', 404);
     } else {
-        // Update the idea status in the database using prepareData like birthday
-        $result = $wpdb->update($table_idea_box, prepareData($params, ['status']), ['id' => intval($id)]);
+        // Prepare update payload and allow optional 'reason' field
+        $allowed = prepareData($params, ['status', 'reason']);
+        // sanitize reason if provided
+        if (isset($allowed['reason'])) {
+            $allowed['reason'] = sanitize_textarea_field($allowed['reason']);
+        }
+        // Update the idea status in the database
+        $result = $wpdb->update($table_idea_box, $allowed, ['id' => intval($id)]);
 
         if ($result === false) {
             $response = createErrorResponse('db_update_error', 'Could not update idea status', 500);
