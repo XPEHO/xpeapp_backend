@@ -44,6 +44,10 @@ When('I update the idea with id {int} to status {string}', async function (id, s
   await apiPut(this, `/ideas/${id}/status`, { status });
 });
 
+When('I update the idea with id {int} to status {string} with reason {string}', async function (id, status, reason) {
+  await apiPut(this, `/ideas/${id}/status`, { status, reason });
+});
+
 Then('I receive the updated idea confirmation', function () {
   assertStatus(this.response, 204);
   assert.strictEqual(this.body.status, this.body.status, 'Idea status should match');

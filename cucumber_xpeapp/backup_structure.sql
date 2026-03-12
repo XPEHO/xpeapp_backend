@@ -133,6 +133,7 @@ CREATE TABLE `wp_idea_box` (
   `context` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `status` varchar(20) NOT NULL DEFAULT 'pending',
+  `reason` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_created_at` (`created_at`),

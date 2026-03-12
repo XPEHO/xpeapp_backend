@@ -21,6 +21,16 @@ Scenario: Update the status of an existing idea
   When I update the idea with id 2 to status "approved"
   Then I receive the updated idea confirmation
 
+Scenario: Update the status of an existing idea with a reason (rejected)
+  Given the WordPress JWT API is available
+  When I update the idea with id 2 to status "rejected" with reason "Out of scope"
+  Then I receive the updated idea confirmation
+
+Scenario: Update the status of an existing idea with a reason (approved)
+  Given the WordPress JWT API is available
+  When I update the idea with id 2 to status "approved" with reason "Ready for implementation"
+  Then I receive the updated idea confirmation
+
 Scenario: Delete an idea
   Given the WordPress JWT API is available
   When I delete the idea with id 2
