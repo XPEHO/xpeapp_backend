@@ -20,10 +20,12 @@ class PostIdea {
     if ($validation_error) {
         $response = $validation_error;
     } else {
-        // Prepare data for insertion (only context and description)
+        // Prepare data for insertion (context, description, optional user_id)
+        $user_id = get_current_user_id();
         $data = [
             'context' => sanitize_text_field($params['context']),
-            'description' => sanitize_textarea_field($params['description'])
+            'description' => sanitize_textarea_field($params['description']),
+            'user_id' => $user_id > 0 ? intval($user_id) : null
         ];
 
         // Insert the idea into the database
