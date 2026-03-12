@@ -31,23 +31,21 @@ class GetIdeaById {
 
         // Build SQL query with author join
         $sql = $wpdb->prepare("
-            SELECT 
+            SELECT
                 i.*,
                 CONCAT_WS(' ', fn.meta_value, ln.meta_value) AS author
             FROM {$table_idea_box} i
-            LEFT JOIN {$table_usermeta} fn 
+            LEFT JOIN {$table_usermeta} fn
                 ON i.user_id = fn.user_id AND fn.meta_key = 'first_name'
-            LEFT JOIN {$table_usermeta} ln 
+            LEFT JOIN {$table_usermeta} ln
                 ON i.user_id = ln.user_id AND ln.meta_key = 'last_name'
             WHERE i.id = %d
         ", intval($id));
 
         $idea = $wpdb->get_row($sql);
 
-        if ($idea) {
-            return createSuccessResponse($idea);
-        }
-
-        return createErrorResponse('db_get_error', 'Could not get idea', 400);
+        return $idea
+            ? createSuccessResponse($idea)
+            : createErrorResponse('db_get_error', 'Could not get idea', 400);
     }
 }

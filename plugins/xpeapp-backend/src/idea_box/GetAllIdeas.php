@@ -6,7 +6,7 @@ use WP_REST_Request;
 include_once __DIR__ . '/../utils.php';
 
 class GetAllIdeas {
-    private static $VALID_STATUSES = ['pending', 'approved', 'implemented', 'rejected'];
+    private static $validStatuses = ['pending', 'approved', 'implemented', 'rejected'];
 
     public static function apiGetAllIdeas(WP_REST_Request $request)
     {
@@ -25,18 +25,18 @@ class GetAllIdeas {
 
         // Build SQL query with author join
         $sql = "
-            SELECT 
+            SELECT
                 i.*,
                 CONCAT_WS(' ', fn.meta_value, ln.meta_value) AS author
             FROM {$table_idea_box} i
-            LEFT JOIN {$table_usermeta} fn 
+            LEFT JOIN {$table_usermeta} fn
                 ON i.user_id = fn.user_id AND fn.meta_key = 'first_name'
-            LEFT JOIN {$table_usermeta} ln 
+            LEFT JOIN {$table_usermeta} ln
                 ON i.user_id = ln.user_id AND ln.meta_key = 'last_name'
         ";
 
         // Add status filter if valid
-        if (!empty($status) && in_array($status, self::$VALID_STATUSES, true)) {
+        if (!empty($status) && in_array($status, self::$validStatuses, true)) {
             $sql = $wpdb->prepare($sql . " WHERE i.status = %s", $status);
         }
 
