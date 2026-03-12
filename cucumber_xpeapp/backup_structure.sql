@@ -130,6 +130,7 @@ DROP TABLE IF EXISTS `wp_idea_box`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `wp_idea_box` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
   `context` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `status` varchar(20) NOT NULL DEFAULT 'pending',
@@ -138,6 +139,7 @@ CREATE TABLE `wp_idea_box` (
   PRIMARY KEY (`id`),
   KEY `idx_created_at` (`created_at`),
   KEY `idx_status` (`status`),
+  KEY `idx_user_id` (`user_id`),
   CONSTRAINT `chk_status` CHECK ((`status` in (_utf8mb4'pending',_utf8mb4'approved',_utf8mb4'implemented',_utf8mb4'rejected')))
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -1,10 +1,11 @@
 Feature: Idea Box API
     Permite to users contribute at XPEHO via their ideas
+    Ideas are associated with users (user_id) and can include a reason when rejected
 
 Scenario: Fetch all ideas
   Given the WordPress JWT API is available
   When I fetch all ideas
-  Then I receive a list of ideas
+  Then I receive a list of ideas with author information
 
 Scenario: Fetch my ideas
   Given the WordPress JWT API is available
@@ -14,7 +15,7 @@ Scenario: Fetch my ideas
 Scenario: Fetch an idea by id
   Given the WordPress JWT API is available
   When I fetch the idea with id 1
-  Then I receive the idea details
+  Then I receive the idea details with author information
 
 Scenario: Post a new idea
   Given the WordPress JWT API is available
