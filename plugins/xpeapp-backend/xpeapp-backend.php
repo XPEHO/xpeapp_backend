@@ -90,6 +90,7 @@ use XpeApp\storage\ImageController;
 // Idea Box
 use XpeApp\idea_box\PostIdea;
 use XpeApp\idea_box\GetAllIdeas;
+use XpeApp\idea_box\GetMyIdeas;
 use XpeApp\idea_box\GetIdeaById;
 use XpeApp\idea_box\PutIdeaStatus;
 use XpeApp\idea_box\DeleteIdeaById;
@@ -803,6 +804,19 @@ class Xpeapp_Backend {
 				'callback' => [GetAllIdeas::class, 'apiGetAllIdeas'],
 				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
 					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
+				}
+			)
+		);
+
+		// Route pour récupérer les idées de l'utilisateur connecté
+		register_rest_route(
+			$endpoint_namespace,
+			'/ideas/my',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => [GetMyIdeas::class, 'apiGetMyIdeas'],
+				'permission_callback' => function () use ($userOfIdeaBoxParameter) {
+					return $this->secure_endpoint_with_parameter($userOfIdeaBoxParameter);
 				}
 			)
 		);
