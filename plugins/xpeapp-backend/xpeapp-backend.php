@@ -862,7 +862,21 @@ class Xpeapp_Backend {
 
 	function on_plugin_activation() {
 		xpeapp_create_log_database();
+		$this->ensure_timezone_configuration();
 		xpeapp_log(Xpeapp_Log_Level::Info, "Activating xpeapp-backend");
+	}
+
+	function ensure_timezone_configuration() {
+		$timezone = 'Europe/Paris';
+
+		// Force WordPress timezone so DST transitions are handled automatically.
+		if (get_option('timezone_string') !== $timezone) {
+			update_option('timezone_string', $timezone);
+		}
+
+		if (function_exists('date_default_timezone_set')) {
+			date_default_timezone_set($timezone);
+		}
 	}
 
 	function xpeappBackendPage()
@@ -877,6 +891,7 @@ class Xpeapp_Backend {
 		add_action('admin_menu', function () { $this->xpeapp_menu_page(); });
 		add_action('rest_api_init', function () { $this->xpeapp_init_rest_api(); });
 		register_activation_hook(__FILE__, function () { $this->on_plugin_activation(); });
+		add_action('init', function () { $this->ensure_timezone_configuration(); }, 1);
 		add_action('acf/init', function () { register_local_acf_fields(); });
 	}
 
