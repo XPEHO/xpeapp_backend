@@ -59,7 +59,7 @@ function buildQueryWithPaginationAndFilters(
     global $wpdb;
 
     $query = $customQuery ?? "SELECT * FROM {$table}";
-    $queryHasWhere = preg_match('/\bwhere\b/i', $query) === 1;
+    $queryHasWhere = $customQuery !== null && stripos($customQuery, 'WHERE') !== false;
     $conditions = [];
     $limit = '';
     $orderBy = " ORDER BY {$dateField} DESC";

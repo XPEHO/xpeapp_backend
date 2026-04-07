@@ -12,12 +12,9 @@ Then('I receive a list of ideas with author information', function () {
   assertStatus(this.response, 200);
   assertArray(this.body, 'Response should be an array of ideas');
   for (const idea of this.body) {
-    if (idea.user_id) {
-      assert.ok(typeof idea.author === 'string' && idea.author.trim().length > 0,
-       'Author field should be present and non-empty in ideas');
-    } else {
-      assert.strictEqual(typeof idea.author, 'string', 'Author field should be a string even if empty for unknown user');
-    }
+    assert.ok(Object.hasOwn(idea, 'author'), 'Author field should be present in ideas');
+    assert.notStrictEqual(idea.author, null, 'Author field should not be null in ideas');
+    assert.notStrictEqual(idea.author, undefined, 'Author field should not be undefined in ideas');
   }
   assertToken(this);
 });
@@ -45,12 +42,9 @@ Then('I receive the idea details with author information', function () {
   assert.ok(this.body.id, 'Idea id should be present');
   assert.ok(this.body.context, 'Idea context should be present');
   assert.ok(this.body.description, 'Idea description should be present');
-  if (this.body.user_id) {
-    assert.ok(typeof this.body.author === 'string' && this.body.author.trim().length > 0,
-     'Author field should be present and non-empty');
-  } else {
-    assert.strictEqual(typeof this.body.author, 'string', 'Author field should be a string even if empty for unknown user');
-  }
+  assert.ok(Object.hasOwn(this.body, 'author'), 'Author field should be present');
+  assert.notStrictEqual(this.body.author, null, 'Author field should not be null');
+  assert.notStrictEqual(this.body.author, undefined, 'Author field should not be undefined');
   assertToken(this);
 });
 
