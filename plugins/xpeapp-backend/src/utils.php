@@ -59,6 +59,7 @@ function buildQueryWithPaginationAndFilters(
     global $wpdb;
 
     $query = $customQuery ?? "SELECT * FROM {$table}";
+    $queryHasWhere = preg_match('/\bwhere\b/i', $query) === 1;
     $conditions = [];
     $limit = '';
     $orderBy = " ORDER BY {$dateField} DESC";
@@ -80,7 +81,12 @@ function buildQueryWithPaginationAndFilters(
         $limit = " LIMIT {$itemsPerPage} OFFSET {$offset}";
     }
 
-    $where = $conditions ? (preg_match('/\bwhere\b/i', $query) ? ' AND ' : ' WHERE ') . implode(' AND ', $conditions) : '';
+    $where = '';
+    if (!empty($conditions)) {
+        $prefix = $queryHasWhere ? ' AND ' : ' WHERE ';
+        $where = $prefix . implode(' AND ', $conditions);
+    }
 
     return $query . $where . $orderBy . $limit;
 }
+
