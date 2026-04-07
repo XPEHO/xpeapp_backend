@@ -12,8 +12,12 @@ Then('I receive a list of ideas with author information', function () {
   assertStatus(this.response, 200);
   assertArray(this.body, 'Response should be an array of ideas');
   for (const idea of this.body) {
-    assert.ok(typeof idea.author === 'string' && idea.author.trim().length > 0,
-     'Author field should be present and non-empty in ideas');
+    if (idea.user_id) {
+      assert.ok(typeof idea.author === 'string' && idea.author.trim().length > 0,
+       'Author field should be present and non-empty in ideas');
+    } else {
+      assert.strictEqual(typeof idea.author, 'string', 'Author field should be a string even if empty for unknown user');
+    }
   }
   assertToken(this);
 });
@@ -41,8 +45,12 @@ Then('I receive the idea details with author information', function () {
   assert.ok(this.body.id, 'Idea id should be present');
   assert.ok(this.body.context, 'Idea context should be present');
   assert.ok(this.body.description, 'Idea description should be present');
-  assert.ok(typeof this.body.author === 'string' && this.body.author.trim().length > 0,
-   'Author field should be present and non-empty');
+  if (this.body.user_id) {
+    assert.ok(typeof this.body.author === 'string' && this.body.author.trim().length > 0,
+     'Author field should be present and non-empty');
+  } else {
+    assert.strictEqual(typeof this.body.author, 'string', 'Author field should be a string even if empty for unknown user');
+  }
   assertToken(this);
 });
 
