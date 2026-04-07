@@ -6,6 +6,11 @@ Scenario: Fetch all ideas
   When I fetch all ideas
   Then I receive a list of ideas
 
+Scenario: Fetch my ideas
+  Given the WordPress JWT API is available
+  When I fetch my ideas
+  Then I receive a list of my ideas
+
 Scenario: Fetch an idea by id
   Given the WordPress JWT API is available
   When I fetch the idea with id 1

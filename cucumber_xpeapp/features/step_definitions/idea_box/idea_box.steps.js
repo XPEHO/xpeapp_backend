@@ -14,6 +14,19 @@ Then('I receive a list of ideas', function () {
   assertToken(this);
 });
 
+When('I fetch my ideas', async function () {
+  await apiGet(this, '/ideas/my');
+});
+
+Then('I receive a list of my ideas', function () {
+  assertStatus(this.response, 200);
+  assertArray(this.body, 'Response should be an array of ideas');
+  for (const idea of this.body) {
+    assert.ok(idea.user_id, 'Each idea should contain a user_id');
+  }
+  assertToken(this);
+});
+
 // ----------- GET IDEA BY ID -----------
 When('I fetch the idea with id {int}', async function (id) {
   await apiGet(this, `/ideas/${id}`);
