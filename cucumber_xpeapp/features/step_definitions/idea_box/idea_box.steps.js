@@ -11,9 +11,9 @@ When('I fetch all ideas', async function () {
 Then('I receive a list of ideas with author information', function () {
   assertStatus(this.response, 200);
   assertArray(this.body, 'Response should be an array of ideas');
-  // Verify each idea has author field
-  if (this.body.length > 0) {
-    assert.ok('author' in this.body[0], 'Author field should be present in ideas');
+  for (const idea of this.body) {
+    assert.ok(typeof idea.author === 'string' && idea.author.trim().length > 0,
+     'Author field should be present and non-empty in ideas');
   }
   assertToken(this);
 });
@@ -41,8 +41,8 @@ Then('I receive the idea details with author information', function () {
   assert.ok(this.body.id, 'Idea id should be present');
   assert.ok(this.body.context, 'Idea context should be present');
   assert.ok(this.body.description, 'Idea description should be present');
-  // Verify author field is present (from user_id join)
-  assert.ok('author' in this.body, 'Author field should be present');
+  assert.ok(typeof this.body.author === 'string' && this.body.author.trim().length > 0,
+   'Author field should be present and non-empty');
   assertToken(this);
 });
 
