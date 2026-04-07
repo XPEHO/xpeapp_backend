@@ -80,8 +80,7 @@ function buildQueryWithPaginationAndFilters(
         $limit = " LIMIT {$itemsPerPage} OFFSET {$offset}";
     }
 
-    $where = $conditions ? ' WHERE ' . implode(' AND ', $conditions) : '';
+    $where = $conditions ? (preg_match('/\bwhere\b/i', $query) ? ' AND ' : ' WHERE ') . implode(' AND ', $conditions) : '';
 
     return $query . $where . $orderBy . $limit;
 }
-

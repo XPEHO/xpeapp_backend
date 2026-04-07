@@ -6,6 +6,18 @@ use WP_REST_Request;
 include_once __DIR__ . '/../utils.php';
 
 class GetMyIdeas {
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_IMPLEMENTED = 'implemented';
+    public const STATUS_REJECTED = 'rejected';
+
+    public const VALID_STATUSES = [
+        self::STATUS_PENDING,
+        self::STATUS_APPROVED,
+        self::STATUS_IMPLEMENTED,
+        self::STATUS_REJECTED,
+    ];
+
     public static function apiGetMyIdeas(WP_REST_Request $request)
     {
         xpeapp_log_request($request);
@@ -21,18 +33,15 @@ class GetMyIdeas {
             return createErrorResponse('unauthorized', 'User not authenticated', 401);
         }
 
-        $custom_query = $wpdb->prepare(
-            "SELECT * FROM $table_idea_box WHERE user_id = %d",
-            intval($current_user_id)
-        );
+        $sql = "SELECT * FROM {$table_idea_box} WHERE user_id = %d";
+        $args = [intval($current_user_id)];
 
-        if (!empty($status) && in_array($status, ['pending', 'approved', 'implemented', 'rejected'], true)) {
-            $custom_query = $wpdb->prepare(
-                "SELECT * FROM $table_idea_box WHERE user_id = %d AND status = %s",
-                intval($current_user_id),
-                $status
-            );
+        if (!empty($status) && in_array($status, self::VALID_STATUSES, true)) {
+            $sql .= " AND status = %s";
+            $args[] = $status;
         }
+
+        $custom_query = $wpdb->prepare($sql, ...$args);
 
         $query = buildQueryWithPaginationAndFilters($table_idea_box, $page, 'created_at', 10, $custom_query);
 
