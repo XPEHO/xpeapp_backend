@@ -8,9 +8,14 @@ When('I fetch all ideas', async function () {
   await apiGet(this, '/ideas');
 });
 
-Then('I receive a list of ideas', function () {
+Then('I receive a list of ideas with author information', function () {
   assertStatus(this.response, 200);
   assertArray(this.body, 'Response should be an array of ideas');
+  for (const idea of this.body) {
+    assert.ok(Object.hasOwn(idea, 'author'), 'Author field should be present in ideas');
+    assert.notStrictEqual(idea.author, null, 'Author field should not be null in ideas');
+    assert.notStrictEqual(idea.author, undefined, 'Author field should not be undefined in ideas');
+  }
   assertToken(this);
 });
 
@@ -32,11 +37,14 @@ When('I fetch the idea with id {int}', async function (id) {
   await apiGet(this, `/ideas/${id}`);
 });
 
-Then('I receive the idea details', function () {
+Then('I receive the idea details with author information', function () {
   assertStatus(this.response, 200);
   assert.ok(this.body.id, 'Idea id should be present');
   assert.ok(this.body.context, 'Idea context should be present');
   assert.ok(this.body.description, 'Idea description should be present');
+  assert.ok(Object.hasOwn(this.body, 'author'), 'Author field should be present');
+  assert.notStrictEqual(this.body.author, null, 'Author field should not be null');
+  assert.notStrictEqual(this.body.author, undefined, 'Author field should not be undefined');
   assertToken(this);
 });
 
