@@ -23,6 +23,7 @@ include_once 'src/notification/notification_helpers.php';
 // Include all endpoints API
 /// Notification XpeApp
 include_once 'src/notification/post_notifications.php';
+include_once 'src/notification/admin_web_topic_subscription.php';
 
 /// Question
 use XpeApp\qvst\questions\GetListOfQvstQuestions;
@@ -206,6 +207,19 @@ class Xpeapp_Backend {
 				'callback' => 'apiPostNotification',
 				'permission_callback' => function () use ($adminQvstParameter) {
 					return $this->secure_endpoint_with_parameter($adminQvstParameter);
+				}
+			)
+		);
+
+		// Subscribe admin web FCM token to idea-box topic
+		register_rest_route(
+			$endpoint_namespace,
+			'/notifications/admin-web/subscribe',
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => 'apiSubscribeAdminWebIdeaNotifications',
+				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
+					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
 				}
 			)
 		);
