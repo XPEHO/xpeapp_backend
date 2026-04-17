@@ -5,9 +5,10 @@
  * @param string $title Notification title
  * @param string $message Notification message
  * @param string $redirection Optional redirection action (default: OPEN_XPEAPP)
+ * @param string $topic Optional topic (default: all)
  * @return bool True if notification sent successfully, false otherwise
  */
-function sendFcmNotification($title, $message, $redirection = 'OPEN_XPEAPP')
+function sendFcmNotification($title, $message, $redirection = 'OPEN_XPEAPP', $topic = 'all')
 {
     // Prepare notification data
     $notification_data = buildServiceAccountData();
@@ -23,7 +24,7 @@ function sendFcmNotification($title, $message, $redirection = 'OPEN_XPEAPP')
             ->createMessaging();
 
         $cloudMessage = \Kreait\Firebase\Messaging\CloudMessage::fromArray([
-            'topic' => 'all',
+            'topic' => $topic,
             'notification' => [
                 'title' => $title,
                 'body' => $message,
@@ -43,7 +44,7 @@ function sendFcmNotification($title, $message, $redirection = 'OPEN_XPEAPP')
             'status' => 'sent',
         ]);
 
-        xpeapp_log(Xpeapp_Log_Level::Info, "Notification sent: $title");
+        xpeapp_log(Xpeapp_Log_Level::Info, "Notification sent on topic $topic: $title");
         return true;
     } catch (\Throwable $e) {
         xpeapp_log(Xpeapp_Log_Level::Error, 'FCM send failed: ' . $e->getMessage());

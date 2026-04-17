@@ -4,8 +4,11 @@ namespace XpeApp\idea_box;
 use WP_REST_Request;
 
 include_once __DIR__ . '/../utils.php';
+include_once __DIR__ . '/../notification/notification_helpers.php';
 
 class PostIdea {
+    private const IDEA_NOTIFICATION_TOPIC = 'admin_web_ideas';
+
     public static function apiPostIdea(WP_REST_Request $request)
 {
     xpeapp_log_request($request);
@@ -34,6 +37,17 @@ class PostIdea {
         if ($result === false) {
             $response = createErrorResponse('db_insert_error', 'Could not insert idea', 500);
         } else {
+            $notificationSent = \sendFcmNotification(
+                'Nouvelle idée soumise',
+                'Une nouvelle idée a été ajoutée dans la boîte à idées.',
+                'OPEN_XPEAPP',
+                self::IDEA_NOTIFICATION_TOPIC
+            );
+
+            if (!$notificationSent) {
+                \xpeapp_log(\Xpeapp_Log_Level::Warn, 'Idea created but notification failed to send');
+            }
+
             $response = createSuccessResponse(null, 201);
         }
     }
