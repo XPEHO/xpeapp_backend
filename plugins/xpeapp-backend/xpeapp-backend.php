@@ -95,6 +95,7 @@ use XpeApp\idea_box\GetMyIdeas;
 use XpeApp\idea_box\GetIdeaById;
 use XpeApp\idea_box\PutIdeaStatus;
 use XpeApp\idea_box\DeleteIdeaById;
+use XpeApp\idea_box\GetCsvFileIdeas;
 
 
 class Xpeapp_Backend {
@@ -868,6 +869,19 @@ class Xpeapp_Backend {
 			array(
 				'methods' => WP_REST_Server::EDITABLE,
 				'callback' => [PutIdeaStatus::class, 'apiPutIdeaStatus'],
+				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
+					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
+				}
+			)
+		);
+
+		// GET - Export ideas to CSV
+		register_rest_route(
+			$endpoint_namespace,
+			'/ideas:export',
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => [GetCsvFileIdeas::class, 'apiGetCsvFileIdeas'],
 				'permission_callback' => function () use ($adminOfIdeaBoxParameter) {
 					return $this->secure_endpoint_with_parameter($adminOfIdeaBoxParameter);
 				}
