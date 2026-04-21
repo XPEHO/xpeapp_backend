@@ -90,3 +90,27 @@ function buildQueryWithPaginationAndFilters(
     return $query . $where . $orderBy . $limit;
 }
 
+function setupCsvExportHeaders($filename)
+{
+    // Define allowed origins based on environment
+    $allowed_origins = getenv_docker('CORS_ALLOWED_ORIGINS', '');
+    $allowed_origins = explode(';', $allowed_origins);
+
+    // Get the origin of the request
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+    // Add CORS headers if the origin is allowed
+    if (in_array($origin, $allowed_origins) || in_array('*', $allowed_origins)) {
+        header('Access-Control-Allow-Origin: ' . ($origin ?: '*'));
+    }
+    header('Access-Control-Allow-Methods: GET');
+    header('Access-Control-Allow-Headers: Authorization, Content-Type');
+
+    // Send the CSV headers
+    header('Content-Type: text/csv; charset=UTF-8');
+    header('Content-Disposition: attachment; filename=' . $filename);
+    header('Pragma: no-cache');
+    header('Expires: 0');
+}
+
+
