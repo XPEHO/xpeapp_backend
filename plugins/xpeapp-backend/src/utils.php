@@ -54,7 +54,8 @@ function buildQueryWithPaginationAndFilters(
     string $dateField,
     int $itemsPerPage = 10,
     ?string $customQuery = null,
-    ?string $endDateField = null
+    ?string $endDateField = null,
+    ?string $orderByClause = null
 ) {
     global $wpdb;
 
@@ -62,7 +63,7 @@ function buildQueryWithPaginationAndFilters(
     $queryHasWhere = $customQuery !== null && stripos($customQuery, 'WHERE') !== false;
     $conditions = [];
     $limit = '';
-    $orderBy = " ORDER BY {$dateField} DESC";
+    $orderBy = $orderByClause ? " ORDER BY {$orderByClause}" : " ORDER BY {$dateField} DESC";
 
     // Week / Month filters
     if ($page === 'week' || $page === 'month') {
