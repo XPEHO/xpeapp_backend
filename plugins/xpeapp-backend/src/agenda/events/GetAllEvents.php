@@ -36,8 +36,7 @@ class GetAllEvents {
         // Get the page parameter from the query parameters
         $page = $request->get_param('page');
 
-        // Build the query using the utility function
-        $query = buildQueryWithPaginationAndFilters($table_events, $page, 'date', 10, null, 'end_date');
+        $query = buildQueryWithPaginationAndFilters($table_events, $page, 'date');
         $results = $wpdb->get_results($query);
         foreach ($results as &$event) {
             if (!property_exists($event, 'end_date')) {

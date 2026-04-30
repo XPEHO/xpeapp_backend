@@ -14,8 +14,7 @@ class GetAllBirthday {
         // Get the page parameter from the query parameters
         $page = $request->get_param('page');
 
-        // Build the query using the utility function
-        $query = buildQueryWithPaginationAndFilters($table_birthday, $page, 'birthdate');
+        $query = buildQueryWithPaginationAndFilters($table_birthday, $page, 'birthdate', 10, null, null, 'MONTH(birthdate) ASC, DAY(birthdate) ASC');
 
         return $wpdb->get_results($query);
     }
