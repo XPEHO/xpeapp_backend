@@ -4,6 +4,12 @@ namespace XpeApp\qvst\campaign;
 include_once __DIR__ . '/../../logging.php';
 require_once __DIR__ . '/GetStatsOfCampaign.php';
 
+/**
+ * Calcule la satisfaction par question et identifie les questions sous le seuil d'alerte.
+ *
+ * @param array<string, mixed> $stats_data Donnees de stats de la campagne.
+ * @return array<string, mixed>
+ */
 function calculateQuestionSatisfaction($stats_data)
 {
     $questions_analysis = [];
@@ -44,24 +50,38 @@ function calculateQuestionSatisfaction($stats_data)
     ];
 }
 
+/**
+ * Retourne les bornes min/max d'une echelle de reponses.
+ *
+ * @param array<int, object> $answers Liste des reponses possibles.
+ * @return array{0:int,1:int}
+ */
 function getMinMaxAnswerValues($answers)
 {
-    $min_value = PHP_INT_MAX;
-    $max_value = PHP_INT_MIN;
-    foreach ($answers as $answer) {
-        $value = (int)$answer->value;
-        if ($value < $min_value) {
-            $min_value = $value;
-        }
-        if ($value > $max_value) {
-            $max_value = $value;
-        }
-    }
-    return [$min_value, $max_value];
+    // Utiliser une echelle fixe : min = 1, max = 5
+    // Cela garantit un calcul de satisfaction cohérent independamment
+    // des valeurs declarees dans le référentiel de réponses.
+    return [1, 5];
 }
 
+/**
+ * Compte le nombre total de reponses et le nombre de reponses satisfaites.
+ *
+ * Pour une question inversee, la valeur est remappee sur la meme echelle
+ * afin d'appliquer une regle unique de satisfaction.
+ *
+ * @param array<int, object> $answers
+ * @param bool $is_reversed
+ * @param int $min_value
+ * @param int $max_value
+ * @return array{0:int,1:int}
+ */
 function getSatisfactionCounts($answers, $is_reversed, $min_value, $max_value)
 {
+    // Forcer l'echelle de notation a 1..5 pour le calcul
+    $min_value = 1;
+    $max_value = 5;
+
     $total_responses = 0;
     $satisfied_count = 0;
     foreach ($answers as $answer) {
@@ -71,6 +91,7 @@ function getSatisfactionCounts($answers, $is_reversed, $min_value, $max_value)
             $value = $max_value + $min_value - $value;
         }
         $total_responses += $count;
+        // Seuil metier: les scores >= 4 sont consideres comme satisfaits.
         if ($value >= 4) {
             $satisfied_count += $count;
         }
@@ -78,6 +99,13 @@ function getSatisfactionCounts($answers, $is_reversed, $min_value, $max_value)
     return [$total_responses, $satisfied_count];
 }
 
+/**
+ * Construit les donnees anonymes par repondant et detecte les profils a risque.
+ *
+ * @param \wpdb $wpdb
+ * @param int|string $campaign_id
+ * @return array<string, mixed>
+ */
 function analyzeEmployeesAtRisk($wpdb, $campaign_id)
 {
     $table_campaign_answers = $wpdb->prefix . 'qvst_campaign_answers';
@@ -133,6 +161,12 @@ function analyzeEmployeesAtRisk($wpdb, $campaign_id)
     ];
 }
 
+/**
+ * Calcule le pourcentage de satisfaction d'un repondant.
+ *
+ * @param array<string, mixed> $employee
+ * @return float
+ */
 function getEmployeeSatisfaction($employee)
 {
     if ($employee['total_responses'] > 0) {
@@ -141,6 +175,12 @@ function getEmployeeSatisfaction($employee)
     return 0;
 }
 
+/**
+ * Filtre les repondants sous le seuil de satisfaction pour produire la liste a risque.
+ *
+ * @param array<string, array<string, mixed>> $employees_data
+ * @return array<int, array<string, mixed>>
+ */
 function getAtRiskEmployees($employees_data)
 {
     $at_risk_employees = [];
@@ -158,12 +198,20 @@ function getAtRiskEmployees($employees_data)
     return $at_risk_employees;
 }
 
+/**
+ * Agrege la reponse d'une question dans la structure employee_data.
+ *
+ * @param array<string, array<string, mixed>> $employees_data
+ * @param object $row
+ * @return void
+ */
 function updateEmployeeData(&$employees_data, $row)
 {
     $group_id = $row->answer_group_id;
     $value = (int)$row->answer_value;
     if ((bool)$row->reversed_question) {
-        $value = (int)$row->max_value + (int)$row->min_value - $value;
+        // Utiliser l'echelle fixe 1..5 pour normaliser les questions inversees
+        $value = 5 + 1 - $value;
     }
     if (!isset($employees_data[$group_id])) {
         $employees_data[$group_id] = [
@@ -173,11 +221,18 @@ function updateEmployeeData(&$employees_data, $row)
         ];
     }
     $employees_data[$group_id]['total_responses']++;
+    // Seuil metier: les scores >= 4 sont consideres comme satisfaits.
     if ($value >= 4) {
         $employees_data[$group_id]['satisfied_count']++;
     }
 }
 
+/**
+ * Calcule la distribution globale des reponses (score -> nombre de reponses).
+ *
+ * @param array<int, array<string, mixed>> $questions_analysis
+ * @return array<int, array{score:mixed,count:mixed}>
+ */
 function calculateGlobalDistribution($questions_analysis)
 {
     $global_distribution = [];
@@ -203,7 +258,19 @@ function calculateGlobalDistribution($questions_analysis)
 }
 
 
+/**
+ * Endpoint d'analyse de campagne QVST.
+ *
+ * Orchestre la recuperation des stats, le calcul de satisfaction, l'identification
+ * des collaborateurs a risque et la construction de la reponse agregée.
+ */
 class GetCampaignAnalysis {
+    /**
+     * Construit la reponse d'analyse complete pour une campagne.
+     *
+     * @param \WP_REST_Request $request
+     * @return array<string, mixed>
+     */
     public static function apiGetCampaignAnalysis(\WP_REST_Request $request)
     {
         xpeapp_log_request($request);
@@ -243,6 +310,7 @@ class GetCampaignAnalysis {
                             'total_respondents' => count($employee_results['employees_data']),
                             'total_questions' => $total_questions,
                             'average_satisfaction' => $average_satisfaction,
+                            // Campagne marquee "a actionner" si la moyenne est sous 75%.
                             'requires_action' => $average_satisfaction < 75.0,
                             'at_risk_count' => count($employee_results['at_risk_employees'])
                         ],
