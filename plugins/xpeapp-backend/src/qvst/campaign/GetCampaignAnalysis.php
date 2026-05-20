@@ -5,9 +5,9 @@ include_once __DIR__ . '/../../logging.php';
 require_once __DIR__ . '/GetStatsOfCampaign.php';
 
 /**
- * Calcule la satisfaction par question et identifie les questions sous le seuil d'alerte.
+ * Calculates satisfaction per question and identifies questions below alert threshold.
  *
- * @param array<string, mixed> $stats_data Donnees de stats de la campagne.
+ * @param array<string, mixed> $stats_data Campaign stats data.
  * @return array<string, mixed>
  */
 function calculateQuestionSatisfaction($stats_data)
@@ -18,10 +18,10 @@ function calculateQuestionSatisfaction($stats_data)
 
     foreach ($stats_data['questions'] as $question) {
         $is_reversed = isset($question->reversed_question) && (bool)$question->reversed_question;
-        // now get average value (not count of >=4)
+        // Get average value (not count of >=4)
         list($total_responses, $average_value) = getSatisfactionCounts($question->answers, $is_reversed);
 
-        // Excel-like: percent = (mean_value / max_scale) * 100
+        // Excel-like: percent = (average_value / 5) * 100
         $satisfaction_percentage = $total_responses > 0
             ? round(($average_value / 5) * 100, 2)
             : 0;
@@ -52,10 +52,10 @@ function calculateQuestionSatisfaction($stats_data)
 }
 
 /**
- * Compte le nombre total de reponses et la moyenne des valeurs.
+ * Counts total responses and average values.
  *
- * Pour une question inversee, la valeur est remappee sur la meme echelle
- * afin d'appliquer une regle unique de satisfaction. L'echelle est fixe (1..5).
+ * For reversed questions, the value is remapped to the same scale
+ * to apply a single satisfaction rule. The scale is fixed (1..5).
  *
  * @param array<int, object> $answers
  * @param bool $is_reversed
@@ -63,7 +63,7 @@ function calculateQuestionSatisfaction($stats_data)
  */
 function getSatisfactionCounts($answers, $is_reversed)
 {
-    // Forcer l'echelle de notation a 1..5 pour le calcul
+    // Force rating scale to 1..5 for calculation
     $fixed_min = 1;
     $fixed_max = 5;
 
@@ -85,7 +85,7 @@ function getSatisfactionCounts($answers, $is_reversed)
 }
 
 /**
- * Construit les donnees anonymes par repondant et detecte les profils a risque.
+ * Builds anonymous respondent data and detects at-risk profiles.
  *
  * @param \wpdb $wpdb
  * @param int|string $campaign_id
@@ -147,7 +147,7 @@ function analyzeEmployeesAtRisk($wpdb, $campaign_id)
 }
 
 /**
- * Calcule le pourcentage de satisfaction d'un repondant.
+ * Calculates respondent satisfaction percentage.
  *
  * @param array<string, mixed> $employee
  * @return float
@@ -162,7 +162,7 @@ function getEmployeeSatisfaction($employee)
 }
 
 /**
- * Filtre les repondants sous le seuil de satisfaction pour produire la liste a risque.
+ * Filters respondents below satisfaction threshold to produce at-risk list.
  *
  * @param array<string, array<string, mixed>> $employees_data
  * @return array<int, array<string, mixed>>
@@ -185,7 +185,7 @@ function getAtRiskEmployees($employees_data)
 }
 
 /**
- * Agrege la reponse d'une question dans la structure employee_data.
+ * Aggregates question response into employee_data structure.
  *
  * @param array<string, array<string, mixed>> $employees_data
  * @param object $row
@@ -210,7 +210,7 @@ function updateEmployeeData(&$employees_data, $row)
 }
 
 /**
- * Calcule la distribution globale des reponses (score -> nombre de reponses).
+ * Calculates global response distribution (score -> response count).
  *
  * @param array<int, array<string, mixed>> $questions_analysis
  * @return array<int, array{score:mixed,count:mixed}>
@@ -241,14 +241,14 @@ function calculateGlobalDistribution($questions_analysis)
 
 
 /**
- * Endpoint d'analyse de campagne QVST.
+ * QVST campaign analysis endpoint.
  *
- * Orchestre la recuperation des stats, le calcul de satisfaction, l'identification
- * des collaborateurs a risque et la construction de la reponse agregée.
+ * Orchestrates stats retrieval, satisfaction calculation, identification
+ * of at-risk employees and aggregated response construction.
  */
 class GetCampaignAnalysis {
     /**
-     * Construit la reponse d'analyse complete pour une campagne.
+     * Builds complete analysis response for a campaign.
      *
      * @param \WP_REST_Request $request
      * @return array<string, mixed>
@@ -292,7 +292,7 @@ class GetCampaignAnalysis {
                             'total_respondents' => count($employee_results['employees_data']),
                             'total_questions' => $total_questions,
                             'average_satisfaction' => $average_satisfaction,
-                            // Campagne marquee "a actionner" si la moyenne est sous 75%.
+                            // Campaign marked "requires action" if average is below 75%.
                             'requires_action' => $average_satisfaction < 75.0,
                             'at_risk_count' => count($employee_results['at_risk_employees'])
                         ],
