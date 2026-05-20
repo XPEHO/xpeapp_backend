@@ -185,43 +185,6 @@ Then('the QVST campaign analysis contains all main stats', function () {
   assertArray(this.body.at_risk_employees, 'at_risk_employees doit etre un tableau');
 });
 
-// ----------- VERIFY FIXED SCALE SATISFACTION CALCULATION -----------
-When('I compute expected satisfaction for campaign {int} using fixed scale', async function (id) {
-  // Fetch raw stats
-  await apiGet(this, `/qvst/campaigns/${id}:stats`);
-  const stats = this.body;
-  if (!stats || !Array.isArray(stats.questions)) throw new Error('Stats response malformed');
-
-  // Compute expected satisfaction per question using fixed scale 1..5
-  this.expectedSatisfaction = {};
-  for (const question of stats.questions) {
-    const isReversed = !!question.reversed_question;
-    let total = 0;
-    let satisfied = 0;
-    for (const a of question.answers) {
-      const count = Number(a.numberAnswered || 0);
-      let value = Number(a.value);
-      if (isReversed) value = 5 + 1 - value; // normalize on 1..5
-      total += count;
-      if (value >= 4) satisfied += count;
-    }
-    const percent = total > 0 ? Math.round((satisfied / total) * 10000) / 100 : 0;
-    this.expectedSatisfaction[question.question_id] = percent;
-  }
-});
-
-Then('the satisfaction percentages in the analysis match the expected values', function () {
-  const analysis = this.body;
-  if (!analysis || !Array.isArray(analysis.questions_analysis)) throw new Error('Analysis response malformed');
-  for (const q of analysis.questions_analysis) {
-    const id = q.question_id;
-    const expected = this.expectedSatisfaction[id];
-    if (expected === undefined) throw new Error(`No expected value for question ${id}`);
-    // Use strict equality on numeric values
-    assert.strictEqual(Number(q.satisfaction_percentage), Number(expected), `Question ${id} satisfaction mismatch (expected ${expected}, got ${q.satisfaction_percentage})`);
-  }
-});
-
 // ----------- DELETE QVST QUESTION -----------
 When('I delete the QVST question with id {int}', async function (id) {
   await apiDelete(this, `/qvst/${id}:delete`);

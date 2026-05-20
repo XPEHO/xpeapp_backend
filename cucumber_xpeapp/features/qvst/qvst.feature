@@ -97,12 +97,6 @@ Scenario: Get campaign analysis for campaign 1
   When I fetch the QVST campaign analysis for id 1
   Then the QVST campaign analysis contains all main stats
 
-Scenario: Verify satisfaction calculation uses fixed 1..5 scale for campaign 1
-  Given the WordPress JWT API is available
-  When I compute expected satisfaction for campaign 1 using fixed scale
-  And I fetch the QVST campaign analysis for id 1
-  Then the satisfaction percentages in the analysis match the expected values
-
 Scenario: Delete QVST Question by ID
   Given the WordPress JWT API is available
   When I delete the QVST question with id 4

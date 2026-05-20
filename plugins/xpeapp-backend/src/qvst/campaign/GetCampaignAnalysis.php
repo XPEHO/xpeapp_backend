@@ -18,11 +18,12 @@ function calculateQuestionSatisfaction($stats_data)
 
     foreach ($stats_data['questions'] as $question) {
         $is_reversed = isset($question->reversed_question) && (bool)$question->reversed_question;
-        list($min_value, $max_value) = getMinMaxAnswerValues($question->answers);
-        list($total_responses, $satisfied_count) = getSatisfactionCounts($question->answers, $is_reversed, $min_value, $max_value);
+        // now get average value (not count of >=4)
+        list($total_responses, $average_value) = getSatisfactionCounts($question->answers, $is_reversed);
 
+        // Excel-like: percent = (mean_value / max_scale) * 100
         $satisfaction_percentage = $total_responses > 0
-            ? round(($satisfied_count / $total_responses) * 100, 2)
+            ? round(($average_value / 5) * 100, 2)
             : 0;
 
         $question_data = [
@@ -51,52 +52,36 @@ function calculateQuestionSatisfaction($stats_data)
 }
 
 /**
- * Retourne les bornes min/max d'une echelle de reponses.
- *
- * @param array<int, object> $answers Liste des reponses possibles.
- * @return array{0:int,1:int}
- */
-function getMinMaxAnswerValues($answers)
-{
-    // Utiliser une echelle fixe : min = 1, max = 5
-    // Cela garantit un calcul de satisfaction cohérent independamment
-    // des valeurs declarees dans le référentiel de réponses.
-    return [1, 5];
-}
-
-/**
- * Compte le nombre total de reponses et le nombre de reponses satisfaites.
+ * Compte le nombre total de reponses et la moyenne des valeurs.
  *
  * Pour une question inversee, la valeur est remappee sur la meme echelle
- * afin d'appliquer une regle unique de satisfaction.
+ * afin d'appliquer une regle unique de satisfaction. L'echelle est fixe (1..5).
  *
  * @param array<int, object> $answers
  * @param bool $is_reversed
- * @param int $min_value
- * @param int $max_value
- * @return array{0:int,1:int}
+ * @return array{0:int,1:float}
  */
-function getSatisfactionCounts($answers, $is_reversed, $min_value, $max_value)
+function getSatisfactionCounts($answers, $is_reversed)
 {
     // Forcer l'echelle de notation a 1..5 pour le calcul
-    $min_value = 1;
-    $max_value = 5;
+    $fixed_min = 1;
+    $fixed_max = 5;
 
     $total_responses = 0;
-    $satisfied_count = 0;
+    $sum_values = 0;
+
     foreach ($answers as $answer) {
         $count = (int)$answer->numberAnswered;
         $value = (int)$answer->value;
         if ($is_reversed) {
-            $value = $max_value + $min_value - $value;
+            $value = $fixed_max + $fixed_min - $value;
         }
         $total_responses += $count;
-        // Seuil metier: les scores >= 4 sont consideres comme satisfaits.
-        if ($value >= 4) {
-            $satisfied_count += $count;
-        }
+        $sum_values += $value * $count;
     }
-    return [$total_responses, $satisfied_count];
+
+    $average_value = $total_responses > 0 ? ($sum_values / $total_responses) : 0;
+    return [$total_responses, $average_value];
 }
 
 /**
@@ -170,7 +155,8 @@ function analyzeEmployeesAtRisk($wpdb, $campaign_id)
 function getEmployeeSatisfaction($employee)
 {
     if ($employee['total_responses'] > 0) {
-        return round(($employee['satisfied_count'] / $employee['total_responses']) * 100, 2);
+        $avg_value = ($employee['sum_values'] ?? 0) / $employee['total_responses'];
+        return round(($avg_value / 5) * 100, 2);
     }
     return 0;
 }
@@ -210,21 +196,17 @@ function updateEmployeeData(&$employees_data, $row)
     $group_id = $row->answer_group_id;
     $value = (int)$row->answer_value;
     if ((bool)$row->reversed_question) {
-        // Utiliser l'echelle fixe 1..5 pour normaliser les questions inversees
-        $value = 5 + 1 - $value;
+        $value = (int)$row->max_value + (int)$row->min_value - $value;
     }
     if (!isset($employees_data[$group_id])) {
         $employees_data[$group_id] = [
             'total_responses' => 0,
-            'satisfied_count' => 0,
+            'sum_values' => 0,
             'open_answer' => null
         ];
     }
     $employees_data[$group_id]['total_responses']++;
-    // Seuil metier: les scores >= 4 sont consideres comme satisfaits.
-    if ($value >= 4) {
-        $employees_data[$group_id]['satisfied_count']++;
-    }
+    $employees_data[$group_id]['sum_values'] += $value;
 }
 
 /**
