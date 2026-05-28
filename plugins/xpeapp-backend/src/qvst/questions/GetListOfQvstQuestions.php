@@ -2,6 +2,8 @@
 
 namespace XpeApp\qvst\questions;
 
+include_once __DIR__ . '/../../utils.php';
+
 class GetListOfQvstQuestions {
 	public static function apiGetQvst(\WP_REST_Request $request)
 {
@@ -15,6 +17,10 @@ class GetListOfQvstQuestions {
 	$table_name_answers = $wpdb->prefix . 'qvst_answers';
 	$table_name_theme = $wpdb->prefix . 'qvst_theme';
 	$table_name_campaign_questions = $wpdb->prefix . 'qvst_campaign_questions';
+
+	$includeNoLongerUsed = filter_var($request->get_param('include_no_longer_used'), FILTER_VALIDATE_BOOLEAN);
+	$page = max(1, intval($request->get_param('page') ?: 1));
+	$perPage = max(1, intval($request->get_param('per_page') ?: 10));
 
 	// Requête SQL pour récupérer toutes les lignes de la table
 	$baseQuery = "
@@ -40,8 +46,11 @@ class GetListOfQvstQuestions {
 		) cq ON question.id = cq.question_id
 	";
 
-	// Check if we should include no_longer_used questions (default: false)
-	$includeNoLongerUsed = filter_var($request->get_param('include_no_longer_used'), FILTER_VALIDATE_BOOLEAN);
+	$countQuery = "
+		SELECT COUNT(DISTINCT question.id)
+		FROM {$table_name_questions} question
+		INNER JOIN {$table_name_theme} theme on question.theme_id = theme.id
+	";
 
 	// If an id param is provided, prepare the query with that id
 	$idParam = $request->get_param('id');
@@ -50,12 +59,29 @@ class GetListOfQvstQuestions {
 		$query = $baseQuery . " WHERE question.id = %d";
 		$results = $wpdb->get_results($wpdb->prepare($query, $question_id));
 	} else {
+		$whereClause = '';
+		$countWhereClause = '';
+
 		// Filter out no_longer_used questions unless explicitly requested
 		if (!$includeNoLongerUsed) {
-			$query = $baseQuery . " WHERE COALESCE(question.no_longer_used, 0) = 0";
+			$whereClause = " WHERE COALESCE(question.no_longer_used, 0) = 0";
+			$countWhereClause = " WHERE COALESCE(question.no_longer_used, 0) = 0";
 		} else {
-			$query = $baseQuery;
+			$whereClause = '';
+			$countWhereClause = '';
 		}
+
+		$totalQuestions = intval($wpdb->get_var($countQuery . $countWhereClause));
+
+		$query = buildQueryWithPaginationAndFilters(
+			'',
+			$page,
+			'question.id',
+			$perPage,
+			$baseQuery . $whereClause,
+			null,
+			'theme.id, question.id'
+		);
 		$results = $wpdb->get_results($query);
 	}
 
@@ -96,13 +122,28 @@ class GetListOfQvstQuestions {
 				);
 			}
 		}
-		return $data;
+		$response = new \WP_REST_Response($data, 200);
+		if (!empty($idParam)) {
+			return $response;
+		}
+
+		$response->header('X-WP-Total', isset($totalQuestions) ? (string) $totalQuestions : (string) count($data));
+		$response->header('X-WP-TotalPages', isset($totalQuestions) ? (string) max(1, (int) ceil($totalQuestions / $perPage)) : '1');
+
+		return $response;
 	} else {
-		xpeapp_log(Xpeapp_Log_Level::Warn, "GET xpeho/v1/qvst No query result found");
-		return new \WP_REST_Response(array(
-			"error" => "Not Found",
-			"message" => "No QVST have been found"
-		), 404);
+		if (!empty($idParam)) {
+			xpeapp_log(Xpeapp_Log_Level::Warn, "GET xpeho/v1/qvst No query result found");
+			return new \WP_REST_Response(array(
+				"error" => "Not Found",
+				"message" => "No QVST have been found"
+			), 404);
+		}
+
+		$response = new \WP_REST_Response(array(), 200);
+		$response->header('X-WP-Total', isset($totalQuestions) ? (string) $totalQuestions : '0');
+		$response->header('X-WP-TotalPages', isset($totalQuestions) ? (string) max(1, (int) ceil($totalQuestions / $perPage)) : '1');
+		return $response;
 	}
 }
 }
