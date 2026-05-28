@@ -5,26 +5,30 @@ namespace XpeApp\qvst\questions;
 class GetQvstQuestionsByTheme {
 	public static function apiGetQvstQuestionsByThemeId(\WP_REST_Request $request)
 {
-	xpeapp_log_request($request);
-	
-	// Utiliser la classe $wpdb pour effectuer une requête SQL
-	global $wpdb;
+		xpeapp_log_request($request);
 
-	// Nom de la table personnalisée
-	$table_name_questions = $wpdb->prefix . 'qvst_questions';
-	$table_name_answers = $wpdb->prefix . 'qvst_answers';
-	$table_name_theme = $wpdb->prefix . 'qvst_theme';
-	$table_name_campaign_questions = $wpdb->prefix . 'qvst_campaign_questions';
+		// Utiliser la classe $wpdb pour effectuer une requête SQL
+		global $wpdb;
 
-	$params = $request->get_params();
+		// Nom des tables personnalisées
+		$table_name_questions = $wpdb->prefix . 'qvst_questions';
+		$table_name_answers = $wpdb->prefix . 'qvst_answers';
+		$table_name_theme = $wpdb->prefix . 'qvst_theme';
+		$table_name_campaign_questions = $wpdb->prefix . 'qvst_campaign_questions';
 
-	if (!empty($params)) {
-		if (!isset($params['id'])) {
+		$params = $request->get_params();
+		$theme_id = isset($params['id']) ? intval($params['id']) : 0;
+		if (empty($theme_id)) {
 			return new \WP_Error('noID', __('No ID', 'QVST'));
-		} else {
-			// renvoyer le congé concerné (sanitize and prepare)
-			$theme_id = isset($params['id']) ? intval($params['id']) : 0;
-			$queryAnswer = "
+		}
+
+		// Vérifier si on doit inclure les questions no_longer_used (par défaut : false)
+		$includeNoLongerUsed = filter_var($request->get_param('include_no_longer_used'), FILTER_VALIDATE_BOOLEAN);
+		$page = $request->get_param('page');
+		$perPage = max(1, intval($request->get_param('per_page') ?: 10));
+		$shouldPaginate = $page !== null && $page !== '';
+
+		$queryAnswer = "
 			SELECT
 				theme.id as theme_id,
 				theme.name as theme_name,
@@ -46,52 +50,76 @@ class GetQvstQuestionsByTheme {
 				GROUP BY question_id
 			) cq ON question.id = cq.question_id
 			WHERE theme.id = %d
+		";
+
+		if (!$includeNoLongerUsed) {
+			$queryAnswer .= " AND COALESCE(question.no_longer_used, 0) = 0";
+		}
+
+		$resultsAnswer = array();
+		if ($shouldPaginate) {
+			$offset = (max(1, intval($page)) - 1) * $perPage;
+			// Récupérer les IDs des questions de la page courante
+			$idsQuery = "
+				SELECT question.id
+				FROM {$table_name_questions} question
+				INNER JOIN {$table_name_theme} theme ON question.theme_id = theme.id
+				WHERE theme.id = %d
 			";
-
-			// Check if we should include no_longer_used questions (default: false)
-			$includeNoLongerUsed = filter_var($request->get_param('include_no_longer_used'), FILTER_VALIDATE_BOOLEAN);
 			if (!$includeNoLongerUsed) {
-				$queryAnswer .= " AND COALESCE(question.no_longer_used, 0) = 0";
+				$idsQuery .= " AND COALESCE(question.no_longer_used, 0) = 0";
 			}
+			$idsQuery .= " GROUP BY question.id, theme.id ORDER BY question.id LIMIT {$perPage} OFFSET {$offset}";
+			$questionIds = $wpdb->get_col($wpdb->prepare($idsQuery, $theme_id));
 
-			$resultsAnswer = $wpdb->get_results($wpdb->prepare($queryAnswer, $theme_id));
-			// Return all rows
-			$data = array();
-			foreach ($resultsAnswer as $result) {
-				$questionExists = false;
-				foreach ($data as &$item) {
-					if ($item['question_id'] === $result->question_id) {
-						$item['answers'][] = array(
+			if (!empty($questionIds)) {
+				// Charger toutes les réponses des questions sélectionnées
+				$placeholders = implode(',', array_fill(0, count($questionIds), '%d'));
+				$resultsQuery = $queryAnswer . " AND question.id IN ($placeholders) ORDER BY question.id, answers.value DESC";
+				$resultsAnswer = $wpdb->get_results(call_user_func_array([$wpdb, 'prepare'], array_merge([$resultsQuery, $theme_id], $questionIds)));
+			}
+		} else {
+			// Comportement historique : renvoyer toutes les lignes sans pagination
+			$resultsAnswer = $wpdb->get_results($wpdb->prepare($queryAnswer . " ORDER BY question.id, answers.value DESC", $theme_id));
+		}
+
+		$data = array();
+		foreach ($resultsAnswer as $result) {
+			$questionExists = false;
+			foreach ($data as &$item) {
+				if ($item['question_id'] === $result->question_id) {
+					$item['answers'][] = array(
+						'id' => $result->answer_id,
+						'answer' => $result->name,
+						'value' => $result->value
+					);
+					$questionExists = true;
+					break;
+				}
+			}
+			unset($item);
+
+			if (!$questionExists) {
+				$data[] = array(
+					'question_id' => $result->question_id,
+					'question' => $result->question,
+					'theme' => $result->theme_name,
+					'theme_id' => $result->theme_id,
+					'answer_repo_id' => $result->answer_repo_id,
+					'numberAsked' => intval($result->numberAsked),
+					'reversed_question' => (bool) $result->reversed_question,
+					'no_longer_used' => (bool) $result->no_longer_used,
+					'answers' => array(
+						array(
 							'id' => $result->answer_id,
 							'answer' => $result->name,
 							'value' => $result->value
-						);
-						$questionExists = true;
-						break;
-					}
-				}
-				if (!$questionExists) {
-					$data[] = array(
-						'question_id' => $result->question_id,
-						'question' => $result->question,
-						'theme' => $result->theme_name,
-						'theme_id' => $result->theme_id,
-						'answer_repo_id' => $result->answer_repo_id,
-						'numberAsked' => intval($result->numberAsked),
-						'reversed_question' => (bool) $result->reversed_question,
-						'no_longer_used' => (bool) $result->no_longer_used,
-						'answers' => array(
-							array(
-								'id' => $result->answer_id,
-								'answer' => $result->name,
-								'value' => $result->value
-							)
 						)
-					);
-				}
+					)
+				);
 			}
-			return $data;
 		}
+
+		return $data;
 	}
-}
 }
