@@ -114,4 +114,49 @@ function setupCsvExportHeaders($filename)
     header('Expires: 0');
 }
 
+/**
+ * Formate les résultats bruts SQL des questions QVST en regroupant leurs réponses.
+ * Évite les duplications de code signalées par SonarQube.
+ */
+function formatQvstQuestionsWithAnswers(array $sql_results, bool $is_theme_endpoint = false): array
+{
+    $data = array();
+    foreach ($sql_results as $result) {
+        $questionExists = false;
+        foreach ($data as &$item) {
+            if ($item['question_id'] === $result->question_id) {
+                $answer_id = $is_theme_endpoint ? $result->answer_id : $result->id;
+                $item['answers'][] = array(
+                    'id' => $answer_id,
+                    'answer' => $result->name,
+                    'value' => $result->value
+                );
+                $questionExists = true;
+                break;
+            }
+        }
+        unset($item);
 
+        if (!$questionExists) {
+            $answer_id = $is_theme_endpoint ? $result->answer_id : $result->id;
+            $data[] = array(
+                'question_id' => $result->question_id,
+                'question' => $result->text_question,
+                'theme' => $result->theme_name,
+                'theme_id' => $result->theme_id,
+                'answer_repo_id' => $result->answer_repo_id,
+                'numberAsked' => intval($result->numberAsked),
+                'reversed_question' => (bool) $result->reversed_question,
+                'no_longer_used' => (bool) $result->no_longer_used,
+                'answers' => array(
+                    array(
+                        'id' => $answer_id,
+                        'answer' => $result->name,
+                        'value' => $result->value
+                    )
+                )
+            );
+        }
+    }
+    return $data;
+}

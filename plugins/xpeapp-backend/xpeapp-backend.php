@@ -2,12 +2,12 @@
 
 /**
  * @package           XpeApp Backend
- * @since             1.2.0
+ * @since             1.3.0
  *
  * @wordpress-plugin
  * Plugin Name:       XpeApp Backend
  * Description:       Defines the REST API endpoints and the backend logic for XpeApp. The endpoints are authenticated using jwt.
- * Version:           1.2.0
+ * Version:           1.3.0
  * Author:            XPEHO
  * Text Domain:       xpeapp-backend
  * Requires Plugins: jwt-authentication-for-wp-rest-api, advanced-custom-fields
